@@ -1,106 +1,92 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:neuflo_learn/src/core/config/theme/colors.dart';
 import 'package:neuflo_learn/src/core/util/constants/app_constants.dart';
+import 'package:neuflo_learn/src/presentation/controller/teststatus/test_status_controller.dart';
+import 'package:neuflo_learn/src/presentation/screens/exams/result/stat/chapters/widgets/problem_area_topics.dart';
+import 'package:neuflo_learn/src/presentation/screens/exams/result/stat/chapters/widgets/strength_area_topics.dart';
 import 'package:neuflo_learn/src/presentation/screens/exams/result/stat/widgets/detail_summary_button.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-class StatChapter extends StatefulWidget {
+class StatChapter extends StatelessWidget {
   const StatChapter({super.key});
 
   @override
-  State<StatChapter> createState() => _StatChapterState();
-}
-
-class _StatChapterState extends State<StatChapter> {
-  bool physics = false;
-  bool chemistery = true;
-  bool biology = false;
-  double index = 1;
-  @override
   Widget build(BuildContext context) {
+    final ctr = Get.find<TestStatusController>();
     return SingleChildScrollView(
-      child: Container(
         child: Column(
-          children: [
-            SizedBox(
-              height: 40,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16),
-              child: Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(40)),
-                child: Container(
-                  padding: EdgeInsets.all(
-                      Constant.screenWidth * (4 / Constant.figmaScreenWidth)),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFFFFFFF),
-                    borderRadius: BorderRadius.all(Radius.circular(40)),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: physics
-                                ? const Color(0xFF010029)
-                                : const Color(0xFFFFFFFF),
+      children: [
+        SizedBox(
+          height: 40,
+        ),
+        Obx(() {
+          return Padding(
+            padding: const EdgeInsets.only(left: 16, right: 16),
+            child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(40)),
+              child: Container(
+                padding: EdgeInsets.all(
+                    Constant.screenWidth * (4 / Constant.figmaScreenWidth)),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFFFFFFF),
+                  borderRadius: BorderRadius.all(Radius.circular(40)),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: ctr.chapIndex.value == 0
+                              ? const Color(0xFF010029)
+                              : const Color(0xFFFFFFFF),
+                          borderRadius: BorderRadius.circular(128),
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
                             borderRadius: BorderRadius.circular(128),
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(128),
-                              onTap: () async {
-                                setState(() {
-                                  physics = true;
-                                  chemistery = false;
-                                  biology = false;
-                                  index = 0;
-                                });
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(128),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Center(
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          PhosphorIcons.atom(physics
-                                              ? PhosphorIconsStyle.fill
-                                              : PhosphorIconsStyle.regular),
-                                          color: physics
-                                              ? Colors.white
-                                              : Colors.black,
-                                          size: 15,
+                            onTap: () async {
+                              ctr.changeChapIndex(index: 0);
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(128),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Center(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        PhosphorIcons.atom(
+                                            ctr.chapIndex.value == 0
+                                                ? PhosphorIconsStyle.fill
+                                                : PhosphorIconsStyle.regular),
+                                        color: ctr.chapIndex.value == 0
+                                            ? Colors.white
+                                            : Colors.black,
+                                        size: 15,
+                                      ),
+                                      Gap(
+                                        Constant.screenWidth *
+                                            (4 / Constant.figmaScreenWidth),
+                                      ),
+                                      Text(
+                                        "Physics",
+                                        style: GoogleFonts.urbanist(
+                                          fontSize: Constant.screenHeight *
+                                              (14 / Constant.figmaScreenHeight),
+                                          fontWeight: FontWeight.w400,
+                                          color: ctr.chapIndex.value == 0
+                                              ? const Color(0xFFFFFFFF)
+                                              : const Color(0xFF010029),
                                         ),
-                                        Gap(
-                                          Constant.screenWidth *
-                                              (4 / Constant.figmaScreenWidth),
-                                        ),
-                                        Text(
-                                          "Physics",
-                                          style: GoogleFonts.urbanist(
-                                            fontSize: Constant.screenHeight *
-                                                (14 /
-                                                    Constant.figmaScreenHeight),
-                                            fontWeight: FontWeight.w400,
-                                            color: physics
-                                                ? const Color(0xFFFFFFFF)
-                                                : const Color(0xFF010029),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -108,64 +94,58 @@ class _StatChapterState extends State<StatChapter> {
                           ),
                         ),
                       ),
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
+                    ),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(128),
+                          color: ctr.chapIndex.value == 1
+                              ? const Color(0xFF010029)
+                              : const Color(0xFFFFFFFF),
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
                             borderRadius: BorderRadius.circular(128),
-                            color: chemistery
-                                ? const Color(0xFF010029)
-                                : const Color(0xFFFFFFFF),
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(128),
-                              onTap: () {
-                                setState(() {
-                                  physics = false;
-                                  chemistery = true;
-                                  biology = false;
-                                  index = 1;
-                                });
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(128),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Center(
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          PhosphorIcons.flask(chemistery
-                                              ? PhosphorIconsStyle.fill
-                                              : PhosphorIconsStyle.regular),
-                                          color: chemistery
-                                              ? Colors.white
-                                              : Colors.black,
-                                          size: 15,
+                            onTap: () {
+                              ctr.changeChapIndex(index: 1);
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(128),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Center(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        PhosphorIcons.flask(
+                                            ctr.chapIndex.value == 1
+                                                ? PhosphorIconsStyle.fill
+                                                : PhosphorIconsStyle.regular),
+                                        color: ctr.chapIndex.value == 1
+                                            ? Colors.white
+                                            : Colors.black,
+                                        size: 15,
+                                      ),
+                                      Gap(
+                                        Constant.screenWidth *
+                                            (4 / Constant.figmaScreenWidth),
+                                      ),
+                                      Text(
+                                        "Chemistry",
+                                        style: GoogleFonts.urbanist(
+                                          fontSize: Constant.screenHeight *
+                                              (14 / Constant.figmaScreenHeight),
+                                          fontWeight: FontWeight.w400,
+                                          color: ctr.chapIndex.value == 1
+                                              ? const Color(0xFFFFFFFF)
+                                              : const Color(0xFF010029),
                                         ),
-                                        Gap(
-                                          Constant.screenWidth *
-                                              (4 / Constant.figmaScreenWidth),
-                                        ),
-                                        Text(
-                                          "Chemistry",
-                                          style: GoogleFonts.urbanist(
-                                            fontSize: Constant.screenHeight *
-                                                (14 /
-                                                    Constant.figmaScreenHeight),
-                                            fontWeight: FontWeight.w400,
-                                            color: chemistery
-                                                ? const Color(0xFFFFFFFF)
-                                                : const Color(0xFF010029),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -173,64 +153,58 @@ class _StatChapterState extends State<StatChapter> {
                           ),
                         ),
                       ),
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: biology
-                                ? const Color(0xFF010029)
-                                : const Color(0xFFFFFFFF),
+                    ),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: ctr.chapIndex.value == 2
+                              ? const Color(0xFF010029)
+                              : const Color(0xFFFFFFFF),
+                          borderRadius: BorderRadius.circular(128),
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
                             borderRadius: BorderRadius.circular(128),
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(128),
-                              onTap: () {
-                                setState(() {
-                                  physics = false;
-                                  chemistery = false;
-                                  biology = true;
-                                  index = 2;
-                                });
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(128),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Center(
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          PhosphorIcons.stethoscope(biology
-                                              ? PhosphorIconsStyle.fill
-                                              : PhosphorIconsStyle.regular),
-                                          color: biology
-                                              ? Colors.white
-                                              : Colors.black,
-                                          size: 15,
+                            onTap: () {
+                              ctr.changeChapIndex(index: 2);
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(128),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Center(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        PhosphorIcons.stethoscope(
+                                            ctr.chapIndex.value == 2
+                                                ? PhosphorIconsStyle.fill
+                                                : PhosphorIconsStyle.regular),
+                                        color: ctr.chapIndex.value == 2
+                                            ? Colors.white
+                                            : Colors.black,
+                                        size: 15,
+                                      ),
+                                      Gap(
+                                        Constant.screenWidth *
+                                            (4 / Constant.figmaScreenWidth),
+                                      ),
+                                      Text(
+                                        "Biology",
+                                        style: GoogleFonts.urbanist(
+                                          fontSize: Constant.screenHeight *
+                                              (14 / Constant.figmaScreenHeight),
+                                          fontWeight: FontWeight.w400,
+                                          color: ctr.chapIndex.value == 2
+                                              ? const Color(0xFFFFFFFF)
+                                              : const Color(0xFF010029),
                                         ),
-                                        Gap(
-                                          Constant.screenWidth *
-                                              (4 / Constant.figmaScreenWidth),
-                                        ),
-                                        Text(
-                                          "Biology",
-                                          style: GoogleFonts.urbanist(
-                                            fontSize: Constant.screenHeight *
-                                                (14 /
-                                                    Constant.figmaScreenHeight),
-                                            fontWeight: FontWeight.w400,
-                                            color: biology
-                                                ? const Color(0xFFFFFFFF)
-                                                : const Color(0xFF010029),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -238,374 +212,100 @@ class _StatChapterState extends State<StatChapter> {
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
-            Container(
-              padding: EdgeInsets.all(24),
-              margin: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              width: MediaQuery.of(context).size.width,
-              child: Column(
-                children: [
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: 222,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Problem areas",
-                          style: GoogleFonts.urbanist(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 24,
-                        ),
-                        Expanded(
-                          child: Column(
-                            children: [
-                              SizedBox(
-                                height: 36,
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            "Electric currents or sum shih its a looooooooooongggsggsgsg",
-                                            overflow: TextOverflow.ellipsis,
-                                            style: GoogleFonts.urbanist(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 13,
-                                        ),
-                                        Text(
-                                          "60% incorrect",
-                                          style: GoogleFonts.urbanist(
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 14,
-                                            color: AppColors.kred,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    LinearProgressIndicator(
-                                      borderRadius: BorderRadius.circular(48),
-                                      backgroundColor: Color(0xffD84040)
-                                          .withValues(alpha: 0.2),
-                                      valueColor:
-                                          AlwaysStoppedAnimation<Color?>(
-                                              Color(0xffD84040)),
-                                      value: 0.6,
-                                    )
-                                  ],
-                                ),
-                              ),
-                              SizedBox(
-                                height: 24,
-                              ),
-                              SizedBox(
-                                height: 36,
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            "Electric currents or sum shih its a looooooooooongggsggsgsg",
-                                            overflow: TextOverflow.ellipsis,
-                                            style: GoogleFonts.urbanist(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 13,
-                                        ),
-                                        Text(
-                                          "60% incorrect",
-                                          style: GoogleFonts.urbanist(
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 14,
-                                            color: AppColors.kred,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    LinearProgressIndicator(
-                                      borderRadius: BorderRadius.circular(48),
-                                      backgroundColor: Color(0xffD84040)
-                                          .withValues(alpha: 0.2),
-                                      valueColor:
-                                          AlwaysStoppedAnimation<Color?>(
-                                              Color(0xffD84040)),
-                                      value: 0.4,
-                                    )
-                                  ],
-                                ),
-                              ),
-                              SizedBox(
-                                height: 24,
-                              ),
-                              SizedBox(
-                                height: 36,
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            "Electric currents or sum shih its a looooooooooongggsggsgsg",
-                                            overflow: TextOverflow.ellipsis,
-                                            style: GoogleFonts.urbanist(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 13,
-                                        ),
-                                        Text(
-                                          "60% incorrect",
-                                          style: GoogleFonts.urbanist(
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 14,
-                                            color: AppColors.kred,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    LinearProgressIndicator(
-                                      borderRadius: BorderRadius.circular(48),
-                                      backgroundColor: Color(0xffD84040)
-                                          .withValues(alpha: 0.2),
-                                      valueColor:
-                                          AlwaysStoppedAnimation<Color?>(
-                                              Color(0xffD84040)),
-                                      value: 0.3,
-                                    )
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
+          );
+        }),
+        Obx(() {
+          final selectedList = ctr.chapIndex.value == 0
+              ? ctr.physics
+              : ctr.chapIndex.value == 1
+                  ? ctr.chemistry
+                  : ctr.biology;
+
+          if (selectedList.isEmpty) {
+            return SizedBox(
+                // color: Colors.red,
+                height: MediaQuery.of(context).size.height / 2,
+                child: Center(child: Text("No History is Available")));
+          }
+
+          return Container(
+            padding: const EdgeInsets.all(24),
+            margin: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Problem areas",
+                  style: GoogleFonts.urbanist(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
                   ),
-                  SizedBox(
-                    height: 48,
+                ),
+                const SizedBox(height: 24),
+                ListView.builder(
+                  primary: false,
+                  shrinkWrap: true,
+                  itemCount: selectedList.length,
+                  itemBuilder: (context, index) {
+                    final topic = selectedList.keys.elementAt(index);
+                    final percentage =
+                        selectedList[topic]["incorrect_percentage"] ?? 0;
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 24),
+                      child: ProblemAreaTopics(
+                        toPic: topic,
+                        inCRCpercentage: percentage,
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  "Strengths",
+                  style: GoogleFonts.urbanist(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
                   ),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: 222,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Strengths ",
-                          style: GoogleFonts.urbanist(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 24,
-                        ),
-                        Expanded(
-                          child: Column(
-                            children: [
-                              SizedBox(
-                                height: 36,
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            "Electric currents or sum shih its a looooooooooongggsggsgsg",
-                                            overflow: TextOverflow.ellipsis,
-                                            style: GoogleFonts.urbanist(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 13,
-                                        ),
-                                        Text(
-                                          "60% correct",
-                                          style: GoogleFonts.urbanist(
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 14,
-                                            color: AppColors.kgreen,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    LinearProgressIndicator(
-                                      borderRadius: BorderRadius.circular(48),
-                                      backgroundColor: Color(0xff18AC00)
-                                          .withValues(alpha: 0.2),
-                                      valueColor:
-                                          AlwaysStoppedAnimation<Color?>(
-                                              Color(0xff18AC00)),
-                                      value: 0.6,
-                                    )
-                                  ],
-                                ),
-                              ),
-                              SizedBox(
-                                height: 24,
-                              ),
-                              SizedBox(
-                                height: 36,
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            "Electric currents or sum shih its a looooooooooongggsggsgsg",
-                                            overflow: TextOverflow.ellipsis,
-                                            style: GoogleFonts.urbanist(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 13,
-                                        ),
-                                        Text(
-                                          "60% correct",
-                                          style: GoogleFonts.urbanist(
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 14,
-                                            color: AppColors.kgreen,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    LinearProgressIndicator(
-                                      borderRadius: BorderRadius.circular(48),
-                                      backgroundColor: Color(0xff18AC00)
-                                          .withValues(alpha: 0.2),
-                                      valueColor:
-                                          AlwaysStoppedAnimation<Color?>(
-                                              Color(0xff18AC00)),
-                                      value: 0.4,
-                                    )
-                                  ],
-                                ),
-                              ),
-                              SizedBox(
-                                height: 24,
-                              ),
-                              SizedBox(
-                                height: 36,
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            "Electric currents or sum shih its a looooooooooongggsggsgsg",
-                                            overflow: TextOverflow.ellipsis,
-                                            style: GoogleFonts.urbanist(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 13,
-                                        ),
-                                        Text(
-                                          "60% correct",
-                                          style: GoogleFonts.urbanist(
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 14,
-                                            color: AppColors.kgreen,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    LinearProgressIndicator(
-                                      borderRadius: BorderRadius.circular(48),
-                                      backgroundColor: Color(0xff18AC00)
-                                          .withValues(alpha: 0.2),
-                                      valueColor:
-                                          AlwaysStoppedAnimation<Color?>(
-                                              Color(0xff18AC00)),
-                                      value: 0.3,
-                                    )
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  CustomTextBtn(
-                    text: 'View detailed summary',
-                    onTap: () {
-                      log("oooi");
-                    },
-                  ),
-                  SizedBox(
-                    height: 22,
-                  ),
-                ],
-              ),
-            )
-          ],
-        ),
-      ),
-    );
+                ),
+                const SizedBox(height: 24),
+                ListView.builder(
+                  primary: false,
+                  shrinkWrap: true,
+                  itemCount: selectedList.length,
+                  itemBuilder: (context, index) {
+                    final topic = selectedList.keys.elementAt(index);
+                    final percentage =
+                        selectedList[topic]["correct_percentage"] ?? 0;
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 24),
+                      child: StrengthAreaTopics(
+                        toPic: topic,
+                        cRCpercentage: percentage,
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 30),
+                CustomTextBtn(
+                  text: 'View detailed summary',
+                  onTap: () {},
+                ),
+                const SizedBox(height: 22),
+              ],
+            ),
+          );
+        }),
+      ],
+    ));
   }
 }

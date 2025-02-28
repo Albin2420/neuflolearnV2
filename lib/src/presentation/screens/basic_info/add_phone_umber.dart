@@ -193,7 +193,7 @@ class AddPhoneNumber extends StatelessWidget {
                       return;
                     } else {
                       ctr.startTimer();
-                      ctr.generateOtp();
+                      // ctr.generateOtp();
                       Get.to(() => VerifyOtp());
                     }
                   }

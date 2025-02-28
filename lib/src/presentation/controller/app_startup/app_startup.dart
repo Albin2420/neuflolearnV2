@@ -7,6 +7,7 @@ import 'package:neuflo_learn/src/data/models/app_user_info.dart';
 import 'package:neuflo_learn/src/data/services/app_service/app_service.dart';
 import 'package:neuflo_learn/src/data/services/data_access/hive_service.dart';
 import 'package:neuflo_learn/src/data/services/firestore/firestore_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AppStartupController extends GetxController {
   /// handle user state
@@ -81,5 +82,25 @@ class AppStartupController extends GetxController {
     }, (data) {
       isDisabled.value = data;
     });
+  }
+
+  Future<void> saveToken(
+      {required String accessToken, required String refreshToken}) async {
+    if (kDebugMode) {
+      log("Token gotit:->  accessToken :$accessToken  refreshToken  :$refreshToken");
+    }
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('accessToken', accessToken);
+    await prefs.setString('refreshToken', refreshToken);
+  }
+
+  Future<String?> getAccessToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('accessToken');
+  }
+
+  Future<String?> getRefreshToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('refreshToken');
   }
 }

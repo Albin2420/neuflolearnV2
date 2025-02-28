@@ -5,13 +5,16 @@ import 'package:neuflo_learn/src/core/data_state/data_state.dart';
 import 'package:neuflo_learn/src/data/models/exam_record.dart';
 import 'package:neuflo_learn/src/data/models/testHistoryModel/qstnhistoryresult.dart';
 import 'package:neuflo_learn/src/data/repositories/testHistory/test_history_repo_impl.dart';
+import 'package:neuflo_learn/src/data/repositories/token/token_repo_impl.dart';
 import 'package:neuflo_learn/src/domain/repositories/testHistory/test_history_repo.dart';
+import 'package:neuflo_learn/src/domain/repositories/token/token_repo.dart';
 import 'package:neuflo_learn/src/presentation/controller/app_startup/app_startup.dart';
 import 'package:neuflo_learn/src/presentation/screens/test%20history/test_history_result.dart';
 
 class TestHistoryController extends GetxController {
   final appctr = Get.find<AppStartupController>();
   TestHistoryRepo tstRepo = TestHistoryRepoImpl();
+  TokenRepo trp = TokenRepoImpl();
   List<String> filters = [
     "All",
     "Mock Test",
@@ -55,10 +58,25 @@ class TestHistoryController extends GetxController {
   }
 
   Future<void> fetch() async {
-    final result =
-        await tstRepo.fetchTestHistorys(studentId: appctr.studentId.value);
-    result.fold((l) {
-      log("failed");
+    final result = await tstRepo.fetchTestHistorys(
+        accessToken: await appctr.getAccessToken() ?? '');
+    result.fold((l) async {
+      log("failed in fetchHistory()");
+
+      if (l.message == "user is not authorised") {
+        log("user is not authorised");
+        final tokens = await trp.getNewTokens(
+            refreshToken: await appctr.getRefreshToken() ?? "");
+        tokens.fold((l) {
+          log("token failed in fetchHistory()");
+        }, (R) {
+          appctr.saveToken(
+              accessToken: R["access_token"], refreshToken: R["refresh_token"]);
+          fetch();
+        });
+      } else {
+        state.value = Failed();
+      }
     }, (r) {
       testHistorys.value = r['mockTests'] +
           r['customTests'] +
@@ -78,24 +96,38 @@ class TestHistoryController extends GetxController {
       {required int testId, required String testName}) async {
     log("test Id:$testId");
     final result = await tstRepo.fetchTestDetails(
-        testId: testId, studentId: appctr.studentId.value, testName: testName);
+        testId: testId,
+        accestoken: await appctr.getAccessToken() ?? '',
+        testName: testName);
 
-    result.fold((l) {
-      log("got it");
-    }, (r) {
+    result.fold((l) async {
+      if (l.message == "user is not authorised") {
+        final tokens = await trp.getNewTokens(
+            refreshToken: await appctr.getRefreshToken() ?? "");
+        tokens.fold((l) {
+          log("token failed in fetchDetailedHistory()");
+        }, (r) {
+          appctr.saveToken(
+              accessToken: r["access_token"], refreshToken: r["refresh_token"]);
+          fetchDetailedHistory(testId: testId, testName: testName);
+        });
+      } else {
+        state.value = Failed();
+      }
+    }, (r) async {
       try {
         log("score:${r["score"].runtimeType}");
         Get.to(() => TestHistoryResult());
         if (r["score"].runtimeType == int) {
           score.value = r["score"];
         }
-        totalAttended.value = r['totalAttended'] ?? 10;
-        correct.value = r['correct'] ?? 4;
-        incorrect.value = r['incorrect'] ?? 5;
-        unAttempted.value = r['unAttempted'] ?? 1;
+        totalAttended.value = r['totalAttended'] ?? 0;
+        correct.value = r['correct'] ?? 0;
+        incorrect.value = r['incorrect'] ?? 0;
+        unAttempted.value = r['unAttempted'] ?? 0;
         qstnsAll.value = r['qstns'];
         sub.value = r['test_name'];
-        percentage.value = r["percentage"] ?? 10;
+        percentage.value = r["percentage"] ?? 0;
 
         filter();
 

@@ -3,8 +3,10 @@ import 'package:neuflo_learn/src/core/network/failure.dart';
 
 abstract class TestHistoryRepo {
   Future<Either<Failure, Map<String, dynamic>>> fetchTestHistorys(
-      {required int studentId});
+      {required String accessToken});
 
   Future<Either<Failure, Map<String, dynamic>>> fetchTestDetails(
-      {required int testId, required int studentId, required String testName});
+      {required int testId,
+      required String accestoken,
+      required String testName});
 }

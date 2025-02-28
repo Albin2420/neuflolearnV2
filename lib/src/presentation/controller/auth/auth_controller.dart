@@ -5,17 +5,23 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:neuflo_learn/src/data/models/app_user_info.dart';
+import 'package:neuflo_learn/src/data/repositories/token/token_repo_impl.dart';
 import 'package:neuflo_learn/src/data/services/data_access/hive_service.dart';
 import 'package:neuflo_learn/src/data/services/firebase/firebase_auth.dart';
 import 'package:neuflo_learn/src/data/services/firebase/firebase_auth_impl.dart';
 import 'package:neuflo_learn/src/data/services/firestore/firestore_service.dart';
 import 'package:neuflo_learn/src/data/services/twilio/twilio_service.dart';
+import 'package:neuflo_learn/src/domain/repositories/token/token_repo.dart';
 import 'package:neuflo_learn/src/presentation/controller/app_startup/app_startup.dart';
 
 class AuthController extends GetxController {
   TextEditingController textCtr = TextEditingController();
 
   final FirestoreService firestoreService = FirestoreService();
+
+  TokenRepo trp = TokenRepoImpl();
+
+  final ctrl = Get.find<AppStartupController>();
 
   /// firebase auth
   final Auth _auth = FirebaseAuthService();
@@ -119,6 +125,20 @@ class AuthController extends GetxController {
     } on Exception {
       isAccountDeleteComplete.value = false;
     }
+  }
+
+  void getNewtoken(
+      {required int studentId, required String phoneNumber}) async {
+    final tokens =
+        await trp.getToken(studentId: studentId, phoneNumber: phoneNumber);
+    tokens.fold((l) {
+      log("error in getNewtoken()");
+    }, (R) {
+      log("access_token:${R["access_token"]}");
+      log("refresh_token:${R["refresh_token"]}");
+      ctrl.saveToken(
+          accessToken: R["access_token"], refreshToken: R["refresh_token"]);
+    });
   }
 
   @override

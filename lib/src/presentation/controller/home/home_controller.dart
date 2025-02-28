@@ -139,7 +139,7 @@ class HomeController extends GetxController {
     await checkTestCompletion();
 
     // /// get practice test details
-    await getPracticeTestDeails();
+    // await getPracticeTestDeails();
 
     /// fetch current streak values
     await fetchAndUpdateStreakValues();
@@ -280,76 +280,76 @@ class HomeController extends GetxController {
 
   // TestCompletionReport
 
-  Future getPracticeTestDeails() async {
-    for (var i = 0; i < 3; i++) {
-      final result = await examRepo.getPracticeTestDetails(
-        studentId: studentId.toString(),
-        instanceId: testInstanceIDList[i].toString(),
-      );
+  // Future getPracticeTestDeails() async {
+  //   for (var i = 0; i < 3; i++) {
+  //     final result = await examRepo.getPracticeTestDetails(
+  //       studentId: studentId.toString(),
+  //       instanceId: testInstanceIDList[i].toString(),
+  //     );
 
-      result.fold((failure) {
-        totalTestDonePerDay.value = 0;
-      }, (data) {
-        bioCount.value = bioCount.value + data.biologyCounter;
-        // log('bioCount => ${bioCount.value}');
-        phyCount.value = phyCount.value + data.physicsCounter;
-        // log('phyCount => ${phyCount.value}');
-        checCount.value = checCount.value + data.chemistryCounter;
-        // log('checCount => ${checCount.value}');
+  //     result.fold((failure) {
+  //       totalTestDonePerDay.value = 0;
+  //     }, (data) {
+  //       bioCount.value = bioCount.value + data.biologyCounter;
+  //       // log('bioCount => ${bioCount.value}');
+  //       phyCount.value = phyCount.value + data.physicsCounter;
+  //       // log('phyCount => ${phyCount.value}');
+  //       checCount.value = checCount.value + data.chemistryCounter;
+  //       // log('checCount => ${checCount.value}');
 
-        physicsResult.add(data.phy);
-        chemistryResult.add(data.che);
-        biologyResult.add(data.bio);
+  //       physicsResult.add(data.phy);
+  //       chemistryResult.add(data.che);
+  //       biologyResult.add(data.bio);
 
-        // log("physicsResult => $physicsResult");
-        // log("chemistryResult => $chemistryResult");
-        // log("biologyResult => $biologyResult");
+  //       // log("physicsResult => $physicsResult");
+  //       // log("chemistryResult => $chemistryResult");
+  //       // log("biologyResult => $biologyResult");
 
-        totalTestDonePerDay.value =
-            bioCount.value + phyCount.value + checCount.value;
+  //       totalTestDonePerDay.value =
+  //           bioCount.value + phyCount.value + checCount.value;
 
-        // log("TOTAL TEST DONR PER DAY ===> $totalTestDonePerDay");
-      });
-    }
+  //       // log("TOTAL TEST DONR PER DAY ===> $totalTestDonePerDay");
+  //     });
+  //   }
 
-    // physicsTestCompletionReport.add(
-    //   TestCompletionReport(
-    //     noOfExamsCompleted: phyCount.value,
-    //     completionResult: physicsResult,
-    //   ),
-    // );
-    phyTestCompletionReport.value = TestCompletionReport(
-      noOfExamsCompleted: phyCount.value,
-      completionResult: physicsResult,
-    );
+  //   // physicsTestCompletionReport.add(
+  //   //   TestCompletionReport(
+  //   //     noOfExamsCompleted: phyCount.value,
+  //   //     completionResult: physicsResult,
+  //   //   ),
+  //   // );
+  //   phyTestCompletionReport.value = TestCompletionReport(
+  //     noOfExamsCompleted: phyCount.value,
+  //     completionResult: physicsResult,
+  //   );
 
-    // chemistryTestCompletionReport.add(
-    //   TestCompletionReport(
-    //     noOfExamsCompleted: checCount.value,
-    //     completionResult: chemistryResult,
-    //   ),
-    // );
-    cheTestCompletionReport.value = TestCompletionReport(
-      noOfExamsCompleted: checCount.value,
-      completionResult: chemistryResult,
-    );
+  //   // chemistryTestCompletionReport.add(
+  //   //   TestCompletionReport(
+  //   //     noOfExamsCompleted: checCount.value,
+  //   //     completionResult: chemistryResult,
+  //   //   ),
+  //   // );
+  //   cheTestCompletionReport.value = TestCompletionReport(
+  //     noOfExamsCompleted: checCount.value,
+  //     completionResult: chemistryResult,
+  //   );
 
-    // biologyTestCompletionReport.add(
-    //   TestCompletionReport(
-    //     noOfExamsCompleted: bioCount.value,
-    //     completionResult: biologyResult,
-    //   ),
-    // );
+  //   // biologyTestCompletionReport.add(
+  //   //   TestCompletionReport(
+  //   //     noOfExamsCompleted: bioCount.value,
+  //   //     completionResult: biologyResult,
+  //   //   ),
+  //   // );
 
-    bioTestCompletionReport.value = TestCompletionReport(
-      noOfExamsCompleted: bioCount.value,
-      completionResult: biologyResult,
-    );
+  //   bioTestCompletionReport.value = TestCompletionReport(
+  //     noOfExamsCompleted: bioCount.value,
+  //     completionResult: biologyResult,
+  //   );
 
-    // log('PHYSICS TEST RESULTS : $phyTestCompletionReport');
-    // log('CHEMISTRY TEST RESULTS : $cheTestCompletionReport');
-    // log('BIOLOGY TEST RESULTS : $bioTestCompletionReport');
-  }
+  //   // log('PHYSICS TEST RESULTS : $phyTestCompletionReport');
+  //   // log('CHEMISTRY TEST RESULTS : $cheTestCompletionReport');
+  //   // log('BIOLOGY TEST RESULTS : $bioTestCompletionReport');
+  // }
 
   Future fetchAndUpdateStreakValues() async {
     streaksState.value = Loading();

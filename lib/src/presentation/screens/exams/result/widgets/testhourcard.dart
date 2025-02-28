@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -20,20 +22,17 @@ class Testhourcard extends StatelessWidget {
   // Function to calculate minutes
   String getMinutes(double totalSeconds) {
     int minutes = ((totalSeconds % 3600) ~/ 60);
-    return minutes > 0 ? '$minutes' : ''; // Return empty string if 0
-  }
-
-  // Function to calculate seconds
-  String getSeconds(double totalSeconds) {
-    int remainingSeconds = (totalSeconds.toInt() % 60);
-    return remainingSeconds > 0 ? '$remainingSeconds' : ''; // Return empty if 0
+    return (minutes > 0 || getHours(totalSeconds).isNotEmpty)
+        ? '$minutes'
+        : '0';
   }
 
   @override
   Widget build(BuildContext context) {
     String hours = getHours(seconds);
     String minutes = getMinutes(seconds);
-    String secs = getSeconds(seconds);
+
+    log("seconds in Testhourcard():$seconds");
 
     return Container(
       padding: const EdgeInsets.only(top: 16, bottom: 16),
@@ -110,44 +109,23 @@ class Testhourcard extends StatelessWidget {
                           ),
                           const SizedBox(width: 5),
                         ],
-                        if (minutes.isNotEmpty) ...[
-                          Text(
-                            minutes,
-                            style: GoogleFonts.urbanist(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 24,
-                            ),
+                        Text(
+                          minutes,
+                          style: GoogleFonts.urbanist(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 24,
                           ),
-                          const SizedBox(width: 5),
-                          Text(
-                            "min",
-                            style: GoogleFonts.urbanist(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 10,
-                              color: const Color.fromARGB(2, 3, 64, 134)
-                                  .withOpacity(0.5),
-                            ),
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          "min",
+                          style: GoogleFonts.urbanist(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 10,
+                            color: const Color.fromARGB(2, 3, 64, 134)
+                                .withOpacity(0.5),
                           ),
-                          const SizedBox(width: 5),
-                        ],
-                        if (secs.isNotEmpty) ...[
-                          Text(
-                            secs,
-                            style: GoogleFonts.urbanist(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 24,
-                            ),
-                          ),
-                          const SizedBox(width: 5),
-                          Text(
-                            "sec",
-                            style: GoogleFonts.urbanist(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 10,
-                              color: const Color(0xff02013d80).withOpacity(0.5),
-                            ),
-                          ),
-                        ],
+                        ),
                       ],
                     ),
                     Text(

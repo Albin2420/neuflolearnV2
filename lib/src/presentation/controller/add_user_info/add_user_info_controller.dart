@@ -55,7 +55,7 @@ class AddUserInfoController extends GetxController {
 
   UserRepo userRepo = UserRepoImpl();
 
-  int currentOtp = 0;
+  int currentOtp = 123456;
 
   @override
   void onInit() {

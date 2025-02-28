@@ -8,7 +8,6 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gpt_markdown/gpt_markdown.dart';
-import 'package:neuflo_learn/src/core/data_state/data_state.dart';
 import 'package:neuflo_learn/src/core/util/constants/app_constants.dart';
 import 'package:neuflo_learn/src/presentation/controller/exam/exam_controller.dart';
 import 'package:neuflo_learn/src/presentation/screens/exams/exam_view/widgets/option_tile.dart';
@@ -545,11 +544,11 @@ class Exam extends StatelessWidget {
                         ctr.setCurrentQuestion(
                           question: ctr.questionList[index],
                         );
-                        log('qns :${ctr.questionList[index].question}');
+                        // log('qns :${ctr.questionList[index].question}');
 
-                        log('id :${ctr.questionList[index].questionId}');
-                        log("opt:${ctr.questionList[index].options}");
-                        log("ans:${ctr.questionList[index].answer}");
+                        // log('id :${ctr.questionList[index].questionId}');
+                        // log("opt:${ctr.questionList[index].options}");
+                        // log("ans:${ctr.questionList[index].answer}");
 
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           ctr.setCurrentQuestionIndex(index: index + 1);
@@ -966,23 +965,22 @@ class Exam extends StatelessWidget {
                 onTapFunction: () async {
                   if (ctr.isSubmitted.value == true) {
                     try {
-                      if (ctr.page.value >= ctr.questionList.length - 1) {
+                      if ((ctr.page.value >= ctr.questionList.length - 1) &&
+                          ctr.isReportLoading.value == false) {
                         EasyLoading.show();
                         ctr.skippedCount();
-                        await ctr.generateExamReport(level: level, type: type);
-                        log("state:${ctr.examReportState.value.state}");
-                        if (ctr.examReportState.value.state ==
-                            DataState.success) {
+                        bool x;
+                        x = await ctr.generateExamReport(
+                            level: level, type: type);
+
+                        if (x) {
                           EasyLoading.dismiss();
                           Get.to(() => ResultPage());
-                        }
-
-                        if (ctr.examReportState.value.state ==
-                            DataState.error) {
+                        } else {
                           EasyLoading.dismiss();
                           Fluttertoast.showToast(
                             msg: ctr.examReportState.value.error ??
-                                'Some went wrong! try submitting exam again.',
+                                'something went wrong',
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
                             timeInSecForIosWeb: 1,
@@ -1021,31 +1019,6 @@ class Exam extends StatelessWidget {
                       ctr.generateIncorrectIdList(index: ctr.page.value);
                       ctr.generateIncorrectList(index: ctr.page.value);
                     }
-
-                    // if (ctr.currentQnAnswer.value ==
-                    //     ctr.currentUserSelectedOption.value) {
-                    //   ctr.generateCorrectList(index: ctr.page.value);
-                    // } else {
-                    //   if (ctr.currentUserSelectedOption.value == null) {
-                    //     ctr.generateSkippedList(index: ctr.page.value);
-                    //     return;
-                    //   }
-
-                    //   if (ctr.currentUserSelectedOption.value !=
-                    //           ctr.currentQnAnswer.value &&
-                    //       ctr.currentUserSelectedOption.value != null) {
-                    //     ctr.generateIncorrectList(index: ctr.page.value);
-                    //     return;
-                    //   }
-
-                    //   if (ctr.currentUserSelectedOption.value !=
-                    //           ctr.currentQnAnswer.value &&
-                    //       ctr.currentUserSelectedOption.value != null) {
-                    //     ctr.generateIncorrectIdList(
-                    //         index: ctr.currentQuestion.value.questionId ?? 0);
-                    //     return;
-                    //   }
-                    // }
 
                     log("ctr.page.value : ${ctr.page.value}");
                   }

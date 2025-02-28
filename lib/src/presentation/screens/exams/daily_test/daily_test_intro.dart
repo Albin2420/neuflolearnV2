@@ -113,7 +113,7 @@ class DailyTestIntro extends StatelessWidget {
             ),
             DailytestExamcriteria(
               timeLimit: 'No time limit',
-              noOfQuestion: '10',
+              noOfQuestion: '30',
             ),
           ],
         ),

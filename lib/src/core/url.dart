@@ -31,4 +31,9 @@ class Url {
   static const studentTestHistory = "list-student-test-history";
   static const detailstudentTestHistory = "get-detail-student-test-history";
   static const saveSkill = "chapter-skill-level/"; //v2
+
+  static const getToken = "generate-token";
+  static const refreshToken = "refresh-token";
+
+  static const timepercentage = "student-tests/time-percentage";
 }
