@@ -10,7 +10,6 @@ import 'package:neuflo_learn/src/presentation/screens/Home/widgets/test_navigate
 import 'package:neuflo_learn/src/presentation/screens/exams/exam_view/widgets/custom_exam_view.dart';
 import 'package:neuflo_learn/src/presentation/screens/exams/exam_view/widgets/mock_exam_view.dart';
 import 'package:neuflo_learn/src/presentation/screens/exams/exam_view/widgets/practice_exam_view.dart';
-import 'package:neuflo_learn/src/presentation/screens/exams/mock_test/mock_test_intro.dart';
 import 'package:neuflo_learn/src/presentation/screens/home/widgets/streak_widget.dart';
 import 'package:neuflo_learn/src/presentation/screens/home/widgets/test_card.dart';
 import 'package:neuflo_learn/src/presentation/screens/profile/profile_page.dart';
@@ -115,12 +114,38 @@ class Home extends StatelessWidget {
                                 onTap: () {
                                   Get.to(() => ProfilePage());
                                 },
-                                child: Obx(
-                                  () {
-                                    return Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        // CircleAvatar with the image
+                                child: Obx(() {
+                                  // Fetch imageUrl safely
+                                  String? imageUrl =
+                                      Get.find<AppStartupController>()
+                                          .appUser
+                                          .value
+                                          ?.imageUrl;
+
+                                  bool isImageUrlValid =
+                                      imageUrl != null && imageUrl.isNotEmpty;
+
+                                  return Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      // CircleAvatar with the image
+                                      Container(
+                                        padding: EdgeInsets.all(2),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: CircleAvatar(
+                                          radius: Constant.screenHeight *
+                                              (20 / Constant.figmaScreenHeight),
+                                          backgroundImage: isImageUrlValid
+                                              ? NetworkImage(imageUrl)
+                                              : null, // Only assign NetworkImage if valid
+                                          backgroundColor: Colors.transparent,
+                                        ),
+                                      ),
+                                      // Fallback placeholder for error case
+                                      if (!isImageUrlValid)
                                         Container(
                                           padding: EdgeInsets.all(2),
                                           decoration: BoxDecoration(
@@ -130,51 +155,19 @@ class Home extends StatelessWidget {
                                           child: CircleAvatar(
                                             radius: Constant.screenHeight *
                                                 (20 /
-                                                    Constant
-                                                        .figmaScreenHeight), // Ensure it's a circle
-                                            backgroundImage: NetworkImage(
-                                              '${Get.find<AppStartupController>().appUser.value?.imageUrl}',
+                                                    Constant.figmaScreenHeight),
+                                            backgroundColor: Colors
+                                                .grey, // Placeholder background color
+                                            child: PhosphorIcon(
+                                              PhosphorIcons
+                                                  .user(), // Fallback icon
+                                              color: Colors.white, // Icon color
                                             ),
-                                            backgroundColor: Colors.transparent,
                                           ),
                                         ),
-                                        // Fallback placeholder for error case
-                                        if (Get.find<AppStartupController>()
-                                                    .appUser
-                                                    .value
-                                                    ?.imageUrl ==
-                                                null ||
-                                            (Get.find<AppStartupController>()
-                                                            .appUser
-                                                            .value
-                                                            ?.imageUrl ??
-                                                        '')
-                                                    .isEmpty ==
-                                                true)
-                                          Container(
-                                            color: Colors.white,
-                                            padding: EdgeInsets.all(2),
-                                            decoration: BoxDecoration(
-                                                shape: BoxShape.circle),
-                                            child: CircleAvatar(
-                                              radius: Constant.screenHeight *
-                                                  (20 /
-                                                      Constant
-                                                          .figmaScreenHeight),
-                                              backgroundColor: Colors
-                                                  .grey, // Placeholder background color
-                                              child: PhosphorIcon(
-                                                PhosphorIcons
-                                                    .user(), // Fallback icon
-                                                color:
-                                                    Colors.white, // Icon color
-                                              ),
-                                            ),
-                                          ),
-                                      ],
-                                    );
-                                  },
-                                ),
+                                    ],
+                                  );
+                                }),
                               ),
                             )
                           ],
@@ -921,7 +914,7 @@ class Home extends StatelessWidget {
                   const SizedBox(height: 10),
                   GestureDetector(
                     onTap: () {
-                      Get.to(() => MockTestIntro());
+                      Get.to(() => MockTestExamView());
                     },
                     child: Container(
                       clipBehavior: Clip.antiAliasWithSaveLayer,

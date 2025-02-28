@@ -11,12 +11,14 @@ import 'package:neuflo_learn/src/data/models/student.dart';
 import 'package:neuflo_learn/src/data/repositories/chapter/chapter_repo_impl.dart';
 import 'package:neuflo_learn/src/data/repositories/course/course_repo_impl.dart';
 import 'package:neuflo_learn/src/data/repositories/skills/skills_repo_impl.dart';
+import 'package:neuflo_learn/src/data/repositories/token/token_repo_impl.dart';
 import 'package:neuflo_learn/src/data/repositories/user/user_repo_impl.dart';
 import 'package:neuflo_learn/src/data/services/data_access/hive_service.dart';
 import 'package:neuflo_learn/src/data/services/firestore/firestore_service.dart';
 import 'package:neuflo_learn/src/domain/repositories/chapter/chapter_repo.dart';
 import 'package:neuflo_learn/src/domain/repositories/course/course_repo.dart';
 import 'package:neuflo_learn/src/domain/repositories/skills/skills_repo.dart';
+import 'package:neuflo_learn/src/domain/repositories/token/token_repo.dart';
 import 'package:neuflo_learn/src/domain/repositories/user/user_repo.dart';
 import 'package:neuflo_learn/src/presentation/controller/app_startup/app_startup.dart';
 
@@ -82,6 +84,10 @@ class SetupAccountController extends GetxController {
   var strongChapters = [];
   var weakChapters = [];
 
+  TokenRepo tokenRepo = TokenRepoImpl();
+
+  final appCtr = Get.find<AppStartupController>();
+
   /// fetch courses available
   Future fetchCourses() async {
     log("fetch course");
@@ -134,6 +140,7 @@ class SetupAccountController extends GetxController {
 
   /// handle profile
   Future<bool> completeAccountSetup() async {
+    log("initiating complteAccountsetup");
     String docName = await getDocumentName();
 
     AppUserInfo? appUserInfo = await getUserInfo();
@@ -378,7 +385,10 @@ class SetupAccountController extends GetxController {
 
   /// save skills
   Future<bool> saveSkills() async {
-    userAccountSetupState.value = Loading();
+    log("saveSkills()");
+    if (userAccountSetupState.value is! Loading) {
+      userAccountSetupState.value = Loading();
+    }
     AppUserInfo? appUserInfo = await getUserInfo();
 
     List<String> subjectIdOfStrengths = strengthMap.keys.toList();
@@ -427,15 +437,75 @@ class SetupAccountController extends GetxController {
     final result = await skillsRepo.saveSkills(data: skillData);
 
     return result.fold((failure) {
+      log("skill save failed");
       userAccountSetupState.value = Failed(e: failure.message);
       throw Exception(failure.message);
     }, (data) async {
-      return await completeAccountSetup();
+      log("skill saved successfully");
+
+      final token = await tokenRepo.getToken(
+        studentId: appUserInfo?.id ?? 0,
+        phoneNumber: appUserInfo?.phone ?? '',
+      );
+
+      return await token.fold((l) async {
+        log("token failed");
+        userAccountSetupState.value = Failed(e: l.message);
+        return false; // Return false if token retrieval fails
+      }, (r) async {
+        log("access_token: ${r["access_token"]}");
+        log("refresh_token: ${r["refresh_token"]}");
+
+        await appCtr.saveToken(
+          accessToken: r['access_token'],
+          refreshToken: r['refresh_token'],
+        );
+
+        return await completeAccountSetup(); // Return the result of `saveSkills`
+      });
     });
   }
 
   Rx<Ds<bool>> userAccountSetupState = Rx(Initial());
   Rx<Student> currentStudent = Rx(Student());
+
+  // RxBool isReadytoSaveskill = RxBool(false);
+
+  // Future<bool> saveUserInfo() async {
+  //   AppUserInfo? appUserInfo = await getUserInfo();
+
+  //   final result = await userRepo.saveStudent(
+  //     student: Student(
+  //       studentId: appUserInfo?.id,
+  //       mailId: appUserInfo?.email,
+  //       name: appUserInfo?.name,
+  //       phoneNumber: appUserInfo?.phone,
+  //     ),
+  //   );
+
+  //   result.fold((f) {
+  //     userAccountSetupState.value = Failed(e: f.message);
+  //     throw Exception(f.message);
+  //   }, (student) async {
+  //     log("save student success");
+  //     currentStudent.value = student;
+  //     final token = await tokenRepo.getToken(
+  //         studentId: student.studentId ?? 0,
+  //         phoneNumber: student.phoneNumber ?? '');
+
+  //     token.fold((l) {
+  //       log("token failed");
+  //       userAccountSetupState.value = Failed(e: l.message);
+  //       return false;
+  //     }, (r) async {
+  //       log("accestoken:${r["access_token"]}");
+  //       log("refresh_token:${r["refresh_token"]}");
+  //       await appCtr.saveToken(
+  //           accessToken: r['access_token'], refreshToken: r['refresh_token']);
+  //       return await saveSkills();
+  //     });
+  //   });
+  // }
 
   Future<bool> saveUserInfo() async {
     AppUserInfo? appUserInfo = await getUserInfo();
@@ -449,11 +519,11 @@ class SetupAccountController extends GetxController {
       ),
     );
 
-    return result.fold((f) {
-      // log("saveStudent> ")
+    return await result.fold((f) async {
       userAccountSetupState.value = Failed(e: f.message);
-      throw Exception(f.message);
+      return false; // Return false explicitly
     }, (student) async {
+      log("save student success");
       currentStudent.value = student;
       return await saveSkills();
     });

@@ -10,8 +10,6 @@ import 'package:neuflo_learn/src/core/network/failure.dart';
 import 'package:neuflo_learn/src/core/url.dart';
 import 'package:neuflo_learn/src/data/models/exam_report.dart';
 import 'package:neuflo_learn/src/data/models/question.dart';
-import 'package:neuflo_learn/src/data/models/test_completion_data.dart';
-import 'package:neuflo_learn/src/data/models/test_completion_result.dart';
 import 'package:neuflo_learn/src/data/services/data_access/api_service.dart';
 import 'package:neuflo_learn/src/domain/repositories/exam/exam_repo.dart';
 
@@ -59,130 +57,130 @@ class ExamRepoImpl extends ExamRepo {
     }
   }
 
-  @override
-  Future<Either<Failure, TestCompletionData>> getPracticeTestDetails({
-    required String studentId,
-    required String instanceId,
-  }) async {
-    if (kDebugMode) {
-      log('${Url.baseUrl}/${Url.getPracticeTestDetails}');
-    }
-    try {
-      final response = await apiService.post(
-        headers: {'Content-Type': 'application/json'},
-        url: '${Url.baseUrl}/${Url.getPracticeTestDetails}',
-        data: json.encode(
-          {
-            "instance_id": instanceId,
-            "student_id": studentId,
-          },
-        ),
-      );
-      dynamic result = handleResponse(response);
+  // @override
+  // Future<Either<Failure, TestCompletionData>> getPracticeTestDetails({
+  //   required String studentId,
+  //   required String instanceId,
+  // }) async {
+  //   if (kDebugMode) {
+  //     log('${Url.baseUrl}/${Url.getPracticeTestDetails}');
+  //   }
+  //   try {
+  //     final response = await apiService.post(
+  //       headers: {'Content-Type': 'application/json'},
+  //       url: '${Url.baseUrl}/${Url.getPracticeTestDetails}',
+  //       data: json.encode(
+  //         {
+  //           "instance_id": instanceId,
+  //           "student_id": studentId,
+  //         },
+  //       ),
+  //     );
+  //     dynamic result = handleResponse(response);
 
-      log("result : ===== $result");
+  //     log("result : ===== $result");
 
-      if (result is Failure) {
-        return Right(
-          TestCompletionData(
-            physicsCounter: 0,
-            chemistryCounter: 0,
-            biologyCounter: 0,
-            phy: TestCompletionResult(),
-            che: TestCompletionResult(),
-            bio: TestCompletionResult(),
-          ),
-        );
-      }
+  //     if (result is Failure) {
+  //       return Right(
+  //         TestCompletionData(
+  //           physicsCounter: 0,
+  //           chemistryCounter: 0,
+  //           biologyCounter: 0,
+  //           phy: TestCompletionResult(),
+  //           che: TestCompletionResult(),
+  //           bio: TestCompletionResult(),
+  //         ),
+  //       );
+  //     }
 
-      int physicsCounter = 0;
-      int chemistryCounter = 0;
-      int biologyCounter = 0;
+  //     int physicsCounter = 0;
+  //     int chemistryCounter = 0;
+  //     int biologyCounter = 0;
 
-      List items = (result["details"] as List<dynamic>);
+  //     List items = (result["details"] as List<dynamic>);
 
-      TestCompletionResult? phyTestCompletionResult;
-      TestCompletionResult? cheTestCompletionResult;
-      TestCompletionResult? bioTestCompletionResult;
+  //     TestCompletionResult? phyTestCompletionResult;
+  //     TestCompletionResult? cheTestCompletionResult;
+  //     TestCompletionResult? bioTestCompletionResult;
 
-      for (int i = 0; i < items.length; i++) {
-        if (kDebugMode) {
-          // log("items[$i] : ${items[i]}");
-        }
-        Map data = items[i];
-        if (data['subjectname'] == "Chemistry") {
-          if (data["iscompleted"] == true) {
-            chemistryCounter++;
-          }
-          cheTestCompletionResult = TestCompletionResult(
-            subjectname: data['subjectname'],
-            iscompleted: data["iscompleted"],
-          );
-        }
+  //     for (int i = 0; i < items.length; i++) {
+  //       if (kDebugMode) {
+  //         // log("items[$i] : ${items[i]}");
+  //       }
+  //       Map data = items[i];
+  //       if (data['subjectname'] == "Chemistry") {
+  //         if (data["iscompleted"] == true) {
+  //           chemistryCounter++;
+  //         }
+  //         cheTestCompletionResult = TestCompletionResult(
+  //           subjectname: data['subjectname'],
+  //           iscompleted: data["iscompleted"],
+  //         );
+  //       }
 
-        if (data['subjectname'] == "Biology") {
-          if (data["iscompleted"] == true) {
-            biologyCounter++;
-          }
-          bioTestCompletionResult = TestCompletionResult(
-            subjectname: data['subjectname'],
-            iscompleted: data["iscompleted"],
-          );
-        }
+  //       if (data['subjectname'] == "Biology") {
+  //         if (data["iscompleted"] == true) {
+  //           biologyCounter++;
+  //         }
+  //         bioTestCompletionResult = TestCompletionResult(
+  //           subjectname: data['subjectname'],
+  //           iscompleted: data["iscompleted"],
+  //         );
+  //       }
 
-        if (data['subjectname'] == "Physics") {
-          if (data["iscompleted"] == true) {
-            physicsCounter++;
-          }
-          phyTestCompletionResult = TestCompletionResult(
-            subjectname: data['subjectname'],
-            iscompleted: data["iscompleted"],
-          );
-        }
-      }
+  //       if (data['subjectname'] == "Physics") {
+  //         if (data["iscompleted"] == true) {
+  //           physicsCounter++;
+  //         }
+  //         phyTestCompletionResult = TestCompletionResult(
+  //           subjectname: data['subjectname'],
+  //           iscompleted: data["iscompleted"],
+  //         );
+  //       }
+  //     }
 
-      return Right(
-        TestCompletionData(
-          physicsCounter: physicsCounter,
-          chemistryCounter: chemistryCounter,
-          biologyCounter: biologyCounter,
-          phy: phyTestCompletionResult ??
-              TestCompletionResult(
-                subjectname: "Physics",
-                iscompleted: false,
-              ),
-          bio: bioTestCompletionResult ??
-              TestCompletionResult(
-                subjectname: "Chemistry",
-                iscompleted: false,
-              ),
-          che: cheTestCompletionResult ??
-              TestCompletionResult(
-                subjectname: "Biology",
-                iscompleted: false,
-              ),
-        ),
-      );
-    } on FormatException catch (e) {
-      debugPrint('exception : $e');
-      return const Left(
-        Failure(message: 'Format Exception'),
-      );
-    } on SocketException catch (e) {
-      debugPrint('exception : $e');
-      return const Left(
-        Failure(
-          code: ResponseCode.NO_INTERNET_CONNECTION,
-          message: ResponseMessage.NO_INTERNET_CONNECTION,
-        ),
-      );
-    } on Exception catch (e) {
-      debugPrint('exception : $e');
-      return const Left(
-        Failure(message: 'Unknown error, Try again later'),
-      );
-    }
-  }
+  //     return Right(
+  //       TestCompletionData(
+  //         physicsCounter: physicsCounter,
+  //         chemistryCounter: chemistryCounter,
+  //         biologyCounter: biologyCounter,
+  //         phy: phyTestCompletionResult ??
+  //             TestCompletionResult(
+  //               subjectname: "Physics",
+  //               iscompleted: false,
+  //             ),
+  //         bio: bioTestCompletionResult ??
+  //             TestCompletionResult(
+  //               subjectname: "Chemistry",
+  //               iscompleted: false,
+  //             ),
+  //         che: cheTestCompletionResult ??
+  //             TestCompletionResult(
+  //               subjectname: "Biology",
+  //               iscompleted: false,
+  //             ),
+  //       ),
+  //     );
+  //   } on FormatException catch (e) {
+  //     debugPrint('exception : $e');
+  //     return const Left(
+  //       Failure(message: 'Format Exception'),
+  //     );
+  //   } on SocketException catch (e) {
+  //     debugPrint('exception : $e');
+  //     return const Left(
+  //       Failure(
+  //         code: ResponseCode.NO_INTERNET_CONNECTION,
+  //         message: ResponseMessage.NO_INTERNET_CONNECTION,
+  //       ),
+  //     );
+  //   } on Exception catch (e) {
+  //     debugPrint('exception : $e');
+  //     return const Left(
+  //       Failure(message: 'Unknown error, Try again later'),
+  //     );
+  //   }
+  // }
 
   @override
   Future<Either<Failure, int>> generatePracticeTestId(
@@ -277,6 +275,7 @@ class ExamRepoImpl extends ExamRepo {
     required int studentId,
     required String subjectName,
     required String testlevel,
+    required String accessToken,
   }) async {
     if (kDebugMode) {
       log('${Url.baseUrl}/${Url.getPracticeTestQuestions}');
@@ -289,16 +288,19 @@ class ExamRepoImpl extends ExamRepo {
 
     try {
       final https.Response response = await apiService.get(
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
         url:
-            '${Url.baseUrl}/${Url.getPracticeTestQuestions}/?student_id=$studentId&subject_name=$subjectName&test_level=$testlevel',
+            '${Url.baseUrl}/${Url.getPracticeTestQuestions}/?subject_name=$subjectName&test_level=$testlevel',
       );
-      log("response in getPracticeTestQuestions():${response.body}");
+      log("statusCode in getPracticeTestQuestions():${response.statusCode}");
       dynamic result = handleResponse(response);
 
       List<Question> questionList = [];
 
       if (result is Failure) {
-        return Left(Failure(message: 'Failed to load question'));
+        return Left(Failure(message: result.message));
       }
 
       if (result["questions"] == null) {
@@ -340,6 +342,7 @@ class ExamRepoImpl extends ExamRepo {
 
   @override
   Future<Either<Failure, Map<String, dynamic>>> sumbitPracticeTestAnswers({
+    required final String accessToken,
     required int practiceTestId,
     required int studentId,
     required int subjectId,
@@ -362,10 +365,13 @@ class ExamRepoImpl extends ExamRepo {
     final url = Uri.parse('${Url.baseUrl}/${Url.submitPracticeTestAnswers}');
     try {
       final response = await https.post(url,
-          headers: {"Content-Type": "application/json"},
+          headers: {
+            "Content-Type": "application/json",
+            'Authorization': 'Bearer $accessToken',
+          },
           body: jsonEncode({
             "practice_test_id": practiceTestId,
-            "student_id": studentId,
+            // "student_id": studentId,
             "subject_id": subjectId,
             "test_level": testLevel.toLowerCase(),
             "total_time_taken": totalTimeTaken,
@@ -373,20 +379,20 @@ class ExamRepoImpl extends ExamRepo {
           }));
 
       dynamic result = handleResponse(response);
-      if (response.statusCode == 200) {
-        log("respons:${response.body}");
-        String? time = await convertSectoHourMinute(result["total_time_taken"]);
 
-        return Right(({
-          "score_percentage": result["score_percentage"],
-          "total_time_taken": time,
-          "score": result["score"],
-          "rank": result["rank"]
-        }));
-      } else {
-        log("body:${response.body}");
-        return Left(Failure(message: "failed"));
+      log("response body :${response.body}");
+      if (result is Failure) {
+        return Left(Failure(message: result.message));
       }
+
+      String? time = await convertSectoHourMinute(result["total_time_taken"]);
+
+      return Right(({
+        "score_percentage": result["score_percentage"],
+        "total_time_taken": time,
+        "score": result["score"],
+        "rank": result["rank"]
+      }));
     } catch (e) {
       log('error in sumbitPracticeTestAnswers():$e');
       return Left(Failure(message: e.toString()));
@@ -395,7 +401,7 @@ class ExamRepoImpl extends ExamRepo {
 
   @override
   Future<Either<Failure, Map<String, dynamic>>> getmockTestQuestions(
-      {required int studentId}) async {
+      {required int studentId, required String accesstoken}) async {
     try {
       final url = Uri.parse('${Url.baseUrl}/${Url.generateMockTest}');
       if (kDebugMode) {
@@ -404,10 +410,19 @@ class ExamRepoImpl extends ExamRepo {
       }
       final response = await https.post(
         url,
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer $accesstoken',
+        },
         body: jsonEncode({"student_id": studentId}),
       );
-      log("response:${response.body}");
+
+      dynamic result = handleResponse(response);
+
+      if (result is Failure) {
+        return Left(result);
+      }
+
       if (response.statusCode == 200) {
         dynamic result = handleResponse(response);
         List<Question> physicsQuestions = [];
@@ -580,6 +595,7 @@ class ExamRepoImpl extends ExamRepo {
 
   @override
   Future<Either<Failure, Map<String, dynamic>>> getCustomTestQuestions({
+    required String accesstoken,
     required int studentId,
     required List physicsChapters,
     required List chemistryChapters,
@@ -596,7 +612,10 @@ class ExamRepoImpl extends ExamRepo {
       }
       final response = await https.post(
         url,
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer $accesstoken',
+        },
         body: jsonEncode({
           "student_id": studentId,
           "subjectwise_chapter": {
@@ -611,13 +630,14 @@ class ExamRepoImpl extends ExamRepo {
       log("response:${response.body}");
 
       dynamic result = handleResponse(response);
+
+      if (result is Failure) {
+        return Left(Failure(message: result.message));
+      }
+
       log("response 1 go:${result["questions"][0]}");
 
       List<Question> questionList = [];
-
-      if (result is Failure) {
-        return Left(Failure(message: 'Failed to load question'));
-      }
 
       questionList = (result["questions"] as List<dynamic>)
           .map((e) => Question.fromJson(e))
@@ -653,6 +673,7 @@ class ExamRepoImpl extends ExamRepo {
 
   @override
   Future<Either<Failure, Map<String, dynamic>>> submitMockTestAnswers({
+    required String accessToken,
     required int mockTestId,
     required int studentId,
     required int totalAttended,
@@ -670,7 +691,10 @@ class ExamRepoImpl extends ExamRepo {
       }
       final response = await https.post(
         Uri.parse(url),
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer $accessToken',
+        },
         body: jsonEncode(({
           "mock_test_id": mockTestId,
           "student_id": studentId,
@@ -689,9 +713,14 @@ class ExamRepoImpl extends ExamRepo {
       log("statusCode submitMockTest():${response.statusCode}");
       dynamic result = handleResponse(response);
 
+      if (result is Failure) {
+        return Left(Failure(message: result.message));
+      }
+
       log("result of mocktest:$result");
 
-      String? time = await convertSectoHourMinute(result["total_time_taken"]);
+      String? time =
+          await convertSectoHourMinute(result["total_time_taken"]); //got it;
 
       return Right(({
         "score_percentage": result["score_percentage"],
@@ -707,6 +736,7 @@ class ExamRepoImpl extends ExamRepo {
 
   @override
   Future<Either<Failure, Map<String, dynamic>>> submitCustomTestAnswers({
+    required String accesstoken,
     required int studentId,
     required int customTestId,
     required int totalAttended,
@@ -733,7 +763,10 @@ class ExamRepoImpl extends ExamRepo {
       }
       final response = await https.post(
         Uri.parse(url),
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer $accesstoken',
+        },
         body: jsonEncode(({
           "custom_id": customTestId,
           "student_id": studentId,
@@ -746,6 +779,9 @@ class ExamRepoImpl extends ExamRepo {
         })),
       );
       dynamic result = handleResponse(response);
+      if (result is Failure) {
+        return Left(Failure(message: result.message));
+      }
       log("res:${response.statusCode}");
       log("result:${response.body}");
       String? time = await convertSectoHourMinute(result["total_time_taken"]);

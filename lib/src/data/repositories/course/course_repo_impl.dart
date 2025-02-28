@@ -24,7 +24,7 @@ class CourseRepoImpl extends CourseRepo {
           await apiService.get(url: '${Url.baseUrl}/${Url.courses}');
       dynamic result = handleResponse(response);
 
-      log("result : $result");
+      log("result : $response");
 
       if (result is Failure) {
         return Left(result);

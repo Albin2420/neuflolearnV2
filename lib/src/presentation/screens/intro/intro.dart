@@ -163,6 +163,11 @@ class IntroScreen extends StatelessWidget {
                       //   }
                       // }
                       if (ctr.currentAppUser.value != null) {
+                        ctr.getNewtoken(
+                            studentId:
+                                ctr.currentFirestoreAppUser.value?.id ?? 0,
+                            phoneNumber:
+                                ctr.currentFirestoreAppUser.value?.phone ?? '');
                         if (ctr.currentFirestoreAppUser.value != null) {
                           if (ctr.currentFirestoreAppUser.value
                                   ?.isProfileSetupComplete ==

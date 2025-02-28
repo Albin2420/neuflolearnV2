@@ -9,13 +9,16 @@ import 'package:neuflo_learn/src/data/models/app_user_info.dart';
 import 'package:neuflo_learn/src/data/models/exam_report.dart';
 import 'package:neuflo_learn/src/data/models/question.dart';
 import 'package:neuflo_learn/src/data/repositories/exam/exam_repo_impl.dart';
+import 'package:neuflo_learn/src/data/repositories/token/token_repo_impl.dart';
 import 'package:neuflo_learn/src/data/services/data_access/hive_service.dart';
 import 'package:neuflo_learn/src/data/services/firestore/firestore_service.dart';
 import 'package:neuflo_learn/src/domain/repositories/exam/exam_repo.dart';
+import 'package:neuflo_learn/src/domain/repositories/token/token_repo.dart';
 import 'package:neuflo_learn/src/presentation/controller/app_startup/app_startup.dart';
 
 class ExamController extends GetxController {
   final appctrl = Get.find<AppStartupController>();
+  TokenRepo tokenRepo = TokenRepoImpl();
 
   RxInt min = RxInt(0);
 
@@ -27,6 +30,8 @@ class ExamController extends GetxController {
 
   /// exam repo
   ExamRepo examRepo = ExamRepoImpl();
+
+  RxBool isReportLoading = RxBool(false);
 
   /// hive service
   HiveService hiveService = HiveService();
@@ -68,15 +73,21 @@ class ExamController extends GetxController {
 
   RxBool showExplanation = RxBool(true);
 
+  RxString accessToken = RxString('');
+  RxString refreshToken = RxString('');
+
   void setCurrentPageIndex({required int index}) {
     page.value = index;
   }
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
     getUserInfo();
-    // Get.to(() => TestSettingsSheet());
+    accessToken.value = await appctrl.getAccessToken() ?? '';
+    refreshToken.value = await appctrl.getRefreshToken() ?? '';
+
+    log("accessToken :$accessToken\nrefreshToken :$refreshToken");
   }
 
   /// generate document name
@@ -185,6 +196,8 @@ class ExamController extends GetxController {
     });
   }
 
+  RxString leVEl = RxString('');
+
   // Stop the timer
   void stopTimer() {
     if (_timer != null) {
@@ -259,44 +272,43 @@ class ExamController extends GetxController {
     final result = await examRepo.getPracticeTestQuestions(
         studentId: studentId.value,
         subjectName: currentSubjectName,
-        testlevel: testlevel);
+        testlevel: testlevel,
+        accessToken: accessToken.value);
 
-    result.fold((failure) {
-      questionList.value = [];
+    result.fold((failure) async {
+      log("failure:${failure.message}");
+      if (failure.message == "user is not authorised" ||
+          failure.message == 'api rejected our request') {
+        log("attempt the refresh token");
+        //call the refreshtoken then update the access token then call this method
+
+        final resp =
+            await tokenRepo.getNewTokens(refreshToken: refreshToken.value);
+        resp.fold((l) {
+          log("failed to get new token:${l.message}");
+          examState.value = Failed();
+        }, (r) async {
+          accessToken.value = r['access_token'];
+          refreshToken.value = r['refresh_token'];
+          await appctrl.saveToken(
+              accessToken: r['access_token'], refreshToken: r['refresh_token']);
+          getPracticeTestQuestions(
+              subjectName: subjectName, testlevel: testlevel);
+        });
+      } else {
+        questionList.value = [];
+        examState.value = Failed();
+      }
     }, (data) {
       questionList.value = data["questions"];
       tempQuestionList.value = data["questions"];
       testId.value = data["practiceTestID"];
 
+      examState.value = Success(data: questionList);
+      startTimer();
+
       if (kDebugMode) {
         log("${questionList.length} QUESTIONS LOADED FOR $currentSubjectName");
-      }
-    });
-  }
-
-  /// get practice test exam questions
-  Future getCustomTestQuestionList({
-    required List physicsChapters,
-    required List chemistryChapters,
-    required List biologyChapters,
-    required int noOfQuestions,
-  }) async {
-    final result = await examRepo.getCustomTestQuestions(
-      studentId: studentId.value,
-      physicsChapters: physicsChapters,
-      chemistryChapters: chemistryChapters,
-      biologyChapters: biologyChapters,
-      noOfQuestions: 20,
-    );
-
-    result.fold((failure) {
-      questionList.value = [];
-    }, (data) {
-      testId.value = data["custom_test_id"];
-      questionList.value = data["questions"];
-      tempQuestionList.value = data["questions"];
-      if (kDebugMode) {
-        log("${questionList.length} QUESTIONS LOADED FOR CUSTOM TEST");
       }
     });
   }
@@ -305,6 +317,7 @@ class ExamController extends GetxController {
     try {
       examState.value = Loading();
       await getMockTestQuestions(studentId: studentId.value);
+      setSubjectName(subj: 'MockTest');
       examState.value = Success(data: questionList);
       startTimer();
     } catch (e) {
@@ -313,9 +326,27 @@ class ExamController extends GetxController {
   }
 
   Future getMockTestQuestions({required int studentId}) async {
-    final result = await examRepo.getmockTestQuestions(studentId: studentId);
+    final result = await examRepo.getmockTestQuestions(
+        studentId: studentId, accesstoken: accessToken.value);
 
-    result.fold((failure) {
+    result.fold((failure) async {
+      log("Failure:${failure.message}");
+
+      if (failure.message == 'user is not authorised') {
+        final resp =
+            await tokenRepo.getNewTokens(refreshToken: refreshToken.value);
+        resp.fold((l) {
+          log("failed to get new token:${l.message}");
+          examState.value = Failed();
+        }, (r) async {
+          accessToken.value = r['access_token'];
+          refreshToken.value = r['refresh_token'];
+          await appctrl.saveToken(
+              accessToken: r['access_token'], refreshToken: r['refresh_token']);
+          await getMockTestQuestions(studentId: studentId);
+        });
+      }
+
       questionList.value = [];
     }, (data) {
       testId.value = data["mock_test_id"];
@@ -327,6 +358,11 @@ class ExamController extends GetxController {
       tempQuestionList.value = data["questions"];
     });
   }
+
+  RxInt totalAttenDed = RxInt(0);
+  RxList userAttendedPhysicSAnswers = RxList([]);
+  RxList userAttendedChemisTryAnswers = RxList([]);
+  RxList biologyAnswers = RxList([]);
 
   Future submitMockTestAnswers() async {
     log("Mock Test Submission");
@@ -388,28 +424,88 @@ class ExamController extends GetxController {
     log("Botany Answers : ${userAttendedChemistryAnswers.length}");
     log("Zoology Answers : ${userAttendedZoologyAnswers.length}");
 
-    final resp = await examRepo.submitMockTestAnswers(
-        mockTestId: testId.value,
-        studentId: studentId.value,
-        totalAttended: totalAttended,
-        correctNumber: correctList.length,
-        incorrectNumber: inCorrectList.length,
-        physicsAnswers: userAttendedPhysicsAnswers,
-        chemistryAnswers: userAttendedChemistryAnswers,
-        totalTimeTaken: secondsLeft.value,
-        biologyAnswers: userAttendedBotanyAnswers + userAttendedZoologyAnswers);
+    totalAttenDed.value = totalAttended;
+    userAttendedPhysicSAnswers.value = userAttendedPhysicsAnswers;
+    userAttendedChemisTryAnswers.value = userAttendedChemistryAnswers;
+    biologyAnswers.value =
+        userAttendedBotanyAnswers + userAttendedZoologyAnswers;
 
-    resp.fold((f) {
-      log("failed");
+    return await subMitMockTest();
+  }
+
+  Future<bool> subMitMockTest() async {
+    log("Submitting mock test answers...");
+    bool isSuccess = false;
+
+    final resp = await examRepo.submitMockTestAnswers(
+      accessToken: accessToken.value,
+      mockTestId: testId.value,
+      studentId: studentId.value,
+      totalAttended: totalAttenDed.value,
+      correctNumber: correctList.length,
+      incorrectNumber: inCorrectList.length,
+      physicsAnswers: userAttendedPhysicSAnswers,
+      chemistryAnswers: userAttendedChemisTryAnswers,
+      totalTimeTaken: secondsLeft.value,
+      biologyAnswers: biologyAnswers,
+    );
+
+    await resp.fold((f) async {
+      log("Error IN FOLD(): ${f.message}");
+
+      if (f.message == 'user is not authorised') {
+        log("Attempting to refresh token...");
+
+        final tokenResp =
+            await tokenRepo.getNewTokens(refreshToken: refreshToken.value);
+        await tokenResp.fold((tokenError) {
+          log("Failed to refresh token: ${tokenError.message}");
+          examReportState.value = Failed(e: 'Authentication Failed');
+          isSuccess = false;
+        }, (tokenSuccess) async {
+          log("New token obtained: ${tokenSuccess['access_token']}");
+
+          // Update the tokens
+          accessToken.value = tokenSuccess['access_token'];
+          refreshToken.value = tokenSuccess['refresh_token'];
+
+          // Save new tokens
+          await appctrl.saveToken(
+            accessToken: tokenSuccess['access_token'],
+            refreshToken: tokenSuccess['refresh_token'],
+          );
+
+          log("Retrying API call after token refresh...");
+          isSuccess = await subMitMockTest(); // Retry API call with new token
+        });
+      } else {
+        examReportState.value = Failed(e: f.message);
+        isSuccess = false;
+      }
     }, (r) async {
-      examReportState.value = Success(
-        data: ExamReport(
-            rank: r['rank'],
-            score: r['score'],
-            timeTaken: r["total_time_taken"],
-            percentage: r['score_percentage']),
-      );
+      try {
+        log("API Response: ${r["rank"]}");
+        log("Before update: ${examReportState.value}");
+
+        examReportState.value = Success(
+          data: ExamReport(
+            rank: r['rank'] ?? 0,
+            score: r['score'] ?? 0,
+            timeTaken: r["total_time_taken"] ?? 0,
+            percentage: (r['score_percentage'] as num?)?.toDouble() ?? 0.0,
+          ),
+        );
+
+        log("After update: ${examReportState.value}");
+        isSuccess = true;
+      } catch (e) {
+        log("Error in processing response: $e");
+        examReportState.value = Failed(e: e.toString());
+        isSuccess = false;
+      }
     });
+
+    return isSuccess;
   }
 
   /// practice test exam start entry point
@@ -426,8 +522,6 @@ class ExamController extends GetxController {
         subjectName: subjectName,
         testlevel: testlevel.toLowerCase(),
       );
-      examState.value = Success(data: questionList);
-      startTimer();
     } on Exception {
       examState.value = Failed(e: 'Cannot start exam');
     }
@@ -441,19 +535,152 @@ class ExamController extends GetxController {
       required int noOfQuestions}) async {
     examState.value = Loading();
     try {
-      // await generatePracticeTest();
       await getCustomTestQuestionList(
         physicsChapters: physicsChapters,
         chemistryChapters: chemistryChapters,
         biologyChapters: biologyChapters,
         noOfQuestions: noOfQuestions,
       );
-      examState.value = Success(data: questionList);
-      startTimer();
-    } on Exception {
+    } catch (e) {
       examState.value = Failed(e: 'Cannot start exam');
     }
   }
+
+  Future getCustomTestQuestionList({
+    required List physicsChapters,
+    required List chemistryChapters,
+    required List biologyChapters,
+    required int noOfQuestions,
+    int retryCount = 0, // Add retry count
+  }) async {
+    if (retryCount > 2) {
+      // Limit retries to avoid infinite loops
+      log("Max retry attempts reached. Aborting...");
+      examState.value = Failed();
+      return;
+    }
+
+    final result = await examRepo.getCustomTestQuestions(
+      accesstoken: accessToken.value,
+      studentId: studentId.value,
+      physicsChapters: physicsChapters,
+      chemistryChapters: chemistryChapters,
+      biologyChapters: biologyChapters,
+      noOfQuestions: noOfQuestions,
+    );
+
+    await result.fold((failure) async {
+      log("Failure in fold: ${failure.message}");
+
+      if (failure.message == "user is not authorised" ||
+          failure.message == "api rejected our request") {
+        log("Attempting refresh token... (Retry: $retryCount)");
+
+        final resp =
+            await tokenRepo.getNewTokens(refreshToken: refreshToken.value);
+
+        await resp.fold((l) {
+          log("Failed to get new token: ${l.message}");
+          examState.value = Failed();
+          questionList.value = [];
+        }, (r) async {
+          // Save new tokens
+          String newAccessToken = r['access_token'];
+          String newRefreshToken = r['refresh_token'];
+
+          if (newAccessToken == accessToken.value) {
+            log("New token is the same as old token. Avoiding infinite loop.");
+            examState.value = Failed();
+            return;
+          }
+
+          accessToken.value = newAccessToken;
+          refreshToken.value = newRefreshToken;
+          await appctrl.saveToken(
+              accessToken: newAccessToken, refreshToken: newRefreshToken);
+
+          await getCustomTestQuestionList(
+            physicsChapters: physicsChapters,
+            chemistryChapters: chemistryChapters,
+            biologyChapters: biologyChapters,
+            noOfQuestions: noOfQuestions,
+            retryCount: retryCount + 1,
+          );
+        });
+      } else {
+        questionList.value = [];
+        examState.value = Failed();
+      }
+    }, (data) async {
+      testId.value = data["custom_test_id"];
+      questionList.value = data["questions"];
+      tempQuestionList.value = data["questions"];
+      examState.value = Success(data: questionList);
+      setSubjectName(subj: 'Custom Test');
+      startTimer();
+    });
+  }
+
+  // Future getCustomTestQuestionList({
+  //   required List physicsChapters,
+  //   required List chemistryChapters,
+  //   required List biologyChapters,
+  //   required int noOfQuestions,
+  // }) async {
+  //   final result = await examRepo.getCustomTestQuestions(
+  //     studentId: studentId.value,
+  //     physicsChapters: physicsChapters,
+  //     chemistryChapters: chemistryChapters,
+  //     biologyChapters: biologyChapters,
+  //     noOfQuestions: noOfQuestions, // Use the provided parameter
+  //   );
+
+  //   await result.fold((failure) async {
+  //     log("Failure in fold: ${failure.message}");
+
+  //     if (failure.message == "user is not authorised" ||
+  //         failure.message == "api rejected our request") {
+  //       log("Attempting refresh token...");
+
+  //       final resp =
+  //           await tokenRepo.getNewTokens(refreshToken: refreshToken.value);
+
+  //       await resp.fold((l) {
+  //         log("Failed to get new token: ${l.message}");
+  //         examState.value = Failed();
+  //         questionList.value = [];
+  //       }, (r) async {
+  //         // Save new tokens
+  //         accessToken.value = r['access_token'];
+  //         refreshToken.value = r['refresh_token'];
+  //         await appctrl.saveToken(
+  //             accessToken: r['access_token'], refreshToken: r['refresh_token']);
+
+  //         // Retry fetching the questions after refreshing the token
+  //         await getCustomTestQuestionList(
+  //           physicsChapters: physicsChapters,
+  //           chemistryChapters: chemistryChapters,
+  //           biologyChapters: biologyChapters,
+  //           noOfQuestions: noOfQuestions,
+  //         );
+  //       });
+  //     } else {
+  //       questionList.value = [];
+  //       examState.value = Failed();
+  //     }
+  //   }, (data) async {
+  //     testId.value = data["custom_test_id"];
+  //     questionList.value = data["questions"];
+  //     tempQuestionList.value = data["questions"];
+  //     examState.value = Success(data: questionList);
+  //     setSubjectName(subj: 'Custom Test');
+  //     startTimer();
+
+  //     if (kDebugMode) {
+  //       log("${questionList.length} QUESTIONS LOADED FOR CUSTOM TEST");
+  //     }
+  //   });
+  // }
 
   //// EXAM LOGIC
   ///
@@ -728,44 +955,90 @@ class ExamController extends GetxController {
   Rx<Ds<ExamReport>> examReportState = Rx(Initial());
   Set<int> addedIds = {};
 
-  Future generateExamReport(
+  RxBool goforNext = RxBool(false);
+
+  Future<bool> generateExamReport(
       {required String level, required String type}) async {
+    isReportLoading.value = true;
     examReportState.value = Loading();
+    goforNext.value = false;
+
     if (currentSubjectName == "Physics") {
       currentSubjectId.value = 1;
-    }
-    if (currentSubjectName == "Chemistry") {
+    } else if (currentSubjectName == "Chemistry") {
       currentSubjectId.value = 2;
-    }
-    if (currentSubjectName == "Biology") {
+    } else if (currentSubjectName == "Biology") {
       currentSubjectId.value = 3;
     }
+
     log("ANSWERS MAP : $answerMap");
     log("type:$type");
+
     try {
+      bool isSuccess = false;
       if (type == 'PracticeTest') {
-        await submitPractiseTest(level: level, type: type);
+        isSuccess = await submitPractiseTest(level: level, type: type);
       } else if (type == 'mocktest') {
-        await submitMockTestAnswers();
+        isSuccess = await submitMockTestAnswers();
       } else {
-        await submitCustomTest();
+        isSuccess = await submitCustomTest();
       }
 
-      resetAvgTimer();
-      resetTimer();
-    } on Exception {
-      examReportState.value = Failed(
-        e: 'Exam Report Creation Failed, Try again',
-      );
+      if (isSuccess) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      log("Error in generateExamReport: $e");
+      return false;
     }
   }
 
-  Future<void> submitCustomTest() async {
+  // Future generateExamReport(
+  //     {required String level, required String type}) async {
+  //   examReportState.value = Loading();
+  //   goforNext.value = false;
+  //   if (currentSubjectName == "Physics") {
+  //     currentSubjectId.value = 1;
+  //   }
+  //   if (currentSubjectName == "Chemistry") {
+  //     currentSubjectId.value = 2;
+  //   }
+  //   if (currentSubjectName == "Biology") {
+  //     currentSubjectId.value = 3;
+  //   }
+  //   log("ANSWERS MAP : $answerMap");
+  //   log("type:$type");
+  //   try {
+  //     if (type == 'PracticeTest') {
+  //       await submitPractiseTest(level: level, type: type);
+  //     } else if (type == 'mocktest') {
+  //       await submitMockTestAnswers();
+  //     } else {
+  //       await submitCustomTest();
+  //     }
+  //   } on Exception {
+  //     examReportState.value = Failed(
+  //       e: 'Exam Report Creation Failed, Try again',
+  //     );
+  //   } catch (e) {
+  //     examReportState.value =
+  //         Failed(e: "Exam Report Creation Failed, Try again");
+  //   }
+  // }
+
+  RxMap<String, String> ansWer = RxMap({});
+  RxMap<String, dynamic> qstnAvGTime = RxMap({});
+
+  Future<bool> submitCustomTest() async {
     try {
       log("submit:submitCustomTest()");
       // Calculate total attended questions
       int totalAttended =
           questionList.where((q) => q.selectedOption != null).length;
+
+      totalAttenDed.value = totalAttended;
 
       Map<String, String> answer = {};
       Map<String, dynamic> qstnAvgTime = {};
@@ -785,34 +1058,79 @@ class ExamController extends GetxController {
         }
       }
       log("ans:$answer");
+      ansWer.value = answer;
 
       log("qstnAvgTime:$qstnAvgTime");
+      qstnAvGTime.value = qstnAvgTime;
 
       log("timer:${secondsLeft.value}");
 
-      final resp = await examRepo.submitCustomTestAnswers(
-          studentId: studentId.value,
-          customTestId: testId.value,
-          totalAttended: totalAttended,
-          correctNumber: correctList.length,
-          incorrectNumber: inCorrectList.length,
-          testAverageTime: secondsLeft.value,
-          answer: answer,
-          questionAvgTime: qstnAvgTime);
-
-      resp.fold((f) {
-        log("got it");
-      }, (r) {
-        examReportState.value = Success(
-          data: ExamReport(
-              rank: r['rank'],
-              score: r['score'],
-              timeTaken: r["total_time_taken"],
-              percentage: r['score_percentage']),
-        );
-      });
+      return await submitCustomTestAnswers();
     } catch (e) {
       log("Error in submitCustomTest():$e");
+      return false;
+    }
+  }
+
+  Future<bool> submitCustomTestAnswers({bool isRetrying = false}) async {
+    try {
+      final resp = await examRepo.submitCustomTestAnswers(
+        accesstoken: accessToken.value,
+        studentId: studentId.value,
+        customTestId: testId.value,
+        totalAttended: totalAttenDed.value,
+        correctNumber: correctList.length,
+        incorrectNumber: inCorrectList.length,
+        testAverageTime: secondsLeft.value,
+        answer: ansWer,
+        questionAvgTime: qstnAvGTime,
+      );
+
+      return resp.fold((failure) async {
+        log("Submission failed: ${failure.message}");
+
+        // If the token has expired and it's not a retry, refresh and retry
+        if ((failure.message == "user is not authorised" ||
+                failure.message == "api rejected our request") &&
+            !isRetrying) {
+          log("Access token expired. Attempting to refresh...");
+
+          final tokenResp =
+              await tokenRepo.getNewTokens(refreshToken: refreshToken.value);
+
+          return tokenResp.fold((tokenFailure) {
+            log("Failed to refresh token: ${tokenFailure.message}");
+            return false; // Token refresh failed, return failure
+          }, (newTokens) async {
+            // Save new tokens
+            accessToken.value = newTokens['access_token'];
+            refreshToken.value = newTokens['refresh_token'];
+
+            await appctrl.saveToken(
+              accessToken: newTokens['access_token'],
+              refreshToken: newTokens['refresh_token'],
+            );
+
+            log("Token refreshed. Retrying submission...");
+            return await submitCustomTestAnswers(isRetrying: true); // Retry API
+          });
+        }
+
+        return false; // Return failure if not token-related
+      }, (data) {
+        examReportState.value = Success(
+          data: ExamReport(
+            rank: data['rank'],
+            score: data['score'],
+            timeTaken: data["total_time_taken"],
+            percentage: (data['score_percentage'] as num).toDouble(),
+          ),
+        );
+        return true;
+      });
+    } catch (e) {
+      log("Error: $e");
+      return false;
     }
   }
 
@@ -866,33 +1184,256 @@ class ExamController extends GetxController {
       log("Gotit..................................");
       currentSubjectId.value = 5;
     }
+    leVEl.value = level;
+    return await submitPracticetestAnswers();
+  }
+
+  // Future<void> submitPracticetestAnswers() async {
+  //   final resp = await examRepo.sumbitPracticeTestAnswers(
+  //       accessToken: accessToken.value,
+  //       practiceTestId: testId.value,
+  //       studentId: studentId.value,
+  //       subjectId: currentSubjectId.value,
+  //       testLevel: leVEl.value,
+  //       totalTimeTaken: secondsLeft.value,
+  //       questions: resuLT);
+
+  //   resp.fold((l) async {
+  //     log("error:${l.message}");
+  //     if (l.message == 'user is not authorised') {
+  //       log("attempt the refresh token");
+  //       //call the refreshtoken then update the access token then call this method
+
+  //       final resp =
+  //           await tokenRepo.getNewTokens(refreshToken: refreshToken.value);
+
+  //       resp.fold((l) {
+  //         log("failed to get new token:${l.message}");
+  //         examReportState.value = Failed();
+  //       }, (r) async {
+  //         accessToken.value = r['access_token'];
+  //         refreshToken.value = r['refresh_token'];
+  //         await appctrl.saveToken(
+  //             accessToken: r['access_token'], refreshToken: r['refresh_token']);
+  //         await submitPracticetestAnswers();
+  //       });
+  //     } else {
+  //       examReportState.value =
+  //           Failed(e: 'Exam Report Creation Failed, Try again');
+  //     }
+  //   }, (r) async {
+  //     log("success:$r");
+  //     int? rank = r['rank'] ?? 0;
+  //     int? score = r['score'] ?? 0;
+
+  //     double? scorepercentage = r['score_percentage'];
+
+  //     examReportState.value = Success(
+  //       data: ExamReport(
+  //           rank: rank,
+  //           score: score,
+  //           timeTaken: r["total_time_taken"],
+  //           percentage: scorepercentage),
+  //     );
+  //   });
+  // }
+
+  Future<bool> submitPracticetestAnswers() async {
+    log("Submitting practice test answers...");
 
     final resp = await examRepo.sumbitPracticeTestAnswers(
+        accessToken: accessToken.value,
         practiceTestId: testId.value,
         studentId: studentId.value,
         subjectId: currentSubjectId.value,
-        testLevel: level,
+        testLevel: leVEl.value,
         totalTimeTaken: secondsLeft.value,
         questions: resuLT);
 
-    resp.fold((l) {
-      examReportState.value =
-          Failed(e: 'Exam Report Creation Failed, Try again');
-    }, (r) async {
-      int? rank = r['rank'];
-      int? score = r['score'];
+    bool isSuccess = false;
 
-      double? scorepercentage = r['score_percentage'];
+    await resp.fold((l) async {
+      log("Error: ${l.message}");
 
-      examReportState.value = Success(
-        data: ExamReport(
-            rank: rank,
-            score: score,
-            timeTaken: r["total_time_taken"],
-            percentage: scorepercentage),
-      );
+      if (l.message == 'user is not authorised') {
+        log("Attempting to refresh token...");
+
+        final tokenResp =
+            await tokenRepo.getNewTokens(refreshToken: refreshToken.value);
+        await tokenResp.fold((tokenError) {
+          log("Failed to refresh token: ${tokenError.message}");
+          examReportState.value = Failed(e: 'Authentication Failed');
+          update(); // Ensure UI updates
+          isSuccess = false;
+        }, (tokenSuccess) async {
+          log("New token obtained: ${tokenSuccess['access_token']}");
+
+          accessToken.value = tokenSuccess['access_token'];
+          refreshToken.value = tokenSuccess['refresh_token'];
+
+          await appctrl.saveToken(
+              accessToken: tokenSuccess['access_token'],
+              refreshToken: tokenSuccess['refresh_token']);
+
+          log("Retrying API call after token refresh...");
+          isSuccess = await submitPracticetestAnswers(); // ✅ Returns a boolean
+        });
+      } else {
+        examReportState.value =
+            Failed(e: 'Exam Report Creation Failed, Try again');
+        update();
+        isSuccess = false;
+      }
+    }, (result) async {
+      try {
+        log("API Response: ${result["rank"]}");
+        log("Before update: ${examReportState.value}");
+
+        examReportState.value = Success(
+          data: ExamReport(
+            rank: result["rank"] ?? 0,
+            score: result["score"] ?? 0,
+            timeTaken: result["total_time_taken"] ?? 0,
+            percentage: result["score_percentage"] ?? 0.0,
+          ),
+        );
+
+        goforNext.value = true;
+        update(); // Ensure GetX updates UI
+
+        log("After update: ${examReportState.value}");
+        isSuccess = true;
+      } catch (e) {
+        log("Error in processing response: $e");
+        examReportState.value = Failed(e: e.toString());
+        update();
+        isSuccess = false;
+      }
     });
+
+    return isSuccess;
   }
+
+  // Future<void> submitPracticetestAnswers() async {
+  //   log("Submitting practice test answers...");
+
+  //   final resp = await examRepo.sumbitPracticeTestAnswers(
+  //       accessToken: accessToken.value,
+  //       practiceTestId: testId.value,
+  //       studentId: studentId.value,
+  //       subjectId: currentSubjectId.value,
+  //       testLevel: leVEl.value,
+  //       totalTimeTaken: secondsLeft.value,
+  //       questions: resuLT);
+
+  //   resp.fold((l) async {
+  //     log("Error: ${l.message}");
+
+  //     if (l.message == 'user is not authorised') {
+  //       log("Attempting to refresh token...");
+
+  //       final tokenResp =
+  //           await tokenRepo.getNewTokens(refreshToken: refreshToken.value);
+  //       tokenResp.fold((tokenError) {
+  //         log("Failed to refresh token: ${tokenError.message}");
+  //         examReportState.value = Failed(e: 'Authentication Failed');
+  //         update(); // Force UI update (GetX)
+  //       }, (tokenSuccess) async {
+  //         log("New token obtained: ${tokenSuccess['access_token']}");
+
+  //         accessToken.value = tokenSuccess['access_token'];
+  //         refreshToken.value = tokenSuccess['refresh_token'];
+
+  //         await appctrl.saveToken(
+  //             accessToken: tokenSuccess['access_token'],
+  //             refreshToken: tokenSuccess['refresh_token']);
+
+  //         log("Retrying API call after token refresh...");
+  //         await submitPracticetestAnswers();
+  //       });
+  //     } else {
+  //       examReportState.value =
+  //           Failed(e: 'Exam Report Creation Failed, Try again');
+  //     }
+  //   }, (result) async {
+  //     try {
+  //       log("API Response: ${result["rank"]}");
+  //       log("Before update: ${examReportState.value}");
+  //       examReportState.value = Success(
+  //         data: ExamReport(
+  //           rank: result["rank"] ?? 0,
+  //           score: result["score"] ?? 0,
+  //           timeTaken: result["total_time_taken"] ?? 0,
+  //           percentage: result["score_percentage"] ?? 0.0,
+  //         ),
+  //       );
+  //       goforNext.value = true;
+  //       update();
+  //       log("after update: ${examReportState.value}");
+  //     } catch (e) {
+  //       log("Error in my point:$e");
+  //       examReportState.value = Failed(e: e.toString());
+  //     }
+  //   });
+  // }
+
+  // Future<void> submitPracticetestAnswers() async {
+  //   log("Submitting practice test answers...");
+
+  //   final resp = await examRepo.sumbitPracticeTestAnswers(
+  //       accessToken: accessToken.value,
+  //       practiceTestId: testId.value,
+  //       studentId: studentId.value,
+  //       subjectId: currentSubjectId.value,
+  //       testLevel: leVEl.value,
+  //       totalTimeTaken: secondsLeft.value,
+  //       questions: resuLT);
+
+  //   resp.fold((l) async {
+  //     log("Error: ${l.message}");
+
+  //     if (l.message == 'user is not authorised') {
+  //       log("Attempting to refresh token...");
+
+  //       final tokenResp =
+  //           await tokenRepo.getNewTokens(refreshToken: refreshToken.value);
+  //       tokenResp.fold((tokenError) {
+  //         log("Failed to refresh token: ${tokenError.message}");
+  //         examReportState.value = Failed(e: 'Authentication Failed');
+  //       }, (tokenSuccess) async {
+  //         accessToken.value = tokenSuccess['access_token'];
+  //         refreshToken.value = tokenSuccess['refresh_token'];
+
+  //         await appctrl.saveToken(
+  //             accessToken: tokenSuccess['access_token'],
+  //             refreshToken: tokenSuccess['refresh_token']);
+
+  //         await submitPracticetestAnswers();
+  //         // Retry submission
+  //       });
+  //     } else {
+  //       examReportState.value =
+  //           Failed(e: 'Exam Report Creation Failed, Try again');
+  //     }
+  //   }, (r) async {
+  //     log("API Response: $r");
+
+  //     if (r.containsKey('rank') &&
+  //         r.containsKey('score') &&
+  //         r.containsKey('score_percentage')) {
+  //       examReportState.value = Success(
+  //         data: ExamReport(
+  //             rank: r['rank'] ?? 0,
+  //             score: r['score'] ?? 0,
+  //             timeTaken: r["total_time_taken"] ?? 0,
+  //             percentage: r['score_percentage'] ?? 0.0),
+  //       );
+  //     } else {
+  //       log("Unexpected response format: $r");
+  //       examReportState.value = Failed(e: 'Invalid response format');
+  //     }
+  //   });
+  // }
 
   int calculateUnattemptedQnNumber() {
     int unAttempted = 0;
@@ -985,6 +1526,7 @@ class ExamController extends GetxController {
   void onClose() {
     // Ensure we cancel the timer if the controller is disposed
     log("disposed.......");
+    isReportLoading.value = false;
     _avgTimer?.cancel();
     _timer?.cancel();
     stopTimer();

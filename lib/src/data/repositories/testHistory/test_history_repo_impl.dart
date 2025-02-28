@@ -13,14 +13,14 @@ import 'package:neuflo_learn/src/domain/repositories/testHistory/test_history_re
 class TestHistoryRepoImpl extends TestHistoryRepo {
   @override
   Future<Either<Failure, Map<String, dynamic>>> fetchTestHistorys(
-      {required int studentId}) async {
+      {required String accessToken}) async {
     try {
       if (kDebugMode) {
-        log("studentId:$studentId");
-        log("${Url.baseUrl}/${Url.studentTestHistory}?student_id=$studentId");
+        log("${Url.baseUrl}/${Url.studentTestHistory}");
       }
-      final response = await http.get(Uri.parse(
-          '${Url.baseUrl}/${Url.studentTestHistory}?student_id=$studentId'));
+      final response = await http.get(
+          Uri.parse('${Url.baseUrl}/${Url.studentTestHistory}'),
+          headers: {"Authorization": "Bearer $accessToken"});
       log("body:${response.body}");
 
       dynamic result = handleResponse(response);
@@ -76,37 +76,40 @@ class TestHistoryRepoImpl extends TestHistoryRepo {
   @override
   Future<Either<Failure, Map<String, dynamic>>> fetchTestDetails(
       {required int testId,
-      required int studentId,
+      required String accestoken,
       required String testName}) async {
     try {
       if (kDebugMode) {
-        log('${Url.baseUrl}/${Url.detailstudentTestHistory}?student_id=$studentId&test_id=$testId&test_name=$testName');
+        log('${Url.baseUrl}/${Url.detailstudentTestHistory}?test_id=$testId&test_name=$testName');
       }
-      final response = await http.get(Uri.parse(
-          '${Url.baseUrl}/${Url.detailstudentTestHistory}?student_id=$studentId&test_id=$testId&test_name=$testName'));
+      final response = await http.get(
+          Uri.parse(
+              '${Url.baseUrl}/${Url.detailstudentTestHistory}?test_id=$testId&test_name=$testName'),
+          headers: {"Authorization": "Bearer $accestoken"});
 
       log("response:${response.statusCode}");
-      if (response.statusCode == 200) {
-        dynamic result = handleResponse(response);
-        log("result:$result");
 
-        List<QstnHistoryModel> qstns = (result["questions"] as List)
-            .map((e) => QstnHistoryModel.fromJson(e))
-            .toList();
+      dynamic result = handleResponse(response);
+      log("result:$result");
 
-        return Right({
-          "test_name": result["test_name"],
-          "score": result["score"],
-          "totalAttended": result["total_attended"],
-          "averageTime": result["test_average_time"],
-          "correct": result["correct_number"],
-          "incorrect": result["incorrect_number"],
-          "unAttempted": result["unattempted"],
-          "qstns": qstns
-        });
-      } else {
-        return Left(Failure(message: "failed in ${response.statusCode}"));
+      if (result is Failure) {
+        return Left(result);
       }
+
+      List<QstnHistoryModel> qstns = (result["questions"] as List)
+          .map((e) => QstnHistoryModel.fromJson(e))
+          .toList();
+
+      return Right({
+        "test_name": result["test_name"],
+        "score": result["score"],
+        "totalAttended": result["total_attended"],
+        "averageTime": result["test_average_time"],
+        "correct": result["correct_number"],
+        "incorrect": result["incorrect_number"],
+        "unAttempted": result["unattempted"],
+        "qstns": qstns
+      });
     } catch (e) {
       log("Error:$e");
       return Left(Failure(message: e.toString()));

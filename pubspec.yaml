@@ -77,6 +77,8 @@ dependencies:
   csv: ^6.0.0
   flutter_tex: ^4.0.13
   tex_text: ^0.1.9
+ 
+  
 
   
 

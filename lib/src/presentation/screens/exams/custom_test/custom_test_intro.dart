@@ -243,7 +243,7 @@ class CustomTestIntro extends StatelessWidget {
           icon: Icon(Icons.close_rounded),
         ),
         title: Text(
-          "Mock Test",
+          "Custom Test",
           style: GoogleFonts.urbanist(
             fontSize: 19,
             fontWeight: FontWeight.w600,

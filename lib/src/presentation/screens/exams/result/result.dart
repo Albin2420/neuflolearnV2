@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:neuflo_learn/src/core/util/constants/app_constants.dart';
 import 'package:neuflo_learn/src/presentation/controller/exam/exam_controller.dart';
-import 'package:neuflo_learn/src/presentation/controller/home/home_controller.dart';
+import 'package:neuflo_learn/src/presentation/controller/navigation/navigation_controller.dart';
 import 'package:neuflo_learn/src/presentation/screens/exams/result/widgets/answer_tile.dart';
 import 'package:neuflo_learn/src/presentation/screens/exams/result/widgets/nextstep.dart';
 import 'package:neuflo_learn/src/presentation/screens/exams/result/widgets/result_info.dart';
@@ -27,6 +27,7 @@ class _ResultPageState extends State<ResultPage> {
   bool skipped = false;
   int index = 0;
   TextEditingController txt = TextEditingController();
+  final nctr = Get.find<Navigationcontroller>();
 
   @override
   Widget build(BuildContext context) {
@@ -43,15 +44,13 @@ class _ResultPageState extends State<ResultPage> {
           automaticallyImplyLeading: false,
           centerTitle: true,
           leading: IconButton(
-            onPressed: () {
-              if (Get.isRegistered<HomeController>()) {
-                Get.delete<HomeController>();
+            onPressed: () async {
+              if (Get.isRegistered<Navigationcontroller>()) {
+                ctr.resetAvgTimer();
+                ctr.resetTimer();
+                await nctr.rebuild(rebuild: true);
+                Get.offAll(() => NavigationScreen());
               }
-              Get.offAll(() => NavigationScreen(
-                    key: UniqueKey(),
-                  ));
-              ctr.resetAvgTimer();
-              ctr.resetTimer();
             },
             icon: Icon(Icons.close_rounded),
           ),
@@ -66,16 +65,13 @@ class _ResultPageState extends State<ResultPage> {
                 ),
               ),
               Text(
-                "Physics 45 - Daily test ",
+                ctr.currentSubjectName,
                 style: GoogleFonts.urbanist(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
                   color: const Color(0xFF010029),
                 ),
               ),
-              // Obx(() {
-              //   return Text(ctr.currentSubjectName);
-              // })
             ],
           ),
           flexibleSpace: Column(
@@ -148,13 +144,13 @@ class _ResultPageState extends State<ResultPage> {
                     height: 24,
                   ),
                   Nextstep(
-                    onFinishDailyTests: () {
-                      log('onFinishDailyTestsTap');
-
-                      if (Get.isRegistered<HomeController>()) {
-                        Get.delete<HomeController>();
+                    onFinishDailyTests: () async {
+                      if (Get.isRegistered<Navigationcontroller>()) {
+                        ctr.resetAvgTimer();
+                        ctr.resetTimer();
+                        await nctr.rebuild(rebuild: true);
+                        Get.offAll(() => NavigationScreen());
                       }
-                      Get.offAll(() => NavigationScreen(key: UniqueKey()));
                     },
                     onSetTestReminders: () {
                       log("onSetTestRemindersTap");
@@ -428,14 +424,35 @@ class _ResultPageState extends State<ResultPage> {
                   SizedBox(
                     height: 16,
                   ),
-                  Obx(() => ListView.builder(
+                  Obx(() {
+                    if (ctr.questionList.isEmpty) {
+                      return SizedBox(
+                        height: MediaQuery.of(context).size.height / 3,
+                        child: Center(child: Text("Nothing found")),
+                      );
+                    } else {
+                      return ListView.builder(
                         primary: false,
                         shrinkWrap: true,
                         itemCount: ctr.questionList.length,
                         itemBuilder: (BuildContext context, index) {
+                          var opt = "${ctr.questionList[index].answer}";
+                          var finans = "";
+                          if (opt == "a") {
+                            finans = "${ctr.questionList[index].options?.a}";
+                          } else if (opt == "b") {
+                            finans = "${ctr.questionList[index].options?.b}";
+                          } else if (opt == "c") {
+                            finans = "${ctr.questionList[index].options?.c}";
+                          } else {
+                            finans = "${ctr.questionList[index].options?.d}";
+                          }
+                          log("final ans:$finans");
                           return Padding(
                             padding: EdgeInsets.only(bottom: 32),
                             child: AnswerTile(
+                              correctOpt: finans,
+                              qsTn: '${ctr.questionList[index].question}',
                               qID: '${ctr.questionList[index].questionId}',
                               answer: ctr.questionList[index].explanation ?? '',
                               correctAnswer:
@@ -445,7 +462,9 @@ class _ResultPageState extends State<ResultPage> {
                             ),
                           );
                         },
-                      ))
+                      );
+                    }
+                  })
                 ],
               ),
             ),

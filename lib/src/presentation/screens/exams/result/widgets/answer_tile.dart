@@ -1,31 +1,26 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gpt_markdown/gpt_markdown.dart';
 import 'package:neuflo_learn/src/core/config/theme/colors.dart';
 
 class AnswerTile extends StatelessWidget {
+  final String qsTn;
   final String qID;
   final String answer;
   final String correctAnswer;
   final String incorrectAnswer;
-  const AnswerTile({
-    super.key,
-    required this.qID,
-    required this.answer,
-    required this.correctAnswer,
-    required this.incorrectAnswer,
-  });
+  final String correctOpt;
+  const AnswerTile(
+      {super.key,
+      required this.qID,
+      required this.answer,
+      required this.correctAnswer,
+      required this.incorrectAnswer,
+      required this.qsTn,
+      required this.correctOpt});
 
   @override
   Widget build(BuildContext context) {
-    log({
-      "in AnswerTile :$qID",
-      "answer:$answer",
-      "correctAnswer:$correctAnswer",
-      "incorrectAnswer:$incorrectAnswer"
-    }.toString());
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
@@ -47,6 +42,7 @@ class AnswerTile extends StatelessWidget {
           Padding(
             padding: EdgeInsets.all(16),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // LaTexT(
                 //   laTeXCode: Text(
@@ -58,6 +54,28 @@ class AnswerTile extends StatelessWidget {
                 //     ),
                 //   ),
                 // ),
+                GptMarkdown(
+                  "Q) $qsTn",
+                  style: GoogleFonts.urbanist(
+                    color: const Color(0xFF010029),
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                  ),
+                ),
+                SizedBox(
+                  height: 22,
+                ),
+                GptMarkdown(
+                  "Ans ($correctAnswer) : $correctOpt",
+                  style: GoogleFonts.urbanist(
+                    color: const Color(0xFF010029),
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                  ),
+                ),
+                SizedBox(
+                  height: 32,
+                ),
                 GptMarkdown(
                   answer,
                   style: GoogleFonts.urbanist(

@@ -12,6 +12,8 @@ import 'package:neuflo_learn/src/presentation/screens/profile/widgets/profile_in
 import 'package:neuflo_learn/src/presentation/widgets/app_btn/appBtnOutline.dart';
 import 'package:neuflo_learn/src/presentation/widgets/app_btn/app_btn.dart';
 
+import '../../controller/profile/profile_controller.dart';
+
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
@@ -19,6 +21,7 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final ctr = Get.find<AppStartupController>();
     final authCtr = Get.put(AuthController());
+    final prctr = Get.find<ProfileController>();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -47,14 +50,17 @@ class ProfilePage extends StatelessWidget {
                   studentType: 'Student',
                 )),
             const SizedBox(height: 18),
-            const ProfileStatsWidget(
-              time: 200,
-              dataMap: {
-                'Physics': 30,
-                'Chemistry': 40,
-                'Biology': 30,
-              },
-            ),
+            Obx(() {
+              return ProfileStatsWidget(
+                toTalPercentage: 87,
+                sec: prctr.sec.value,
+                dataMap: {
+                  'Physics': prctr.phySics.value,
+                  'Chemistry': prctr.chemIstry.value,
+                  'Biology': prctr.bioLogy.value,
+                },
+              );
+            }),
             const SizedBox(height: 18),
           ],
         ),
