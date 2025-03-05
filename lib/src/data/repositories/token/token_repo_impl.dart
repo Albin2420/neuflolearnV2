@@ -12,21 +12,24 @@ import 'package:neuflo_learn/src/domain/repositories/token/token_repo.dart';
 class TokenRepoImpl extends TokenRepo {
   @override
   Future<Either<Failure, Map<String, dynamic>>> getToken(
-      {required int studentId, required String phoneNumber}) async {
+      {required int studentId,
+      required String phoneNumber,
+      required String fcmToken}) async {
     try {
       if (kDebugMode) {
         log("getToken()");
         log('${Url.baseUrl}/${Url.getToken}');
         log(
-          "studentId:$studentId phoneNumber: $phoneNumber in getToken() ",
+          "studentId:$studentId phoneNumber: $phoneNumber in getToken() ,fcmtoken:$fcmToken",
         );
       }
       final response = await http.post(
-        Uri.parse('${Url.baseUrl}/${Url.getToken}'),
+        Uri.parse('${Url.baseUrl}/${Url.getToken}/'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           "student_id": studentId,
           "phone_number": phoneNumber,
+          "fcm_token": fcmToken,
         }),
       );
 
@@ -59,7 +62,7 @@ class TokenRepoImpl extends TokenRepo {
         log("refreshToken:$refreshToken");
       }
       final response = await http.post(
-        Uri.parse("${Url.baseUrl}/${Url.refreshToken}"),
+        Uri.parse("${Url.baseUrl}/${Url.refreshToken}/"),
         headers: {
           'Content-Type': 'application/json',
         },

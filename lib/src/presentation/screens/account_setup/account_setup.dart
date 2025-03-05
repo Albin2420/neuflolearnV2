@@ -93,6 +93,7 @@ class AccountSetup extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
+          leading: SizedBox(),
           shadowColor: const Color(0x00000008),
           surfaceTintColor: Colors.white,
           elevation: 10,

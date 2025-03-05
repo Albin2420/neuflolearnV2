@@ -15,14 +15,15 @@ class Splash extends StatelessWidget {
       return ctr.userState.value.onState(
         onInitial: () => const SplashWidget(),
         success: (userInfo) {
-          // log('ctr.disable : ${ctr.disable}');
           if (ctr.isDisabled.value == false) {
             return const SplashWidget();
           }
-          if (userInfo?.isProfileSetupComplete == true) {
+          if (userInfo?.isProfileSetupComplete == true &&
+              (ctr.accessToken.value.isNotEmpty) &&
+              ctr.refreshToken.value.isNotEmpty) {
             return const NavigationScreen();
           } else {
-            return const NavigationScreen();
+            return IntroScreen();
           }
         },
         onFailed: (_) {

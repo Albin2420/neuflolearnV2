@@ -55,6 +55,7 @@ class TestHistoryController extends GetxController {
   void onInit() {
     super.onInit();
     fetch();
+    selectedFilter.value = Get.arguments ?? 0;
   }
 
   Future<void> fetch() async {

@@ -19,11 +19,11 @@ class ChapterRepoImpl extends ChapterRepo {
     log("fetchChapters Impl");
 
     if (kDebugMode) {
-      log('${Url.baseUrl}/${Url.getChapterNames}/$subjectId');
+      log('${Url.baseUrl}/${Url.getChapterNames}/$subjectId/');
     }
     try {
       final response = await apiService.get(
-          url: '${Url.baseUrl}/${Url.getChapterNames}/$subjectId');
+          url: '${Url.baseUrl}/${Url.getChapterNames}/$subjectId/');
       dynamic result = handleResponse(response);
 
       if (result is Failure) {

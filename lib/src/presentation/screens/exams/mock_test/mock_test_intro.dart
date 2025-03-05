@@ -122,6 +122,9 @@ class MockTestIntro extends StatelessWidget {
               btnName: 'Start Test',
               onTapFunction: () async {
                 log("mocktest begins");
+                ctr.instantEvaluvation.value = false;
+                ctr.timeLimit.value = true;
+                ctr.targetSecond.value = 10800;
                 await ctr.initiatemockTest();
               },
               iconImg: Icons.arrow_forward,

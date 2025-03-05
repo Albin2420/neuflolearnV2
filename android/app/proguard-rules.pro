@@ -8,3 +8,4 @@
 -keepclasseswithmembers class * {
   public void onPayment*(...);
 }
+-keep class org.videolan.libvlc.** { *; }

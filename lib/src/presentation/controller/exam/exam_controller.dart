@@ -22,6 +22,8 @@ class ExamController extends GetxController {
 
   RxInt min = RxInt(0);
 
+  RxInt targetSecond = RxInt(0);
+
   ///for mockTest;
   var physicsIds = [];
   var chemistryIds = [];
@@ -75,6 +77,12 @@ class ExamController extends GetxController {
 
   RxString accessToken = RxString('');
   RxString refreshToken = RxString('');
+
+  RxBool instantEvaluvation = RxBool(true);
+
+  RxBool timeLimit = RxBool(false);
+
+  RxBool timerExpired = RxBool(false);
 
   void setCurrentPageIndex({required int index}) {
     page.value = index;
@@ -192,7 +200,11 @@ class ExamController extends GetxController {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       secondsLeft.value++; // Increment seconds left every second
 
-      log("TOTAL TIME ELAPSED : ${secondsLeft.value}");
+      log("TOTAL TIME ELAPSED : ${secondsLeft.value}, target :${targetSecond.value}, timeLimit : ${timeLimit.value}");
+      if (secondsLeft.value > targetSecond.value && timeLimit.value) {
+        timerExpired.value = true;
+        stopTimer();
+      }
     });
   }
 

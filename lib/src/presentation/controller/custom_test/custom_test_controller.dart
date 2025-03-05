@@ -22,7 +22,7 @@ class CustomTestController extends GetxController {
   RxInt questionCount = RxInt(20);
 
   /// is instant evaluation
-  RxBool isInstantEvaluation = RxBool(false);
+  RxBool isInstantEvaluation = RxBool(true);
 
   /// has time timit for the exam
   RxBool hasTimeLimit = RxBool(false);

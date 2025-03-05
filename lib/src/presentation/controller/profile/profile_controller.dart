@@ -22,15 +22,14 @@ class ProfileController extends GetxController {
       final prData = await prf.fetchweekGrowth(
           accestoken: await appctr.getAccessToken() ?? '');
 
-      prData.fold((l) async {
-        log("Error in fetchweekgrowth():${l.message}");
-      }, (R) async {
+      prData.fold((l) async {}, (R) async {
         sec.value = (R["time"] ?? 0 as num).toDouble();
         phySics.value = (R["physics"] ?? 0 as num).toDouble();
         chemIstry.value = (R["chemistry"] ?? 0 as num).toDouble();
-        bioLogy.value = (R["biology"] ?? 0 as num).toDouble();
+        bioLogy.value = (R["Biology"] ?? 0 as num).toDouble();
+        totalPerc.value = (R['totalPercentage'] ?? 0 as num).toDouble();
 
-        totalPerc.value = phySics.value + chemIstry.value + bioLogy.value;
+        log("Physics:${phySics.value},chemistry:${chemIstry.value},biology:${bioLogy.value}, percent:${totalPerc.value}");
       });
 
       //handle

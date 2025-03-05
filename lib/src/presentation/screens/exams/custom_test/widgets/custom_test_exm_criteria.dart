@@ -78,7 +78,7 @@ class CustomtestExamcriteria extends StatelessWidget {
                     width: 3,
                   ),
                   Text(
-                    "20 min",
+                    "$timeLimit min",
                     style: GoogleFonts.urbanist(
                       fontWeight: FontWeight.w700,
                       fontSize: 16,
@@ -114,7 +114,7 @@ class CustomtestExamcriteria extends StatelessWidget {
                     width: 3,
                   ),
                   Text(
-                    "20",
+                    noOfQuestion,
                     style: GoogleFonts.urbanist(
                         color: Color(0xff02013B),
                         fontWeight: FontWeight.w700,
