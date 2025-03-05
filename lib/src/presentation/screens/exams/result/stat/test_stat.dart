@@ -111,7 +111,7 @@ class TestStat extends StatelessWidget {
                                 ),
                                 child: Center(
                                   child: Text(
-                                    "Practise test",
+                                    "Practice Test",
                                     style: GoogleFonts.urbanist(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 14,

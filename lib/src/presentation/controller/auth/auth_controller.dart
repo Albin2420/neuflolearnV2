@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -43,6 +44,8 @@ class AuthController extends GetxController {
 
   Rxn<AppUserInfo> currentFirestoreAppUser = Rxn(null);
 
+  final appctr = Get.find<AppStartupController>();
+
   /// sign in with googel
   Future singInWithGoogle() async {
     if (_auth.getCurrentUser() == null) {
@@ -73,6 +76,17 @@ class AuthController extends GetxController {
       await userInfoBox.put("phno", currentFirestoreAppUser.value?.phone ?? '');
 
       log("currentFirestoreUser => $currentFirestoreAppUser");
+
+      final String fcmToken = await FirebaseMessaging.instance.getToken() ?? '';
+
+      if (fcmToken != '' &&
+          currentFirestoreAppUser.value?.phone != null &&
+          currentFirestoreAppUser.value?.id != null) {
+        appctr.getToken(
+            fcmToken: fcmToken,
+            studentId: currentFirestoreAppUser.value?.id ?? 0,
+            phoneNumber: currentFirestoreAppUser.value?.phone ?? '');
+      }
       setAuthStatus(status: AuthStatus.successful);
     } else {
       await _auth.signOut();
@@ -129,8 +143,16 @@ class AuthController extends GetxController {
 
   void getNewtoken(
       {required int studentId, required String phoneNumber}) async {
-    final tokens =
-        await trp.getToken(studentId: studentId, phoneNumber: phoneNumber);
+    String? fcmToken = await FirebaseMessaging.instance.getToken();
+    if (studentId == 0 || phoneNumber.isEmpty || fcmToken == '') {
+      log("Invalid input: studentId should not be 0 and phoneNumber should not be empty");
+      return;
+    }
+
+    final tokens = await trp.getToken(
+        studentId: studentId,
+        phoneNumber: phoneNumber,
+        fcmToken: await FirebaseMessaging.instance.getToken() ?? '');
     tokens.fold((l) {
       log("error in getNewtoken()");
     }, (R) {

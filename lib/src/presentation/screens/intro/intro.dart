@@ -156,18 +156,7 @@ class IntroScreen extends StatelessWidget {
                     onTapFunction: () async {
                       await ctr.singInWithGoogle();
 
-                      // if (ctr.currentAppUser.value != null) {
-                      //   if (ctr.currentFirestoreAppUser.value != null) {
-                      //     Get.offAll(() => HomeScreen());
-                      //     return;
-                      //   }
-                      // }
                       if (ctr.currentAppUser.value != null) {
-                        ctr.getNewtoken(
-                            studentId:
-                                ctr.currentFirestoreAppUser.value?.id ?? 0,
-                            phoneNumber:
-                                ctr.currentFirestoreAppUser.value?.phone ?? '');
                         if (ctr.currentFirestoreAppUser.value != null) {
                           if (ctr.currentFirestoreAppUser.value
                                   ?.isProfileSetupComplete ==
@@ -198,22 +187,6 @@ class IntroScreen extends StatelessWidget {
                   ),
                   const SizedBox(
                     height: 32,
-                  ),
-                  Center(
-                    child: GestureDetector(
-                      child: Text(
-                        "I already have an account",
-                        style: GoogleFonts.urbanist(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          color: const Color(0xFF010029),
-                          decoration: TextDecoration.underline,
-                          decorationThickness: 1,
-                          decorationStyle: TextDecorationStyle.solid,
-                          decorationColor: Colors.black,
-                        ),
-                      ),
-                    ),
                   ),
                 ],
               ),

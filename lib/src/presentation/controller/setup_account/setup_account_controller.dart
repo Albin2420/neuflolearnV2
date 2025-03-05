@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
@@ -442,10 +443,12 @@ class SetupAccountController extends GetxController {
       throw Exception(failure.message);
     }, (data) async {
       log("skill saved successfully");
+      String? fcmToken = await FirebaseMessaging.instance.getToken();
 
       final token = await tokenRepo.getToken(
         studentId: appUserInfo?.id ?? 0,
         phoneNumber: appUserInfo?.phone ?? '',
+        fcmToken: fcmToken ?? '',
       );
 
       return await token.fold((l) async {

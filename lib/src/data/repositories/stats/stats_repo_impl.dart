@@ -10,7 +10,7 @@ import 'package:neuflo_learn/src/domain/repositories/stats/stats_repo.dart';
 
 class StatsRepoImpl extends StatsRepo {
   @override
-  Future<Either<Failure, Map<String, dynamic>>> fetchStatus(
+  Future<Either<Failure, Map<String, dynamic>>> weeklystats(
       {required String accessToken}) async {
     try {
       if (kDebugMode) {
@@ -19,7 +19,7 @@ class StatsRepoImpl extends StatsRepo {
       }
 
       final response = await http.get(
-          Uri.parse('${Url.baseUrl}/${Url.weeklystats}'),
+          Uri.parse('${Url.baseUrl}/${Url.weeklystats}/'),
           headers: {"Authorization": "Bearer $accessToken"});
 
       dynamic result = handleResponse(response);

@@ -73,10 +73,13 @@ dependencies:
   flutter_math_fork: ^0.7.3
   flutter_markdown_latex: ^0.3.4
   gpt_markdown: ^1.0.6
-  
-  csv: ^6.0.0
   flutter_tex: ^4.0.13
   tex_text: ^0.1.9
+  firebase_messaging: ^15.2.4
+  flutter_local_notifications: ^18.0.1
+  yt_player:
+    path: C:\Users\hp\Desktop\currentprojects\flutter_plugin\yt_player
+  
  
   
 

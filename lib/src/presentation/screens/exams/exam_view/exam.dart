@@ -7,12 +7,10 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:gpt_markdown/gpt_markdown.dart';
 import 'package:neuflo_learn/src/core/util/constants/app_constants.dart';
 import 'package:neuflo_learn/src/presentation/controller/exam/exam_controller.dart';
 import 'package:neuflo_learn/src/presentation/screens/exams/exam_view/widgets/option_tile.dart';
 import 'package:neuflo_learn/src/presentation/screens/exams/result/result.dart';
-import 'package:neuflo_learn/src/presentation/screens/navigationscreen/navigationscreen.dart';
 import 'package:neuflo_learn/src/presentation/widgets/app_btn/next_prev_btn.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tex_text/tex_text.dart';
@@ -90,14 +88,39 @@ class Exam extends StatelessWidget {
                                                     Constant.figmaScreenHeight),
                                           ),
                                           CustomBtn3(
-                                            btnName: 'Yes i want to exit',
+                                            btnName:
+                                                'Yes i want to submit & exit',
                                             vpad: 12,
                                             hpad: 12,
-                                            onTapFunction: () {
+                                            onTapFunction: () async {
                                               Get.back();
                                               // ctr.resetExamValues();
-                                              Get.offAll(
-                                                  () => NavigationScreen());
+                                              // Get.offAll(
+                                              //     () => NavigationScreen());
+                                              EasyLoading.show();
+                                              ctr.skippedCount();
+                                              bool x1;
+                                              x1 = await ctr.generateExamReport(
+                                                  level: level, type: type);
+
+                                              if (x1) {
+                                                EasyLoading.dismiss();
+                                                Get.to(() => ResultPage());
+                                              } else {
+                                                EasyLoading.dismiss();
+                                                Fluttertoast.showToast(
+                                                  msg: ctr.examReportState.value
+                                                          .error ??
+                                                      'something went wrong',
+                                                  toastLength:
+                                                      Toast.LENGTH_SHORT,
+                                                  gravity: ToastGravity.BOTTOM,
+                                                  timeInSecForIosWeb: 1,
+                                                  backgroundColor: Colors.red,
+                                                  textColor: Colors.white,
+                                                  fontSize: 16.0,
+                                                );
+                                              }
                                             },
                                           ),
                                           Gap(
@@ -180,13 +203,16 @@ class Exam extends StatelessWidget {
                                               decoration: BoxDecoration(
                                                 borderRadius:
                                                     BorderRadius.circular(34),
-                                                color:
-                                                    ctr.correctList.contains(i)
+                                                color: ctr.instantEvaluvation
+                                                        .value
+                                                    ? ctr.correctList
+                                                            .contains(i)
                                                         ? Colors.green
                                                         : ctr.inCorrectList
                                                                 .contains(i)
                                                             ? Colors.red
-                                                            : Color(0xff010029),
+                                                            : Color(0xff010029)
+                                                    : Color(0xff010029),
                                               ),
                                             ),
                                           ),
@@ -347,15 +373,21 @@ class Exam extends StatelessWidget {
                                                     height: 20,
                                                     width: 20,
                                                     decoration: BoxDecoration(
-                                                        color: ctr.correctList
-                                                                .contains(index)
-                                                            ? Colors.green
-                                                            : ctr.inCorrectList
+                                                        color: ctr
+                                                                .instantEvaluvation
+                                                                .value
+                                                            ? ctr.correctList
                                                                     .contains(
                                                                         index)
-                                                                ? Colors.red
-                                                                : Color(
-                                                                    0xff010029), //
+                                                                ? Colors.green
+                                                                : ctr.inCorrectList
+                                                                        .contains(
+                                                                            index)
+                                                                    ? Colors.red
+                                                                    : Color(
+                                                                        0xff010029)
+                                                            : Color(
+                                                                0xff010029), //
                                                         shape: BoxShape.circle),
                                                     child: Center(
                                                       child: Text(
@@ -516,426 +548,647 @@ class Exam extends StatelessWidget {
             ),
             Expanded(
               child: Container(
-                  decoration: BoxDecoration(
-                    color: Color(0xffEEFCFF).withValues(alpha: 0.5),
-                  ),
-                  child: Obx(() {
-                    return PageView.builder(
-                      scrollBehavior: ScrollBehavior(),
-                      onPageChanged: (index) {
-                        ctr.setCurrentPageIndex(index: index);
-                        ctr.resetValues();
-                        ctr.setSubmittedStatus(
-                          staus: ctr.questionList[index].isAttempted ?? false,
-                        );
+                decoration: BoxDecoration(
+                  color: Color(0xffEEFCFF).withValues(alpha: 0.5),
+                ),
+                // child: Obx(
+                //   () {
+                //     return PageView.builder(
+                //       scrollBehavior: ScrollBehavior(),
+                //       onPageChanged: (index) {
+                //         ctr.setCurrentPageIndex(index: index);
+                //         ctr.resetValues();
+                //         ctr.setSubmittedStatus(
+                //           staus: ctr.questionList[index].isAttempted ?? false,
+                //         );
 
-                        ctr.resetToCurrentDeafults();
+                //         ctr.resetToCurrentDeafults();
 
-                        ctr.resetAvgTimer();
-                        ctr.startAvgTimer();
+                //         ctr.resetAvgTimer();
+                //         ctr.startAvgTimer();
 
-                        // ctr.setLastVisitedIndex(index: index);
-                        // ctr.onNextQuestionLoaded();
-                      },
-                      controller: ctr.pageController,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: ctr.questionList.length,
-                      itemBuilder: (context, index) {
-                        ctr.setCurrentQuestion(
-                          question: ctr.questionList[index],
-                        );
-                        // log('qns :${ctr.questionList[index].question}');
+                //         // ctr.setLastVisitedIndex(index: index);
+                //         // ctr.onNextQuestionLoaded();
+                //       },
+                //       controller: ctr.pageController,
+                //       physics: NeverScrollableScrollPhysics(),
+                //       itemCount: ctr.questionList.length,
+                //       itemBuilder: (context, index) {
+                //         ctr.setCurrentQuestion(
+                //           question: ctr.questionList[index],
+                //         );
+                //         // log('qns :${ctr.questionList[index].question}');
 
-                        // log('id :${ctr.questionList[index].questionId}');
-                        // log("opt:${ctr.questionList[index].options}");
-                        // log("ans:${ctr.questionList[index].answer}");
+                //         // log('id :${ctr.questionList[index].questionId}');
+                //         // log("opt:${ctr.questionList[index].options}");
+                //         // log("ans:${ctr.questionList[index].answer}");
 
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          ctr.setCurrentQuestionIndex(index: index + 1);
-                        });
+                //         WidgetsBinding.instance.addPostFrameCallback((_) {
+                //           ctr.setCurrentQuestionIndex(index: index + 1);
+                //         });
 
-                        // ctr.startAvgTimer();
+                //         // ctr.startAvgTimer();
 
-                        // WidgetsBinding.instance.addPostFrameCallback((_) {
-                        //   ctr.canShowAnswer();
-                        // });
+                //         // WidgetsBinding.instance.addPostFrameCallback((_) {
+                //         //   ctr.canShowAnswer();
+                //         // });
 
-                        ///
-                        return Container(
-                          padding: EdgeInsets.only(left: 16, right: 16),
-                          child: SingleChildScrollView(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
+                //         ///
+                //         return Container(
+                //           padding: EdgeInsets.only(left: 16, right: 16),
+                //           child: SingleChildScrollView(
+                //             child: Column(
+                //               crossAxisAlignment: CrossAxisAlignment.start,
+                //               children: [
+                //                 Row(
+                //                   children: [
+                //                     Text(
+                //                       "Question  ${index < 10 ? index + 1 : index}  of ${ctr.questionList.length}",
+                //                       style: GoogleFonts.urbanist(
+                //                         fontWeight: FontWeight.w600,
+                //                         fontSize: 16,
+                //                         color: const Color(0xff0100294d)
+                //                             .withValues(alpha: 0.3),
+                //                       ),
+                //                     ),
+                //                     SizedBox(
+                //                       width: 4,
+                //                     ),
+                //                     // Text(
+                //                     //     "ID:${ctr.questionList[index].questionId}")
+                //                   ],
+                //                 ),
+                //                 SizedBox(
+                //                   height: 8,
+                //                 ),
+                //                 // LaTexT(
+                //                 //   laTeXCode: Text(
+                //                 //     '${ctr.questionList[index].question}',
+                //                 //     style: GoogleFonts.urbanist(
+                //                 //       color: const Color(0xFF010029),
+                //                 //       fontWeight: FontWeight.w700,
+                //                 //       fontSize: 16,
+                //                 //     ),
+                //                 //   ),
+                //                 // ),
+
+                //                 // SizedBox(
+                //                 //   height: 400,
+                //                 //   child: Markdown(
+                //                 //     selectable: true,
+                //                 //     data:
+                //                 //         r'''${ctr.questionList[index].question}''',
+                //                 //     builders: {
+                //                 //       'latex': LatexElementBuilder(
+                //                 //         textStyle: const TextStyle(
+                //                 //           // color: Colors.blue,
+                //                 //           fontWeight: FontWeight.w100,
+                //                 //         ),
+                //                 //         textScaleFactor: 1.2,
+                //                 //       ),
+                //                 //     },
+                //                 //     extensionSet: md.ExtensionSet(
+                //                 //       [LatexBlockSyntax()],
+                //                 //       [LatexInlineSyntax()],
+                //                 //     ),
+                //                 //   ),
+                //                 // ),
+
+                //                 // GptMarkdown(
+                //                 //   '${ctr.questionList[index].question}',
+                //                 //   style: const TextStyle(
+                //                 //     color: Colors.red,
+                //                 //   ),
+                //                 // ),
+
+                //                 SizedBox(
+                //                   height: 5,
+                //                 ),
+                //                 // Math.tex(
+                //                 //   "{Å}", // API response
+                //                 //   mathStyle: MathStyle.display,
+                //                 //   textStyle: TextStyle(fontSize: 18),
+                //                 // ),
+
+                //                 TexText(
+                //                   "${ctr.questionList[index].question}",
+                //                   style: GoogleFonts.urbanist(
+                //                     color: const Color(0xFF010029),
+                //                     fontWeight: FontWeight.w700,
+                //                     fontSize: 16,
+                //                   ),
+                //                 ),
+
+                //                 // GptMarkdown(
+                //                 //   '${ctr.questionList[index].question}',
+                //                 //   style: GoogleFonts.urbanist(
+                //                 //     color: const Color(0xFF010029),
+                //                 //     fontWeight: FontWeight.w700,
+                //                 //     fontSize: 16,
+                //                 //   ),
+                //                 // ),
+
+                //                 SizedBox(
+                //                   height: 4,
+                //                 ),
+
+                //                 // Math.tex(
+                //                 //   r'''In Young's double slit experiment carried out with light of wavelength (\lambda)=5000 \AA, the distance between the slits is 0.2 \mathrm{~mm} and the screen is at 200 \mathrm{~cm} from the slits. The central maximum is at x=0. The third maximum (taking the central maximum as zeroth maximum) will be at x equal to''',
+                //                 //   textStyle: TextStyle(color: Colors.green),
+                //                 //   onErrorFallback: (err) {
+                //                 //     log("error,$err");
+                //                 //     return Container(
+                //                 //       height: 10,
+                //                 //       width: 10,
+                //                 //       color: Colors.red,
+                //                 //     );
+                //                 //   },
+                //                 // ),
+                //                 // GptMarkdown(
+                //                 //     r'''$\mathrm{V}=\mathrm{B}_{\mathrm{E}} \tan \delta, \mathrm{H}=\mathrm{B}_{\mathrm{E}},$'''),
+
+                //                 // GptMarkdown(
+                //                 //   r'''$\mathrm{V}=\mathrm{B}_{\mathrm{E}} \tan \delta, \quad \mathrm{H}=\mathrm{B}_{\mathrm{E}}$''',
+                //                 //   style: GoogleFonts.urbanist(
+                //                 //     color: Color(0xFF010029),
+                //                 //     fontWeight: FontWeight.w700,
+                //                 //     fontSize: 16,
+                //                 //   ),
+                //                 // ),
+                //                 // GptMarkdown(
+                //                 //   r'''$\mathrm{V}=\mathrm{B}_{\mathrm{E}} \tan \delta, \mathrm{H}=\mathrm{B}_{\mathrm{E}},''',
+                //                 //   style: GoogleFonts.urbanist(
+                //                 //     color: Color.fromARGB(255, 15, 224, 85),
+                //                 //     fontWeight: FontWeight.w700,
+                //                 //     fontSize: 16,
+                //                 //   ),
+                //                 // ),
+
+                //                 SizedBox(
+                //                   height: 4,
+                //                 ),
+
+                //                 // GptMarkdown(
+                //                 //   r'''$\left[\begin{array}{lll}2015 & R S\end{array}\right]$''',
+                //                 //   style: GoogleFonts.urbanist(
+                //                 //     color: Color(0xFF010029),
+                //                 //     fontWeight: FontWeight.w700,
+                //                 //     fontSize: 16,
+                //                 //   ),
+                //                 // ),
+
+                //                 // GptMarkdown(
+                //                 //   r'''$\mathrm{V}=\mathrm{B}_{\mathrm{E}}, \mathrm{H}=\mathrm{B}_{\mathrm{E}} \tan \delta$, ''',
+                //                 //   style: const TextStyle(
+                //                 //     color: Colors.red,
+                //                 //   ),
+                //                 // ),
+
+                //                 SizedBox(
+                //                   height: 24,
+                //                 ),
+                //                 ListView.builder(
+                //                   physics: NeverScrollableScrollPhysics(),
+                //                   shrinkWrap: true,
+                //                   itemCount: 4,
+                //                   itemBuilder: (BuildContext context, i) {
+                //                     // Option corresponding to the index
+                //                     String option =
+                //                         ctr.mapIndexToOption(index: i);
+
+                //                     // log("option =: $option");
+
+                //                     // Check if the current option is selected
+                //                     bool isSelected = ctr.currentQuestion.value
+                //                             .selectedOption ==
+                //                         option;
+
+                //                     // log("isSelected =: $isSelected");
+
+                //                     // Check if the answer has been submitted
+                //                     bool isSubmitted =
+                //                         ctr.currentQuestion.value.isAttempted ??
+                //                             false;
+
+                //                     // log("isSubmitted =: $isSubmitted");
+
+                //                     // Get the option title dynamically
+                //                     String optionTitle = _getOptionTitle(i);
+
+                //                     // Calculate the tile color based on the current selected option and the correct answer
+                //                     Color tileColor = _getTileColor(
+                //                         index, option, isSelected, isSubmitted);
+
+                //                     return Obx(
+                //                       () => OptionTile(
+                //                         index: i,
+                //                         isSelected: ctr
+                //                                 .currentUserSelectedOption
+                //                                 .value ==
+                //                             option,
+                //                         onTapFunction: (optionValue) {
+                //                           if (ctr.questionList[index]
+                //                                   .isAttempted !=
+                //                               true) {
+                //                             ctr.setCurrentUserSelectedOption(
+                //                               option: optionValue,
+                //                             );
+                //                           }
+                //                         },
+                //                         optionValue: option,
+                //                         tileColor: ctr.instantEvaluvation.value
+                //                             ? tileColor
+                //                             : null,
+                //                         title: optionTitle,
+                //                       ),
+                //                     );
+                //                   },
+                //                 ),
+                //                 SizedBox(
+                //                   height: 12,
+                //                 ),
+                //                 // Obx(() {
+                //                 //   if (ctr.currentUserSelectedOption.value !=
+                //                 //       null) {
+                //                 //     return (ctr.currentQuestion.value
+                //                 //                     .isMarkedCorrect !=
+                //                 //                 true
+                //                 //             ? false
+                //                 //             : true)
+                //                 //         ? Column(
+                //                 //             crossAxisAlignment:
+                //                 //                 CrossAxisAlignment.start,
+                //                 //             children: [
+                //                 //               Text(
+                //                 //                 "AI-Solution",
+                //                 //                 style: GoogleFonts.urbanist(
+                //                 //                   fontWeight: FontWeight.w800,
+                //                 //                   fontSize: 16,
+                //                 //                 ),
+                //                 //               ),
+                //                 //               SizedBox(
+                //                 //                 height: 8,
+                //                 //               ),
+                //                 //               GptMarkdown(
+                //                 //                 "${ctr.questionList[index].explanation}",
+                //                 //                 style: GoogleFonts.urbanist(
+                //                 //                   color:
+                //                 //                       const Color(0xFF010029),
+                //                 //                   fontWeight: FontWeight.w600,
+                //                 //                   fontSize: 16,
+                //                 //                 ),
+                //                 //               ),
+                //                 //               SizedBox(
+                //                 //                 height: 24,
+                //                 //               )
+                //                 //             ],
+                //                 //           )
+                //                 //         : SizedBox();
+                //                 //   } else {
+                //                 //     return SizedBox();
+                //                 //   }
+                //                 // })
+                //                 Obx(() {
+                //                   if (ctr.currentUserSelectedOption.value !=
+                //                           null &&
+                //                       ctr.instantEvaluvation.value) {
+                //                     return ctr.currentQuestion.value
+                //                                 .isMarkedCorrect ==
+                //                             true
+                //                         ? Column(
+                //                             crossAxisAlignment:
+                //                                 CrossAxisAlignment.start,
+                //                             children: [
+                //                               Text(
+                //                                 "AI-Solution",
+                //                                 style: GoogleFonts.urbanist(
+                //                                   fontWeight: FontWeight.w800,
+                //                                   fontSize: 16,
+                //                                 ),
+                //                               ),
+                //                               SizedBox(
+                //                                 height: 8,
+                //                               ),
+                //                               TexText(
+                //                                 "${ctr.questionList[index].explanation}",
+                //                                 style: GoogleFonts.urbanist(
+                //                                   color:
+                //                                       const Color(0xFF010029),
+                //                                   fontWeight: FontWeight.w600,
+                //                                   fontSize: 16,
+                //                                 ),
+                //                               ),
+                //                               SizedBox(
+                //                                 height: 24,
+                //                               )
+                //                             ],
+                //                           )
+                //                         : SizedBox();
+                //                   } else {
+                //                     return SizedBox();
+                //                   }
+                //                 }),
+
+                //                 // Expanded(
+                //                 //   flex: 1,
+                //                 //   child: SingleChildScrollView(
+                //                 //     child: Column(
+                //                 //       children: [
+                //                 //         ListView.builder(
+                //                 //           physics: NeverScrollableScrollPhysics(),
+                //                 //           shrinkWrap: true,
+                //                 //           itemCount: 4,
+                //                 //           itemBuilder: (BuildContext context, i) {
+                //                 //             // Option corresponding to the index
+                //                 //             String option =
+                //                 //                 ctr.mapIndexToOption(index: i);
+
+                //                 //             // log("option =: $option");
+
+                //                 //             // Check if the current option is selected
+                //                 //             bool isSelected = ctr.currentQuestion
+                //                 //                     .value.selectedOption ==
+                //                 //                 option;
+
+                //                 //             // log("isSelected =: $isSelected");
+
+                //                 //             // Check if the answer has been submitted
+                //                 //             bool isSubmitted = ctr.currentQuestion
+                //                 //                     .value.isAttempted ??
+                //                 //                 false;
+
+                //                 //             // log("isSubmitted =: $isSubmitted");
+
+                //                 //             // Get the option title dynamically
+                //                 //             String optionTitle =
+                //                 //                 _getOptionTitle(i);
+
+                //                 //             // Calculate the tile color based on the current selected option and the correct answer
+                //                 //             Color tileColor = _getTileColor(index,
+                //                 //                 option, isSelected, isSubmitted);
+
+                //                 //             return Obx(
+                //                 //               () => OptionTile(
+                //                 //                 index: i,
+                //                 //                 isSelected: ctr
+                //                 //                         .currentUserSelectedOption
+                //                 //                         .value ==
+                //                 //                     option,
+                //                 //                 onTapFunction: (optionValue) {
+                //                 //                   if (ctr.questionList[index]
+                //                 //                           .isAttempted !=
+                //                 //                       true) {
+                //                 //                     ctr.setCurrentUserSelectedOption(
+                //                 //                       option: optionValue,
+                //                 //                     );
+                //                 //                   }
+                //                 //                 },
+                //                 //                 optionValue: option,
+                //                 //                 tileColor: tileColor,
+                //                 //                 title: optionTitle,
+                //                 //               ),
+                //                 //             );
+                //                 //           },
+                //                 //         ),
+                //                 //         SizedBox(
+                //                 //           height: 12,
+                //                 //         ),
+                //                 //         Obx(() {
+                //                 //           if (ctr.currentUserSelectedOption
+                //                 //                   .value !=
+                //                 //               null) {
+                //                 //             return (ctr.currentQuestion.value
+                //                 //                             .isMarkedCorrect !=
+                //                 //                         true
+                //                 //                     ? false
+                //                 //                     : true)
+                //                 //                 ? Column(
+                //                 //                     crossAxisAlignment:
+                //                 //                         CrossAxisAlignment.start,
+                //                 //                     children: [
+                //                 //                       Text(
+                //                 //                         "AI-Solution",
+                //                 //                         style:
+                //                 //                             GoogleFonts.urbanist(
+                //                 //                           fontWeight:
+                //                 //                               FontWeight.w800,
+                //                 //                           fontSize: 16,
+                //                 //                         ),
+                //                 //                       ),
+                //                 //                       SizedBox(
+                //                 //                         height: 8,
+                //                 //                       ),
+                //                 //                       LaTexT(
+                //                 //                         laTeXCode: Text(
+                //                 //                           '${ctr.questionList[index].explanation}',
+                //                 //                           style: GoogleFonts
+                //                 //                               .urbanist(
+                //                 //                             color: const Color(
+                //                 //                                 0xFF010029),
+                //                 //                             fontWeight:
+                //                 //                                 FontWeight.w700,
+                //                 //                             fontSize: 16,
+                //                 //                           ),
+                //                 //                         ),
+                //                 //                       ),
+                //                 //                       SizedBox(
+                //                 //                         height: 24,
+                //                 //                       )
+                //                 //                     ],
+                //                 //                   )
+                //                 //                 : SizedBox();
+                //                 //           } else {
+                //                 //             return SizedBox();
+                //                 //           }
+                //                 //         })
+                //                 //       ],
+                //                 //     ),
+                //                 //   ),
+                //                 // ),
+                //               ],
+                //             ),
+                //           ),
+                //         );
+                //       },
+                //     );
+                //   },
+                // ),
+                child: Obx(
+                  () {
+                    if (ctr.timerExpired.value &&
+                        ctr.isReportLoading.value == false) {
+                      EasyLoading.show();
+                      Future.delayed(Duration.zero, () async {
+                        bool x = await ctr.generateExamReport(
+                            level: level, type: type);
+
+                        EasyLoading.dismiss();
+
+                        if (x) {
+                          Get.to(() => ResultPage());
+                        } else {
+                          Fluttertoast.showToast(
+                            msg: ctr.examReportState.value.error ??
+                                'Something went wrong',
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: Colors.red,
+                            textColor: Colors.white,
+                            fontSize: 16.0,
+                          );
+                        }
+                      });
+                    }
+                    return Obx(
+                      () {
+                        return PageView.builder(
+                          scrollBehavior: ScrollBehavior(),
+                          onPageChanged: (index) {
+                            ctr.setCurrentPageIndex(index: index);
+                            ctr.resetValues();
+                            ctr.setSubmittedStatus(
+                              staus:
+                                  ctr.questionList[index].isAttempted ?? false,
+                            );
+                            ctr.resetToCurrentDeafults();
+                            ctr.resetAvgTimer();
+                            ctr.startAvgTimer();
+                          },
+                          controller: ctr.pageController,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: ctr.questionList.length,
+                          itemBuilder: (context, index) {
+                            ctr.setCurrentQuestion(
+                              question: ctr.questionList[index],
+                            );
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              ctr.setCurrentQuestionIndex(index: index + 1);
+                            });
+
+                            return Container(
+                              padding: EdgeInsets.only(left: 16, right: 16),
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      "Question  ${index < 10 ? index + 1 : index}  of ${ctr.questionList.length}",
+                                    Row(
+                                      children: [
+                                        Text(
+                                          "Question  ${index < 10 ? index + 1 : index}  of ${ctr.questionList.length}",
+                                          style: GoogleFonts.urbanist(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 16,
+                                            color: const Color(0xff0100294d)
+                                                .withValues(alpha: 0.3),
+                                          ),
+                                        ),
+                                        SizedBox(width: 4),
+                                      ],
+                                    ),
+                                    SizedBox(height: 8),
+                                    SizedBox(height: 5),
+                                    TexText(
+                                      "${ctr.questionList[index].question}",
                                       style: GoogleFonts.urbanist(
-                                        fontWeight: FontWeight.w600,
+                                        color: const Color(0xFF010029),
+                                        fontWeight: FontWeight.w700,
                                         fontSize: 16,
-                                        color: const Color(0xff0100294d)
-                                            .withValues(alpha: 0.3),
                                       ),
                                     ),
-                                    SizedBox(
-                                      width: 4,
+                                    SizedBox(height: 4),
+                                    ListView.builder(
+                                      physics: NeverScrollableScrollPhysics(),
+                                      shrinkWrap: true,
+                                      itemCount: 4,
+                                      itemBuilder: (BuildContext context, i) {
+                                        String option =
+                                            ctr.mapIndexToOption(index: i);
+                                        bool isSelected = ctr.currentQuestion
+                                                .value.selectedOption ==
+                                            option;
+                                        bool isSubmitted = ctr.currentQuestion
+                                                .value.isAttempted ??
+                                            false;
+                                        String optionTitle = _getOptionTitle(i);
+                                        Color tileColor = _getTileColor(index,
+                                            option, isSelected, isSubmitted);
+
+                                        return Obx(
+                                          () => OptionTile(
+                                            index: i,
+                                            isSelected: ctr
+                                                    .currentUserSelectedOption
+                                                    .value ==
+                                                option,
+                                            onTapFunction: (optionValue) {
+                                              if (ctr.questionList[index]
+                                                      .isAttempted !=
+                                                  true) {
+                                                ctr.setCurrentUserSelectedOption(
+                                                    option: optionValue);
+                                              }
+                                            },
+                                            optionValue: option,
+                                            tileColor:
+                                                ctr.instantEvaluvation.value
+                                                    ? tileColor
+                                                    : null,
+                                            title: optionTitle,
+                                          ),
+                                        );
+                                      },
                                     ),
-                                    // Text(
-                                    //     "ID:${ctr.questionList[index].questionId}")
+                                    SizedBox(height: 12),
+                                    Obx(() {
+                                      if (ctr.currentUserSelectedOption.value !=
+                                              null &&
+                                          ctr.instantEvaluvation.value) {
+                                        return ctr.currentQuestion.value
+                                                    .isMarkedCorrect ==
+                                                true
+                                            ? Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    "AI-Solution",
+                                                    style: GoogleFonts.urbanist(
+                                                      fontWeight:
+                                                          FontWeight.w800,
+                                                      fontSize: 16,
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 8),
+                                                  TexText(
+                                                    "${ctr.questionList[index].explanation}",
+                                                    style: GoogleFonts.urbanist(
+                                                      color: const Color(
+                                                          0xFF010029),
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 16,
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 24),
+                                                ],
+                                              )
+                                            : SizedBox();
+                                      } else {
+                                        return SizedBox();
+                                      }
+                                    }),
                                   ],
                                 ),
-                                SizedBox(
-                                  height: 8,
-                                ),
-                                // LaTexT(
-                                //   laTeXCode: Text(
-                                //     '${ctr.questionList[index].question}',
-                                //     style: GoogleFonts.urbanist(
-                                //       color: const Color(0xFF010029),
-                                //       fontWeight: FontWeight.w700,
-                                //       fontSize: 16,
-                                //     ),
-                                //   ),
-                                // ),
-
-                                // SizedBox(
-                                //   height: 400,
-                                //   child: Markdown(
-                                //     selectable: true,
-                                //     data:
-                                //         r'''${ctr.questionList[index].question}''',
-                                //     builders: {
-                                //       'latex': LatexElementBuilder(
-                                //         textStyle: const TextStyle(
-                                //           // color: Colors.blue,
-                                //           fontWeight: FontWeight.w100,
-                                //         ),
-                                //         textScaleFactor: 1.2,
-                                //       ),
-                                //     },
-                                //     extensionSet: md.ExtensionSet(
-                                //       [LatexBlockSyntax()],
-                                //       [LatexInlineSyntax()],
-                                //     ),
-                                //   ),
-                                // ),
-
-                                // GptMarkdown(
-                                //   '${ctr.questionList[index].question}',
-                                //   style: const TextStyle(
-                                //     color: Colors.red,
-                                //   ),
-                                // ),
-
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                // Math.tex(
-                                //   "{Å}", // API response
-                                //   mathStyle: MathStyle.display,
-                                //   textStyle: TextStyle(fontSize: 18),
-                                // ),
-
-                                TexText(
-                                  "${ctr.questionList[index].question}",
-                                  style: GoogleFonts.urbanist(
-                                    color: const Color(0xFF010029),
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 16,
-                                  ),
-                                ),
-
-                                // GptMarkdown(
-                                //   '${ctr.questionList[index].question}',
-                                //   style: GoogleFonts.urbanist(
-                                //     color: const Color(0xFF010029),
-                                //     fontWeight: FontWeight.w700,
-                                //     fontSize: 16,
-                                //   ),
-                                // ),
-
-                                SizedBox(
-                                  height: 4,
-                                ),
-
-                                // Math.tex(
-                                //   r'''In Young's double slit experiment carried out with light of wavelength (\lambda)=5000 \AA, the distance between the slits is 0.2 \mathrm{~mm} and the screen is at 200 \mathrm{~cm} from the slits. The central maximum is at x=0. The third maximum (taking the central maximum as zeroth maximum) will be at x equal to''',
-                                //   textStyle: TextStyle(color: Colors.green),
-                                //   onErrorFallback: (err) {
-                                //     log("error,$err");
-                                //     return Container(
-                                //       height: 10,
-                                //       width: 10,
-                                //       color: Colors.red,
-                                //     );
-                                //   },
-                                // ),
-                                // GptMarkdown(
-                                //     r'''$\mathrm{V}=\mathrm{B}_{\mathrm{E}} \tan \delta, \mathrm{H}=\mathrm{B}_{\mathrm{E}},$'''),
-
-                                // GptMarkdown(
-                                //   r'''$\mathrm{V}=\mathrm{B}_{\mathrm{E}} \tan \delta, \quad \mathrm{H}=\mathrm{B}_{\mathrm{E}}$''',
-                                //   style: GoogleFonts.urbanist(
-                                //     color: Color(0xFF010029),
-                                //     fontWeight: FontWeight.w700,
-                                //     fontSize: 16,
-                                //   ),
-                                // ),
-                                // GptMarkdown(
-                                //   r'''$\mathrm{V}=\mathrm{B}_{\mathrm{E}} \tan \delta, \mathrm{H}=\mathrm{B}_{\mathrm{E}},''',
-                                //   style: GoogleFonts.urbanist(
-                                //     color: Color.fromARGB(255, 15, 224, 85),
-                                //     fontWeight: FontWeight.w700,
-                                //     fontSize: 16,
-                                //   ),
-                                // ),
-
-                                SizedBox(
-                                  height: 4,
-                                ),
-
-                                // GptMarkdown(
-                                //   r'''$\left[\begin{array}{lll}2015 & R S\end{array}\right]$''',
-                                //   style: GoogleFonts.urbanist(
-                                //     color: Color(0xFF010029),
-                                //     fontWeight: FontWeight.w700,
-                                //     fontSize: 16,
-                                //   ),
-                                // ),
-
-                                // GptMarkdown(
-                                //   r'''$\mathrm{V}=\mathrm{B}_{\mathrm{E}}, \mathrm{H}=\mathrm{B}_{\mathrm{E}} \tan \delta$, ''',
-                                //   style: const TextStyle(
-                                //     color: Colors.red,
-                                //   ),
-                                // ),
-
-                                SizedBox(
-                                  height: 24,
-                                ),
-                                ListView.builder(
-                                  physics: NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  itemCount: 4,
-                                  itemBuilder: (BuildContext context, i) {
-                                    // Option corresponding to the index
-                                    String option =
-                                        ctr.mapIndexToOption(index: i);
-
-                                    // log("option =: $option");
-
-                                    // Check if the current option is selected
-                                    bool isSelected = ctr.currentQuestion.value
-                                            .selectedOption ==
-                                        option;
-
-                                    // log("isSelected =: $isSelected");
-
-                                    // Check if the answer has been submitted
-                                    bool isSubmitted =
-                                        ctr.currentQuestion.value.isAttempted ??
-                                            false;
-
-                                    // log("isSubmitted =: $isSubmitted");
-
-                                    // Get the option title dynamically
-                                    String optionTitle = _getOptionTitle(i);
-
-                                    // Calculate the tile color based on the current selected option and the correct answer
-                                    Color tileColor = _getTileColor(
-                                        index, option, isSelected, isSubmitted);
-
-                                    return Obx(
-                                      () => OptionTile(
-                                        index: i,
-                                        isSelected: ctr
-                                                .currentUserSelectedOption
-                                                .value ==
-                                            option,
-                                        onTapFunction: (optionValue) {
-                                          if (ctr.questionList[index]
-                                                  .isAttempted !=
-                                              true) {
-                                            ctr.setCurrentUserSelectedOption(
-                                              option: optionValue,
-                                            );
-                                          }
-                                        },
-                                        optionValue: option,
-                                        tileColor: tileColor,
-                                        title: optionTitle,
-                                      ),
-                                    );
-                                  },
-                                ),
-                                SizedBox(
-                                  height: 12,
-                                ),
-                                Obx(() {
-                                  if (ctr.currentUserSelectedOption.value !=
-                                      null) {
-                                    return (ctr.currentQuestion.value
-                                                    .isMarkedCorrect !=
-                                                true
-                                            ? false
-                                            : true)
-                                        ? Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                "AI-Solution",
-                                                style: GoogleFonts.urbanist(
-                                                  fontWeight: FontWeight.w800,
-                                                  fontSize: 16,
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                height: 8,
-                                              ),
-                                              GptMarkdown(
-                                                "${ctr.questionList[index].explanation}",
-                                                style: GoogleFonts.urbanist(
-                                                  color:
-                                                      const Color(0xFF010029),
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 16,
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                height: 24,
-                                              )
-                                            ],
-                                          )
-                                        : SizedBox();
-                                  } else {
-                                    return SizedBox();
-                                  }
-                                })
-                                // Expanded(
-                                //   flex: 1,
-                                //   child: SingleChildScrollView(
-                                //     child: Column(
-                                //       children: [
-                                //         ListView.builder(
-                                //           physics: NeverScrollableScrollPhysics(),
-                                //           shrinkWrap: true,
-                                //           itemCount: 4,
-                                //           itemBuilder: (BuildContext context, i) {
-                                //             // Option corresponding to the index
-                                //             String option =
-                                //                 ctr.mapIndexToOption(index: i);
-
-                                //             // log("option =: $option");
-
-                                //             // Check if the current option is selected
-                                //             bool isSelected = ctr.currentQuestion
-                                //                     .value.selectedOption ==
-                                //                 option;
-
-                                //             // log("isSelected =: $isSelected");
-
-                                //             // Check if the answer has been submitted
-                                //             bool isSubmitted = ctr.currentQuestion
-                                //                     .value.isAttempted ??
-                                //                 false;
-
-                                //             // log("isSubmitted =: $isSubmitted");
-
-                                //             // Get the option title dynamically
-                                //             String optionTitle =
-                                //                 _getOptionTitle(i);
-
-                                //             // Calculate the tile color based on the current selected option and the correct answer
-                                //             Color tileColor = _getTileColor(index,
-                                //                 option, isSelected, isSubmitted);
-
-                                //             return Obx(
-                                //               () => OptionTile(
-                                //                 index: i,
-                                //                 isSelected: ctr
-                                //                         .currentUserSelectedOption
-                                //                         .value ==
-                                //                     option,
-                                //                 onTapFunction: (optionValue) {
-                                //                   if (ctr.questionList[index]
-                                //                           .isAttempted !=
-                                //                       true) {
-                                //                     ctr.setCurrentUserSelectedOption(
-                                //                       option: optionValue,
-                                //                     );
-                                //                   }
-                                //                 },
-                                //                 optionValue: option,
-                                //                 tileColor: tileColor,
-                                //                 title: optionTitle,
-                                //               ),
-                                //             );
-                                //           },
-                                //         ),
-                                //         SizedBox(
-                                //           height: 12,
-                                //         ),
-                                //         Obx(() {
-                                //           if (ctr.currentUserSelectedOption
-                                //                   .value !=
-                                //               null) {
-                                //             return (ctr.currentQuestion.value
-                                //                             .isMarkedCorrect !=
-                                //                         true
-                                //                     ? false
-                                //                     : true)
-                                //                 ? Column(
-                                //                     crossAxisAlignment:
-                                //                         CrossAxisAlignment.start,
-                                //                     children: [
-                                //                       Text(
-                                //                         "AI-Solution",
-                                //                         style:
-                                //                             GoogleFonts.urbanist(
-                                //                           fontWeight:
-                                //                               FontWeight.w800,
-                                //                           fontSize: 16,
-                                //                         ),
-                                //                       ),
-                                //                       SizedBox(
-                                //                         height: 8,
-                                //                       ),
-                                //                       LaTexT(
-                                //                         laTeXCode: Text(
-                                //                           '${ctr.questionList[index].explanation}',
-                                //                           style: GoogleFonts
-                                //                               .urbanist(
-                                //                             color: const Color(
-                                //                                 0xFF010029),
-                                //                             fontWeight:
-                                //                                 FontWeight.w700,
-                                //                             fontSize: 16,
-                                //                           ),
-                                //                         ),
-                                //                       ),
-                                //                       SizedBox(
-                                //                         height: 24,
-                                //                       )
-                                //                     ],
-                                //                   )
-                                //                 : SizedBox();
-                                //           } else {
-                                //             return SizedBox();
-                                //           }
-                                //         })
-                                //       ],
-                                //     ),
-                                //   ),
-                                // ),
-                              ],
-                            ),
-                          ),
+                              ),
+                            );
+                          },
                         );
                       },
                     );
-                  })),
+                  },
+                ),
+              ),
             )
           ],
         ),

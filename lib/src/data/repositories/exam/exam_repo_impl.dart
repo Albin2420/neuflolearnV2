@@ -352,7 +352,7 @@ class ExamRepoImpl extends ExamRepo {
   }) async {
     if (kDebugMode) {
       log("sumbitPracticeTestAnswers()");
-      log("url:${Uri.parse('${Url.baseUrl}/${Url.submitPracticeTestAnswers}')}");
+      log("url:${Uri.parse('${Url.baseUrl}/${Url.submitPracticeTestAnswers}/')}");
       log({
         "practice_test_id": practiceTestId,
         "student_id": studentId,
@@ -362,7 +362,7 @@ class ExamRepoImpl extends ExamRepo {
         "questions": questions
       }.toString());
     }
-    final url = Uri.parse('${Url.baseUrl}/${Url.submitPracticeTestAnswers}');
+    final url = Uri.parse('${Url.baseUrl}/${Url.submitPracticeTestAnswers}/');
     try {
       final response = await https.post(url,
           headers: {
@@ -403,7 +403,7 @@ class ExamRepoImpl extends ExamRepo {
   Future<Either<Failure, Map<String, dynamic>>> getmockTestQuestions(
       {required int studentId, required String accesstoken}) async {
     try {
-      final url = Uri.parse('${Url.baseUrl}/${Url.generateMockTest}');
+      final url = Uri.parse('${Url.baseUrl}/${Url.generateMockTest}/');
       if (kDebugMode) {
         log("url:$url");
         log("studentId:$studentId");
@@ -608,7 +608,7 @@ class ExamRepoImpl extends ExamRepo {
     try {
       final url = Uri.parse('${Url.baseUrl}/${Url.generateCustomTest}');
       if (kDebugMode) {
-        log("url:$url");
+        log("url:$url  physicsChapter:$physicsChapters");
       }
       final response = await https.post(
         url,
@@ -623,8 +623,8 @@ class ExamRepoImpl extends ExamRepo {
             "2": chemistryChapters,
             "3": biologyChapters
           },
-          "total_questions": 20,
-          "total_time": 30,
+          "total_questions": noOfQuestions,
+          "total_time": noOfQuestions,
         }),
       );
       log("response:${response.body}");
@@ -632,7 +632,10 @@ class ExamRepoImpl extends ExamRepo {
       dynamic result = handleResponse(response);
 
       if (result is Failure) {
-        return Left(Failure(message: result.message));
+        final errorData = jsonDecode(response.body);
+        String errorMessage = errorData['detail'] ?? 'Unknown error occurred';
+        log("Error Message:$errorMessage");
+        return Left(Failure(message: ''));
       }
 
       log("response 1 go:${result["questions"][0]}");
@@ -685,9 +688,9 @@ class ExamRepoImpl extends ExamRepo {
     required List<dynamic> biologyAnswers,
   }) async {
     try {
-      final url = "${Url.baseUrl}/${Url.submitMockquestion}";
+      final url = "${Url.baseUrl}/${Url.submitMockquestion}/";
       if (kDebugMode) {
-        log('url:${Url.baseUrl}/${Url.submitMockquestion}');
+        log('url:${Url.baseUrl}/${Url.submitMockquestion}/');
       }
       final response = await https.post(
         Uri.parse(url),

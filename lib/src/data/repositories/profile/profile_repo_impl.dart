@@ -13,15 +13,15 @@ class ProfileRepoImpl extends ProfileRepo {
   Future<Either<Failure, Map<String, dynamic>>> fetchweekGrowth(
       {required String accestoken}) async {
     try {
-      final url = Uri.parse('${Url.baseUrl}/${Url.timepercentage}');
+      final url = Uri.parse('${Url.baseUrl}/${Url.timepercentage}/');
       if (kDebugMode) {
         log("fetchweekGrowth()");
-        log("${Url.baseUrl}/${Url.timepercentage}");
+        log("${Url.baseUrl}/${Url.timepercentage}/");
       }
       final response =
           await http.get(url, headers: {"Authorization": "Bearer $accestoken"});
 
-      log("status code in fetchweekGrowth():${response.statusCode}");
+      log("status code in fetchweekGrowth():${response.body}");
 
       dynamic result = handleResponse(response);
       if (result is Failure) {
@@ -32,6 +32,7 @@ class ProfileRepoImpl extends ProfileRepo {
         "physics": result["subject_wise_time_percentage"]["Physics"] ?? 0,
         "chemistry": result["subject_wise_time_percentage"]["Chemistry"] ?? 0,
         "Biology": result["subject_wise_time_percentage"]["Biology"] ?? 0,
+        "totalPercentage": result['total_percentage'] ?? 0,
       });
     } catch (e) {
       log("Error in fetchweekGrowth():$e");

@@ -403,9 +403,7 @@ import 'package:neuflo_learn/src/presentation/screens/test%20history/widgets/Fil
 import 'package:neuflo_learn/src/presentation/screens/test%20history/widgets/FilterWidgets/correct_filtered.dart';
 import 'package:neuflo_learn/src/presentation/screens/test%20history/widgets/FilterWidgets/incorrect_filtered.dart';
 import 'package:neuflo_learn/src/presentation/screens/test%20history/widgets/FilterWidgets/skipped_filtered.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-import '../../widgets/app_btn/custom_text_field.dart';
 import '../exams/result/widgets/result_info.dart';
 
 class TestHistoryResult extends StatelessWidget {
@@ -521,18 +519,18 @@ class TestHistoryResult extends StatelessWidget {
                             SizedBox(
                               height: 16,
                             ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 16, right: 16),
-                              child: CustomTextField(
-                                hintText: 'Search topic',
-                                textEditingController: txt,
-                                prefixIcon: PhosphorIcons.magnifyingGlass(),
-                              ),
-                            ),
-                            SizedBox(
-                              height: 16,
-                            ),
+                            // Padding(
+                            //   padding:
+                            //       const EdgeInsets.only(left: 16, right: 16),
+                            //   child: CustomTextField(
+                            //     hintText: 'Search topic',
+                            //     textEditingController: txt,
+                            //     prefixIcon: PhosphorIcons.magnifyingGlass(),
+                            //   ),
+                            // ),
+                            // SizedBox(
+                            //   height: 16,
+                            // ),
                             Padding(
                               padding: const EdgeInsets.only(
                                   top: 4, left: 16, right: 16, bottom: 16),

@@ -22,6 +22,7 @@ android {
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
+        coreLibraryDesugaringEnabled true
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
@@ -39,6 +40,7 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        multiDexEnabled true
     }
     signingConfigs {
        release {
@@ -75,6 +77,8 @@ dependencies {
   implementation 'com.google.firebase:firebase-analytics'
 
   implementation 'com.google.firebase:firebase-firestore'
+
+  coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.2.2'
 
 
   // Add the dependencies for any other desired Firebase products

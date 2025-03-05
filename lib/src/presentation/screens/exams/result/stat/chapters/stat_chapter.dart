@@ -6,7 +6,6 @@ import 'package:neuflo_learn/src/core/util/constants/app_constants.dart';
 import 'package:neuflo_learn/src/presentation/controller/teststatus/test_status_controller.dart';
 import 'package:neuflo_learn/src/presentation/screens/exams/result/stat/chapters/widgets/problem_area_topics.dart';
 import 'package:neuflo_learn/src/presentation/screens/exams/result/stat/chapters/widgets/strength_area_topics.dart';
-import 'package:neuflo_learn/src/presentation/screens/exams/result/stat/widgets/detail_summary_button.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class StatChapter extends StatelessWidget {
@@ -295,12 +294,12 @@ class StatChapter extends StatelessWidget {
                     );
                   },
                 ),
-                const SizedBox(height: 30),
-                CustomTextBtn(
-                  text: 'View detailed summary',
-                  onTap: () {},
-                ),
-                const SizedBox(height: 22),
+                // const SizedBox(height: 30),
+                // CustomTextBtn(
+                //   text: 'View detailed summary',
+                //   onTap: () {},
+                // ),
+                // const SizedBox(height: 22),
               ],
             ),
           );

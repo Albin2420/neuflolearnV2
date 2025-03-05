@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:gpt_markdown/gpt_markdown.dart';
 import 'package:neuflo_learn/src/core/config/theme/colors.dart';
 import 'package:neuflo_learn/src/presentation/controller/exam/exam_controller.dart';
+import 'package:tex_text/tex_text.dart';
 
 class OptionTile extends StatelessWidget {
   final int index;
@@ -81,7 +81,7 @@ class OptionTile extends StatelessWidget {
             //   ),
             // )
             Expanded(
-              child: GptMarkdown(
+              child: TexText(
                 title,
                 style: GoogleFonts.urbanist(
                   color: const Color(0xFF010029),

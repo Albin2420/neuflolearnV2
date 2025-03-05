@@ -4,12 +4,16 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:neuflo_learn/src/core/data_state/data_state.dart';
 import 'package:neuflo_learn/src/data/models/app_user_info.dart';
+import 'package:neuflo_learn/src/data/repositories/token/token_repo_impl.dart';
 import 'package:neuflo_learn/src/data/services/app_service/app_service.dart';
 import 'package:neuflo_learn/src/data/services/data_access/hive_service.dart';
 import 'package:neuflo_learn/src/data/services/firestore/firestore_service.dart';
+import 'package:neuflo_learn/src/domain/repositories/token/token_repo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppStartupController extends GetxController {
+  TokenRepo tokenRepo = TokenRepoImpl();
+
   /// handle user state
   Rx<Ds<AppUserInfo?>> userState = Rx(Initial());
 
@@ -30,6 +34,9 @@ class AppStartupController extends GetxController {
   RxBool isDisabled = RxBool(false);
 
   RxBool isDemo = RxBool(true);
+
+  RxString accessToken = RxString('');
+  RxString refreshToken = RxString('');
 
   @override
   void onInit() {
@@ -61,6 +68,9 @@ class AppStartupController extends GetxController {
           log('current userInfo => $appUser');
         }
 
+        accessToken.value = (await getAccessToken()) ?? '';
+        refreshToken.value = (await getRefreshToken()) ?? '';
+
         userState.value = Success(data: appUser.value);
       } else {
         userState.value = Failed(e: 'User not exists');
@@ -81,6 +91,21 @@ class AppStartupController extends GetxController {
       isDisabled.value = false;
     }, (data) {
       isDisabled.value = data;
+    });
+  }
+
+  Future getToken({
+    required int studentId,
+    required String phoneNumber,
+    required String fcmToken,
+  }) async {
+    final tokens = await tokenRepo.getToken(
+        studentId: studentId, phoneNumber: phoneNumber, fcmToken: fcmToken);
+    tokens.fold((l) {
+      log("token generation Failed");
+    }, (r) {
+      saveToken(
+          accessToken: r['access_token'], refreshToken: r['refresh_token']);
     });
   }
 

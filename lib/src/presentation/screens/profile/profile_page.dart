@@ -52,7 +52,7 @@ class ProfilePage extends StatelessWidget {
             const SizedBox(height: 18),
             Obx(() {
               return ProfileStatsWidget(
-                toTalPercentage: 87,
+                toTalPercentage: prctr.totalPerc.value,
                 sec: prctr.sec.value,
                 dataMap: {
                   'Physics': prctr.phySics.value,

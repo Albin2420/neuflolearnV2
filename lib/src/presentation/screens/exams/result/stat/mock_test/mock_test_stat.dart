@@ -486,7 +486,7 @@ class MockTestStat extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: GoogleFonts.urbanist(
                             fontWeight: FontWeight.w500,
-                            fontSize: 16,
+                            fontSize: 14,
                             color: Color(0xff010029)),
                       ),
                       SizedBox(
@@ -494,9 +494,9 @@ class MockTestStat extends StatelessWidget {
                       ),
                       GradientButton(
                         onTap: () {
-                          Get.to(() => TestHistory());
+                          Get.to(() => TestHistory(), arguments: 1);
                         },
-                        text: 'view your practice test history',
+                        text: 'view your Detailed test history',
                         iconPath: 'assets/icons/timer5.png',
                       ),
                     ],

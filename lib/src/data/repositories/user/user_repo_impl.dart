@@ -18,7 +18,7 @@ class UserRepoImpl extends UserRepo {
       {required Student student}) async {
     try {
       if (kDebugMode) {
-        log('${Url.baseUrl}/${Url.studentProfile}');
+        log('${Url.baseUrl}/${Url.studentProfile}/');
         log({
           "student_id": student.studentId,
           "mail_id": student.mailId,
@@ -29,7 +29,7 @@ class UserRepoImpl extends UserRepo {
         }.toString());
       }
       final response = await apiService.post(
-        url: '${Url.baseUrl}/${Url.studentProfile}',
+        url: '${Url.baseUrl}/${Url.studentProfile}/',
         headers: {
           "Content-Type": "application/json",
         },
@@ -47,6 +47,8 @@ class UserRepoImpl extends UserRepo {
 
       dynamic result = handleResponse(response);
       log("status code for saveStudent():${response.statusCode}");
+
+      log("response body for savestudent():$result");
 
       if (result is Failure) {
         return Left(result);

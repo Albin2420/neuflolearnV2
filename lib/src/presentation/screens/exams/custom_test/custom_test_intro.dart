@@ -311,8 +311,14 @@ class CustomTestIntro extends StatelessWidget {
                   ],
                 ),
               ),
-              CustomtestExamcriteria(
-                  shadow: false, timeLimit: '2hr 35min', noOfQuestion: '60'),
+              Obx(
+                () {
+                  return CustomtestExamcriteria(
+                      shadow: false,
+                      timeLimit: '${ctr.questionCount.value}',
+                      noOfQuestion: '${ctr.questionCount.value}');
+                },
+              ),
               Container(
                 padding: EdgeInsets.only(left: 24, right: 24),
                 height: 24,
