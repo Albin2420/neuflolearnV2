@@ -65,35 +65,35 @@ class IntroScreen extends StatelessWidget {
             Expanded(
               child: Column(
                 children: [
-                  Obx(() {
-                    if (appctrl.isDemo.value == true) {
-                      return Padding(
-                        padding: const EdgeInsets.only(left: 8, right: 8),
-                        child: SizedBox(
-                          height: 100,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: TextField(
-                                  controller: ctr.textCtr,
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  Url.baseUrl = ctr.textCtr.text;
+                  // Obx(() {
+                  //   if (appctrl.isDemo.value == true) {
+                  //     return Padding(
+                  //       padding: const EdgeInsets.only(left: 8, right: 8),
+                  //       child: SizedBox(
+                  //         height: 100,
+                  //         child: Row(
+                  //           children: [
+                  //             Expanded(
+                  //               child: TextField(
+                  //                 controller: ctr.textCtr,
+                  //               ),
+                  //             ),
+                  //             TextButton(
+                  //               onPressed: () {
+                  //                 Url.baseUrl = ctr.textCtr.text;
 
-                                  ctr.textCtr.clear();
-                                },
-                                child: const Text('Submit'),
-                              )
-                            ],
-                          ),
-                        ),
-                      );
-                    } else {
-                      return SizedBox();
-                    }
-                  }),
+                  //                 ctr.textCtr.clear();
+                  //               },
+                  //               child: const Text('Submit'),
+                  //             )
+                  //           ],
+                  //         ),
+                  //       ),
+                  //     );
+                  //   } else {
+                  //     return SizedBox();
+                  //   }
+                  // }),
                   Expanded(
                     child: PageView(
                       controller: ctr.controller,

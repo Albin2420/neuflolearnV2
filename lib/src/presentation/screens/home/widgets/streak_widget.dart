@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:neuflo_learn/src/core/config/theme/colors.dart';
@@ -18,6 +20,7 @@ class StreakWidget extends StatelessWidget {
 
         for (int i = 0; i < ctr.currentStreakValues.length; i++) {
           var e = ctr.currentStreakValues[i];
+          log("streak e:$e");
           Icon icon;
 
           if (e == 0) {
