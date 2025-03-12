@@ -625,6 +625,7 @@ class ExamRepoImpl extends ExamRepo {
           },
           "total_questions": noOfQuestions,
           "total_time": noOfQuestions,
+          "organization_id": 1,
         }),
       );
       log("response:${response.body}");

@@ -3,15 +3,20 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:neuflo_learn/src/core/data_state/data_state.dart';
+import 'package:neuflo_learn/src/data/repositories/stats/stats_repo_impl.dart';
+import 'package:neuflo_learn/src/domain/repositories/stats/stats_repo.dart';
+import 'package:neuflo_learn/src/presentation/controller/app_startup/app_startup.dart';
 import 'package:neuflo_learn/src/presentation/controller/navigation/navigation_controller.dart';
 
 class TestStatusController extends GetxController {
+  final appctr = Get.find<AppStartupController>();
   final ctr = Get.find<Navigationcontroller>();
   RxInt currentPageIndex = RxInt(0);
   PageController pageController = PageController(initialPage: 0);
   var stdataPracticeTest = {}.obs;
   var stdataMockTest = {}.obs;
   var stdataChaptStatus = {}.obs;
+  StatsRepo stRepo = StatsRepoImpl();
 
   Rx<Ds<Map<String, dynamic>>> userState =
       Rx<Ds<Map<String, dynamic>>>(Initial());
@@ -26,56 +31,31 @@ class TestStatusController extends GetxController {
 
   @override
   void onInit() {
-    userState.value = Loading();
     super.onInit();
-    log("controller initialized");
-    listeNer();
+    log("TestStatusController initialized");
+    userState.value = Loading();
+    weeklystats();
   }
 
-  void listeNer() {
-    updateStats();
-    ever(ctr.isLoading, (_) {
-      log("breakpoint");
-      if (ctr.isLoading.value) {
-        userState.value = Loading();
-        updateStats();
-      }
-    });
-    ever(ctr.statsData, (_) {
-      log("data updated");
-      updateStats();
-    });
-  }
+  Future<void> weeklystats() async {
+    final result = await stRepo.weeklystats(
+        accessToken: await appctr.getAccessToken() ?? '');
 
-  void updateStats() {
-    try {
-      var statsData = Map<String, dynamic>.from(
-          ctr.statsData); // Convert RxMap to a normal Map
-      log("statsData: ${statsData["practice_test_stats"]}");
-
-      if (statsData.isNotEmpty) {
-        stdataPracticeTest.value = statsData["practice_test_stats"] ?? {};
-        stdataMockTest.value = statsData["mock_test_stats"] ?? {};
-        stdataChaptStatus.value = statsData["chapter_stats"] ?? {};
-
-        log("stdataPracticeTest: $stdataPracticeTest");
-        log("stdataMockTest: $stdataMockTest");
-        log("stdataChaptStatus: $stdataChaptStatus");
-
-        if (stdataChaptStatus.isNotEmpty) {
-          seperateChapters();
-        }
-
-        // Update state to success with data
-        userState.value = Success(data: statsData);
-      } else {
-        // If statsData is empty, set it as an error or empty state
-        userState.value = Failed();
-      }
-    } catch (e) {
-      log("Error updating stats: $e");
+    result.fold((f) async {
+      log("Error in weeklystats(): ${f.message}");
       userState.value = Failed();
-    }
+    }, (r) {
+      log("R:$r");
+      stdataPracticeTest.value = r['practice_test_stats'];
+      stdataMockTest.value = r['mock_test_stats'];
+      stdataChaptStatus.value = r['chapter_stats'];
+
+      if (stdataChaptStatus.isNotEmpty ||
+          stdataMockTest.isNotEmpty ||
+          stdataChaptStatus.isNotEmpty) {
+        seperateChapters();
+      }
+    });
   }
 
   void seperateChapters() {
@@ -89,6 +69,7 @@ class TestStatusController extends GetxController {
     if (stdataChaptStatus.containsKey("Biology")) {
       biology.value = stdataChaptStatus["Biology"];
     }
+    userState.value = Success(data: {});
   }
 
   void changeChapIndex({required int index}) {

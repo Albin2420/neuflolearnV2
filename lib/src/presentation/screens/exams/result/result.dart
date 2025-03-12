@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:neuflo_learn/src/core/util/constants/app_constants.dart';
 import 'package:neuflo_learn/src/presentation/controller/exam/exam_controller.dart';
 import 'package:neuflo_learn/src/presentation/controller/navigation/navigation_controller.dart';
+import 'package:neuflo_learn/src/presentation/controller/teststatus/test_status_controller.dart';
 import 'package:neuflo_learn/src/presentation/screens/exams/result/widgets/answer_tile.dart';
 import 'package:neuflo_learn/src/presentation/screens/exams/result/widgets/nextstep.dart';
 import 'package:neuflo_learn/src/presentation/screens/exams/result/widgets/result_info.dart';
@@ -43,10 +44,10 @@ class _ResultPageState extends State<ResultPage> {
           centerTitle: true,
           leading: IconButton(
             onPressed: () async {
-              if (Get.isRegistered<Navigationcontroller>()) {
+              if (Get.isRegistered<TestStatusController>()) {
+                Get.delete<TestStatusController>();
                 ctr.resetAvgTimer();
                 ctr.resetTimer();
-                await nctr.rebuild(rebuild: true);
               }
               Get.offAll(() => NavigationScreen());
             },
@@ -143,12 +144,12 @@ class _ResultPageState extends State<ResultPage> {
                   ),
                   Nextstep(
                     onFinishDailyTests: () async {
-                      if (Get.isRegistered<Navigationcontroller>()) {
+                      if (Get.isRegistered<TestStatusController>()) {
+                        Get.delete<TestStatusController>();
                         ctr.resetAvgTimer();
                         ctr.resetTimer();
-                        await nctr.rebuild(rebuild: true);
-                        Get.offAll(() => NavigationScreen());
                       }
+                      Get.offAll(() => NavigationScreen());
                     },
                     onSetTestReminders: () {
                       log("onSetTestRemindersTap");

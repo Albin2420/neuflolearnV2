@@ -73,7 +73,7 @@ class HomeController extends GetxController {
     userName.value = name;
   }
 
-  RxList<int> currentStreakValues = RxList([]);
+  RxList<int> currentStreakValues = RxList([0, 0, 0, 0, 0, -1, 0]);
 
   RxInt noOfTestCompletedToday = RxInt(0);
 
@@ -100,7 +100,7 @@ class HomeController extends GetxController {
   Future initiate() async {
     await setUserInfo();
     studentId = (await getUserInfo())?.id ?? 0;
-    // await init();
+    await init();
     await fetchStreakData();
   }
 
@@ -133,10 +133,10 @@ class HomeController extends GetxController {
     // biologyChapters = await fetchChapters(subId: 3);
 
     /// generate practice test id list
-    await generatePracticeTestIds();
+    // await generatePracticeTestIds();
 
     // /// check test completion
-    await checkTestCompletion();
+    // await checkTestCompletion();
 
     // /// get practice test details
     // await getPracticeTestDeails();
@@ -354,6 +354,7 @@ class HomeController extends GetxController {
   Future fetchAndUpdateStreakValues() async {
     streaksState.value = Loading();
     try {
+      log("fetchAndUpdateStreakValues()");
       final streakFromFirebase =
           await firestoreService.getStreakValueFromFirebase(userName: docName);
       // log("streakFromFirebase : $streakFromFirebase");
@@ -370,7 +371,7 @@ class HomeController extends GetxController {
       streaksState.value = Success(data: [-1, -1, -1, -1, -1, -1, -1]);
     }
 
-    // log("STREAKS DATA  : $currentStreakValues");
+    log("STREAKS DATA  : $currentStreakValues");
   }
 
   List findStreak(List streakList) {
