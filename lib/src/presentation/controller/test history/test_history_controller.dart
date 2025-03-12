@@ -117,11 +117,9 @@ class TestHistoryController extends GetxController {
       }
     }, (r) async {
       try {
-        log("score:${r["score"].runtimeType}");
+        log("detailed test history :${r['']}");
         Get.to(() => TestHistoryResult());
-        if (r["score"].runtimeType == int) {
-          score.value = r["score"];
-        }
+
         totalAttended.value = r['totalAttended'] ?? 0;
         correct.value = r['correct'] ?? 0;
         incorrect.value = r['incorrect'] ?? 0;
@@ -129,6 +127,8 @@ class TestHistoryController extends GetxController {
         qstnsAll.value = r['qstns'];
         sub.value = r['test_name'];
         percentage.value = r["percentage"] ?? 0;
+
+        score.value = r['score']; //done
 
         filter();
 

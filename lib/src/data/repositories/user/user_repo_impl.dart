@@ -41,7 +41,7 @@ class UserRepoImpl extends UserRepo {
           "organization": 1,
           "is_active": true,
           "token_version": 0,
-          "current_identfier": "",
+          "current_identifier": "",
         }),
       );
 
