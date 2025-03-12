@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:neuflo_learn/src/presentation/controller/navigation/navigation_controller.dart';
+import 'package:neuflo_learn/src/presentation/screens/classes/classes_screen.dart';
 import 'package:neuflo_learn/src/presentation/screens/exams/result/stat/test_stat.dart';
 import 'package:neuflo_learn/src/presentation/screens/home/home.dart';
 import 'package:neuflo_learn/src/presentation/screens/tests/tests.dart';
@@ -20,16 +21,7 @@ class NavigationScreen extends StatelessWidget {
       Home(),
       Tests(),
       TestStat(),
-      Center(
-        child: Text(
-          "Coming soon.....",
-          style: GoogleFonts.aBeeZee(
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-            color: Color(0xFF02012A),
-          ),
-        ),
-      ),
+      Classes(),
     ];
     return Scaffold(
       backgroundColor: Color(0xFFEDF1F2),
