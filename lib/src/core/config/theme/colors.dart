@@ -29,4 +29,14 @@ class AppColors {
   static const kred = Color(0xffD84040);
 
   static const Color kinactive = Color(0xFF010029);
+  static final scaffoldBackground = const Color(0xFFEDF1F2);
+
+  static final statusBarColor = Color(0xFF010029);
+  static final gradientEnd = Color(0xFF003538);
+  static final white = const Color(0xFFFFFFFF);
+  static final orange = const Color(0xffffff6c00);
+  static final black = const Color(0xFF000000);
+  static final subjectTextColor = const Color(0xFF41405F);
+  static final completedTextArrowColor = const Color(0xFF010029);
+  static final timeTextColor = const Color(0xFF7D7D7D);
 }

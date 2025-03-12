@@ -78,6 +78,10 @@ dependencies:
   firebase_messaging: ^15.2.4
   flutter_local_notifications: ^18.0.1
 
+  yt_player:
+    path: C:\Users\HP\Desktop\NEUFLO_LEARN\neuflolearnV2\lib\src\data\yt_player
+  
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
