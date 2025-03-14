@@ -12,6 +12,8 @@ import 'package:neuflo_learn/src/domain/repositories/token/token_repo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppStartupController extends GetxController {
+  RxString docname = RxString('');
+
   TokenRepo tokenRepo = TokenRepoImpl();
 
   /// handle user state
@@ -41,6 +43,7 @@ class AppStartupController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    log("initializing AppStartupController()");
     handleUserSession();
   }
 
@@ -55,17 +58,21 @@ class AppStartupController extends GetxController {
     String? curretntUserPhoneNumber = userInfo;
 
     if (curretntUserPhoneNumber != null || curretntUserPhoneNumber != "") {
-      if (!kDebugMode) {
+      if (kDebugMode) {
         log('currentUserPhno : $curretntUserPhoneNumber');
       }
       String docName = "$curretntUserPhoneNumber@neuflo.io";
+      docname.value = docName;
 
       appUser.value =
           await firestoreService.getCurrentUserDocument(userName: docName);
 
       if (appUser.value != null) {
-        if (!kDebugMode) {
-          log('current userInfo => $appUser');
+        await firestoreService.dailyExamReportResetandStreakReset(
+            userName: docName);
+
+        if (kDebugMode) {
+          log('current userInfo ===========> $appUser');
         }
 
         accessToken.value = (await getAccessToken()) ?? '';

@@ -995,6 +995,13 @@ class ExamController extends GetxController {
       } else {
         isSuccess = await submitCustomTest();
       }
+      if (type == "PracticeTest") {
+        dailyExamReport(
+          subject: currentSubjectName,
+          level: level,
+          docname: appctrl.docname.value,
+        );
+      }
 
       if (isSuccess) {
         return true;
@@ -1005,6 +1012,15 @@ class ExamController extends GetxController {
       log("Error in generateExamReport: $e");
       return false;
     }
+  }
+
+  dailyExamReport({
+    required String subject,
+    required String level,
+    required String docname,
+  }) {
+    firestoreService.updateDailyExamReport(
+        subject: subject, level: level, docname: docname);
   }
 
   // Future generateExamReport(

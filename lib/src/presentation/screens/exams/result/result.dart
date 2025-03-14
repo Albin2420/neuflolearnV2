@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:neuflo_learn/src/core/util/constants/app_constants.dart';
 import 'package:neuflo_learn/src/presentation/controller/exam/exam_controller.dart';
+import 'package:neuflo_learn/src/presentation/controller/home/home_controller.dart';
 import 'package:neuflo_learn/src/presentation/controller/navigation/navigation_controller.dart';
 import 'package:neuflo_learn/src/presentation/controller/teststatus/test_status_controller.dart';
 import 'package:neuflo_learn/src/presentation/screens/exams/result/widgets/answer_tile.dart';
@@ -26,7 +27,6 @@ class _ResultPageState extends State<ResultPage> {
   bool skipped = false;
   int index = 0;
   TextEditingController txt = TextEditingController();
-  final nctr = Get.find<Navigationcontroller>();
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +46,12 @@ class _ResultPageState extends State<ResultPage> {
             onPressed: () async {
               if (Get.isRegistered<TestStatusController>()) {
                 Get.delete<TestStatusController>();
+
                 ctr.resetAvgTimer();
                 ctr.resetTimer();
+              }
+              if (Get.isRegistered<HomeController>()) {
+                Get.delete<HomeController>();
               }
               Get.offAll(() => NavigationScreen());
             },
@@ -176,14 +180,6 @@ class _ResultPageState extends State<ResultPage> {
                             SizedBox(
                               height: 16,
                             ),
-                            // CustomTextField(
-                            //   hintText: 'Search topic',
-                            //   textEditingController: txt,
-                            //   prefixIcon: PhosphorIcons.magnifyingGlass(),
-                            // ),
-                            // SizedBox(
-                            //   height: 16,
-                            // ),
                             Container(
                               padding: EdgeInsets.all(Constant.screenWidth *
                                   (4 / Constant.figmaScreenWidth)),

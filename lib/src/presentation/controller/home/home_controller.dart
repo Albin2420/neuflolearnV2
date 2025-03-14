@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:ffi';
 
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
@@ -50,15 +51,15 @@ class HomeController extends GetxController {
   RxList<String> level = ["Easy", "Medium", "Difficult"].obs;
 
   Map<String, int> weekDaysMap = {
-    'Monday': 0,
-    'Tuesday': 1,
-    'Wednesday': 2,
-    'Thursday': 3,
-    'Friday': 4,
-    'Saturday': 5,
-    'Sunday': 6
+    'Sunday': 0,
+    'Monday': 1,
+    'Tuesday': 2,
+    'Wednesday': 3,
+    'Thursday': 4,
+    'Friday': 5,
+    'Saturday': 6,
   };
-  List<String> weekdaysList = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+  List<String> weekdaysList = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
   /// set user image url
   void setImageUrl({required String url}) {
@@ -73,14 +74,23 @@ class HomeController extends GetxController {
     userName.value = name;
   }
 
-  RxList<int> currentStreakValues = RxList([0, 0, 0, 0, 0, -1, 0]);
+  RxList<int> currentStreakValues = RxList([]);
 
   RxInt noOfTestCompletedToday = RxInt(0);
 
   Rx<Ds<List<int>>> homeExamState = Rx(Initial());
 
+  RxList<dynamic> physics = RxList([]);
+  RxList<dynamic> chemistry = RxList([]);
+  RxList<dynamic> biology = RxList([]);
+
+  RxInt physicsattendedCount = RxInt(0);
+  RxInt chemattendedCount = RxInt(0);
+  RxInt bioattendedCount = RxInt(0);
+
   @override
   void onInit() {
+    log("onInit Homecontroller");
     initiate();
     super.onInit();
   }
@@ -102,6 +112,39 @@ class HomeController extends GetxController {
     studentId = (await getUserInfo())?.id ?? 0;
     await init();
     await fetchStreakData();
+    fetchTotalTestDoneperday();
+  }
+
+  fetchTotalTestDoneperday() async {
+    try {
+      String docUsername = await getDocumentName();
+      totalTestDonePerDay.value =
+          await firestoreService.getTotalTestsDoneperDay(docName: docUsername);
+
+      physics.value = await firestoreService.getdailyTestReportTest(
+          docName: docUsername, sub: "Physics");
+      for (int i = 0; i < physics.length; i++) {
+        if (physics[i] == true) {
+          physicsattendedCount++;
+        }
+      }
+      chemistry.value = await firestoreService.getdailyTestReportTest(
+          docName: docUsername, sub: "Chemistry");
+      for (int i = 0; i < chemistry.length; i++) {
+        if (chemistry[i] == true) {
+          chemattendedCount++;
+        }
+      }
+      biology.value = await firestoreService.getdailyTestReportTest(
+          docName: docUsername, sub: 'Biology');
+      for (int i = 0; i < biology.length; i++) {
+        if (biology[i] == true) {
+          bioattendedCount++;
+        }
+      }
+    } catch (e) {
+      log('Error fetchTotalTestDoneperday():$e');
+    }
   }
 
   /// fetch streak data from firestore
@@ -126,22 +169,6 @@ class HomeController extends GetxController {
   List<Chapter> biologyChapters = [];
 
   Future init() async {
-    /// fetching chapters of each subjects
-
-    // physicsChapters = await fetchChapters(subId: 1);
-    // chemistryChapters = await fetchChapters(subId: 2);
-    // biologyChapters = await fetchChapters(subId: 3);
-
-    /// generate practice test id list
-    // await generatePracticeTestIds();
-
-    // /// check test completion
-    // await checkTestCompletion();
-
-    // /// get practice test details
-    // await getPracticeTestDeails();
-
-    /// fetch current streak values
     await fetchAndUpdateStreakValues();
   }
 
@@ -155,9 +182,6 @@ class HomeController extends GetxController {
       savedChapters.add((data?[i] as Chapter));
     }
 
-    if (kDebugMode) {
-      // log('saved subject $subId chapters loading => $savedChapters');
-    }
     if (savedChapters.isEmpty) {
       final result = await chapterRepo.fetchChapters(subjectId: subId);
       result.fold((failure) {
@@ -174,67 +198,67 @@ class HomeController extends GetxController {
   List<int> testInstanceIDList = [];
 
   /// generate practice test ids
-  Future generatePracticeTestIds() async {
-    // log('docName => $docName');
+  // Future generatePracticeTestIds() async {
+  //   // log('docName => $docName');
 
-    homeExamState.value = Loading();
-    String date =
-        await firestoreService.getTodateFromFirebase(userName: docName);
-    String today = DateTime.now().toString().split(' ').first;
-    // '2025-01-18';
+  //   homeExamState.value = Loading();
+  //   String date =
+  //       await firestoreService.getTodateFromFirebase(userName: docName);
+  //   String today = DateTime.now().toString().split(' ').first;
+  //   // '2025-01-18';
 
-    log('date : $date');
+  //   log('date : $date');
 
-    if (date.compareTo(today) != 0) {
-      firestoreService.updateTodate(userName: docName, date: today);
-      firestoreService.updateListExamId(userName: docName, examId: []);
-    }
+  //   if (date.compareTo(today) != 0) {
+  //     firestoreService.updateTodate(userName: docName, date: today);
+  //     firestoreService.updateListExamId(userName: docName, examId: []);
+  //   }
 
-    testInstanceIDList =
-        List.from(await firestoreService.getListExamId(userName: docName))
-            .cast<int>();
+  //   testInstanceIDList =
+  //       List.from(await firestoreService.getListExamId(userName: docName))
+  //           .cast<int>();
 
-    if (testInstanceIDList.isEmpty || testInstanceIDList.length < 3) {
-      for (var i = 0; i < 3; i++) {
-        await generatePracticeTestId();
-      }
-    }
+  //   if (testInstanceIDList.isEmpty || testInstanceIDList.length < 3) {
+  //     for (var i = 0; i < 3; i++) {
+  //       await generatePracticeTestId();
+  //     }
+  //   }
 
-    if (testInstanceIDList.isNotEmpty) {
-      if (testInstanceIDList.length == 3 &&
-          (testInstanceIDList.contains(0) ||
-              testInstanceIDList.every((e) => e == 0))) {
-        homeExamState.value = Failed(e: 'TestInstanceId Not Loaded');
-      } else {
-        // log("CURRENT GENERATED TESTINSTANCE ID LIST ======> $testInstanceIDList");
-        homeExamState.value = Success(data: testInstanceIDList);
-      }
-    } else {
-      homeExamState.value = Failed(e: 'TestInstanceId Not Loaded');
-    }
-  }
+  //   if (testInstanceIDList.isNotEmpty) {
+  //     if (testInstanceIDList.length == 3 &&
+  //         (testInstanceIDList.contains(0) ||
+  //             testInstanceIDList.every((e) => e == 0))) {
+  //       homeExamState.value = Failed(e: 'TestInstanceId Not Loaded');
+  //     } else {
+  //       // log("CURRENT GENERATED TESTINSTANCE ID LIST ======> $testInstanceIDList");
+  //       homeExamState.value = Success(data: testInstanceIDList);
+  //     }
+  //   } else {
+  //     homeExamState.value = Failed(e: 'TestInstanceId Not Loaded');
+  //   }
+  // }
 
-  /// generate practice test ids
-  Future generatePracticeTestId() async {
-    final result = await examRepo.generatePracticeTestId(
-      studentId: studentId.toString(),
-    );
+  // /// generate practice test ids
+  // Future generatePracticeTestId() async {
+  //   final result = await examRepo.generatePracticeTestId(
+  //     studentId: studentId.toString(),
+  //   );
 
-    result.fold(
-      (failure) {
-        testInstanceIDList.add(0);
-      },
-      (data) async {
-        testInstanceIDList.add(data);
-        await firestoreService.updateListExamId(
-          userName: docName,
-          examId: testInstanceIDList,
-        );
-      },
-    );
+  //   result.fold(
+  //     (failure) {
+  //       testInstanceIDList.add(0);
+  //     },
+  //     (data) async {
+  //       testInstanceIDList.add(data);
+  //       await firestoreService.updateListExamId(
+  //         userName: docName,
+  //         examId: testInstanceIDList,
+  //       );
+  //     },
+  //   );
 
-    // log('practiceTestIdList => $testInstanceIDList');
-  }
+  //   // log('practiceTestIdList => $testInstanceIDList');
+  // }
 
   Future<AppUserInfo?> getUserInfo() async {
     docName = await getDocumentName();
@@ -375,6 +399,7 @@ class HomeController extends GetxController {
   }
 
   List findStreak(List streakList) {
+    log("streak list in findStreak():$streakList");
     int todayResponse = 0;
     if (noOfTestCompletedToday.value == 3) {
       todayResponse = 1;
@@ -386,10 +411,12 @@ class HomeController extends GetxController {
 
     indexOfToday = weekDaysMap[data];
     // log("indexOfToday ==> $indexOfToday");
-    streakList[indexOfToday ?? 0] = todayResponse;
-    for (int j = (indexOfToday ?? 0) + 1; j < 7; j++) {
-      streakList[j] = -1;
-    }
+
+    // streakList[indexOfToday ?? 0] = todayResponse;
+    // for (int j = (indexOfToday ?? 0) + 1; j < 7; j++) {
+    //   streakList[j] = -1;
+    // }
+    log("return of findStreak():$streakList");
     return streakList;
   }
 }

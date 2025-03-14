@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:neuflo_learn/src/data/yt_player/lib/yt_player.dart';
 import 'package:neuflo_learn/src/presentation/controller/videos/videos_controller.dart';
+import 'package:yt_player/yt_player.dart';
 
 
 

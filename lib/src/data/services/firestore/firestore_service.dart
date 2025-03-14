@@ -23,30 +23,354 @@ class FirestoreService {
     });
   }
 
+  Future<List<bool>> getdailyTestReportTest(
+      {required String docName, required String sub}) async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection("neuflo_basic")
+          .doc(docName)
+          .get();
+
+      if (doc.exists) {
+        List<bool> res = [];
+        log("report of getdailyTestReportTest(): ${doc['dialyexamReport'][sub]}");
+        var data = doc['dialyexamReport'][sub];
+
+        res.add(data['Easy']);
+        res.add(data['Medium']);
+        res.add(data['Difficult']);
+        log("res of physics:$res");
+        return res;
+      }
+    } catch (e) {
+      log("Error in getdailyTestReportTest():$e");
+    }
+    return [false, false, false];
+  }
+
+  Future<int> getTotalTestsDoneperDay({required String docName}) async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('neuflo_basic')
+          .doc(docName)
+          .get();
+      if (doc.exists) {
+        log("totalTestsDoneperDay:${doc["totalTestsDoneperDay"]}");
+        return doc['totalTestsDoneperDay'];
+      } else {
+        return 0;
+      }
+    } catch (e) {
+      log("Error in gettotalTestsDoneperDay():$e");
+      return 0;
+    }
+  }
+
   Future<AppUserInfo?> getCurrentUserDocument(
       {required String userName}) async {
-    if (kDebugMode) {
-      // log('USER NAME => $userName');
-    }
     DocumentSnapshot snap = await FirebaseFirestore.instance
         .collection("neuflo_basic")
         .doc(userName)
         .get();
 
-    if (kDebugMode) {
-      log('CURRENT USER DOCUMENT => ${snap.data()}');
-    }
     if (snap.data() != null) {
       Map<String, dynamic> data = jsonDecode(jsonEncode(snap.data()));
 
       AppUserInfo userInfo = AppUserInfo.fromMap(data);
-      if (kDebugMode) {
-        // log('AppUserInfo => $userInfo');
-      }
+
       return userInfo;
     } else {
       return null;
     }
+  }
+
+  Future dailyExamReportResetandStreakReset({required String userName}) async {
+    try {
+      DocumentSnapshot snap = await FirebaseFirestore.instance
+          .collection("neuflo_basic")
+          .doc(userName)
+          .get();
+
+      if (kDebugMode) {
+        log('CURRENT USER DOCUMENT snap => ${snap.data()}');
+      }
+      if (snap.data() != null) {
+        DateTime now = DateTime.now();
+        String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+
+        Map<String, dynamic> data = jsonDecode(jsonEncode(snap.data()));
+
+        log("data:${data['endOfWeek']}");
+
+        if (isDatePassed(data['endOfWeek'])) {
+          log("timesup for reset streaklist");
+          resetStreak(userName: userName, formattedDate: formattedDate);
+        }
+
+        if (formattedDate != data['dialyexamReport']['currentDate']) {
+          // Convert the formattedDate (current date) and data['dialyexamReport']['currentDate'] to DateTime objects
+          DateTime currentDate = DateTime.parse(
+              formattedDate); // formattedDate is in yyyy-MM-dd format
+          DateTime storedDate = DateTime.parse(data['dialyexamReport']
+              ['currentDate']); // stored date in yyyy-MM-dd format
+
+          // Calculate the difference between the two dates
+          Duration difference = currentDate.difference(storedDate);
+
+          // Get the difference in days
+          int daysDifference = difference.inDays;
+
+          // Log the difference
+          log("Difference in days: $daysDifference");
+          log("reset dialyexamReport and update the currentDate");
+          resetDailyExamReport(
+              userName: userName, formattedDate: formattedDate);
+          updateStreak(docname: userName, difference: daysDifference);
+        } else {
+          log("today");
+        }
+      } else {
+        return null;
+      }
+    } catch (e) {
+      log('Error:$e');
+    }
+  }
+
+  bool isDatePassed(String dateToCheck) {
+    log("dateToCheck:$dateToCheck");
+    try {
+      DateTime parsedDate = DateTime.parse(dateToCheck);
+      DateTime now = DateTime.now();
+      return parsedDate.isBefore(now);
+    } catch (e) {
+      log("Error parsing date: $e");
+      return false; // Or handle as per your requirement
+    }
+  }
+
+  Future<void> resetStreak({
+    required String userName,
+    required String formattedDate, // Pass the formatted current date
+  }) async {
+    try {
+      DateTime now = DateTime.now();
+      int daysToSunday = now.weekday % 7; // 0 for Sunday, 1 for Monday, etc.
+      DateTime startOfWeek = now.subtract(Duration(days: daysToSunday));
+      DateTime endOfWeek = startOfWeek.add(Duration(days: 6));
+
+      // Format the start and end of the week as strings
+      String startOfWeekString = DateFormat('yyyy-MM-dd').format(startOfWeek);
+      String endOfWeekString = DateFormat('yyyy-MM-dd').format(endOfWeek);
+
+      int day = getCurrentDayIndex();
+      List<int> streaklist = generateDaysList(day);
+      log("updated list in resetStreak():$streaklist");
+
+      // Reset streak and update the start and end of the week as strings
+      await FirebaseFirestore.instance
+          .collection("neuflo_basic")
+          .doc(userName)
+          .update({
+        'streakComplted': streaklist,
+        'startOfWeek': startOfWeekString,
+        'endOfWeek': endOfWeekString,
+      });
+    } catch (e) {
+      log("Error in resetStreak():$e");
+    }
+  }
+
+  updateDailyExamReport(
+      {required String subject,
+      required String level,
+      required String docname}) async {
+    try {
+      log("subject in updateDailyExamReport():$subject");
+      log("level in updateDailyExamReport():$level");
+
+      // Validate the level is correct for a subject
+      if (!["Easy", "Medium", "Difficult"].contains(level)) {
+        log("Invalid level passed: $level");
+        return; // exit if the level is not valid
+      }
+
+      // Fetch the current document to get the existing value of 'totalTestsDoneperDay'
+      var docSnapshot = await FirebaseFirestore.instance
+          .collection("neuflo_basic")
+          .doc(docname)
+          .get();
+
+      if (docSnapshot.exists) {
+        int totalTestsDoneperDay =
+            docSnapshot.data()?['totalTestsDoneperDay'] ??
+                0; // Get current value (default to 0 if null)
+
+        // Update the Firestore document
+        await FirebaseFirestore.instance
+            .collection("neuflo_basic")
+            .doc(docname)
+            .update({
+          'dialyexamReport.$subject.$level':
+              true, // Set the specific subject-level to true
+          'totalTestsDoneperDay':
+              totalTestsDoneperDay + 1, // Increment the totalTestsDoneperDay
+        });
+
+        // Fetch the updated document to count true values for each subject
+        var updatedDocSnapshot = await FirebaseFirestore.instance
+            .collection("neuflo_basic")
+            .doc(docname)
+            .get();
+
+        if (updatedDocSnapshot.exists) {
+          var dailyExamReport =
+              updatedDocSnapshot.data()?['dialyexamReport'] ?? {};
+
+          // Separate subjects: Physics, Chemistry, and Biology
+          int physicsTrueCount = 0;
+          int chemistryTrueCount = 0;
+          int biologyTrueCount = 0;
+
+          // Function to count true values for a subject
+          int countTrueValues(Map<String, dynamic> subjectReport) {
+            int trueCount = 0;
+            subjectReport.forEach((level, value) {
+              if (value == true) {
+                trueCount++;
+              }
+            });
+            return trueCount;
+          }
+
+          // Check for Physics, Chemistry, and Biology subjects and count true values
+          if (dailyExamReport['Physics'] != null) {
+            physicsTrueCount = countTrueValues(dailyExamReport['Physics']);
+          }
+          if (dailyExamReport['Chemistry'] != null) {
+            chemistryTrueCount = countTrueValues(dailyExamReport['Chemistry']);
+          }
+          if (dailyExamReport['Biology'] != null) {
+            biologyTrueCount = countTrueValues(dailyExamReport['Biology']);
+          }
+
+          log("Physics true count: $physicsTrueCount");
+          log("Chemistry true count: $chemistryTrueCount");
+          log("Biology true count: $biologyTrueCount");
+
+          int totalcount =
+              physicsTrueCount + chemistryTrueCount + biologyTrueCount;
+
+          // If all subjects have completed 3 tests (total 9 tests), update streak list
+          if (totalcount == 9) {
+            log("time to update streak list");
+            setstreakTocompleted(docName: docname);
+          }
+        }
+      } else {
+        log("Document not found for $docname");
+      }
+    } catch (e) {
+      log("error in updateDailyExamReport():$e");
+    }
+  }
+
+  setstreakTocompleted({required String docName}) async {
+    try {
+      var docRef =
+          FirebaseFirestore.instance.collection("neuflo_basic").doc(docName);
+
+      // Fetch the document
+      var docSnapshot = await docRef.get();
+      if (docSnapshot.exists) {
+        // Retrieve the current streakComplted array
+        List<dynamic> streakCompleted = docSnapshot['streakComplted'];
+        int streakIndex = docSnapshot['currentstreakIndex'];
+
+        streakCompleted[streakIndex] = 2;
+        await docRef.update({
+          "streakComplted": streakCompleted,
+        });
+      }
+    } catch (e) {
+      log("Error in setstreakTocompleted():$e");
+    }
+  }
+
+  Future<void> updateStreak(
+      {required String docname, required int difference}) async {
+    try {
+      // Get the document reference
+      var docRef =
+          FirebaseFirestore.instance.collection("neuflo_basic").doc(docname);
+
+      // Fetch the document
+      var docSnapshot = await docRef.get();
+      if (docSnapshot.exists) {
+        // Retrieve the current streakComplted array
+        List<dynamic> streakCompleted = docSnapshot['streakComplted'];
+        int streakIndex = docSnapshot['currentstreakIndex'];
+
+        if (streakCompleted[streakIndex] != 2) {
+          streakCompleted[streakIndex] = -1;
+          streakCompleted[streakIndex + difference] = 0;
+        } else {
+          streakCompleted[streakIndex + difference] = 0;
+        }
+        await docRef.update({
+          "streakComplted": streakCompleted,
+          'currentstreakIndex': streakIndex + difference
+        });
+      }
+    } catch (e) {
+      log("Error in updateStreak(): $e");
+    }
+  }
+
+  Future resetDailyExamReport({
+    required String userName,
+    required String formattedDate, // Pass the formatted current date
+  }) async {
+    // Prepare the updated daily exam report data
+    // ["Easy", "Medium", "Difficult"]
+    var dialyexamReport = {
+      "Physics": {"Easy": false, "Medium": false, "Difficult": false},
+      "Chemistry": {"Easy": false, "Medium": false, "Difficult": false},
+      "Biology": {"Easy": false, "Medium": false, "Difficult": false},
+      "currentDate": formattedDate
+    };
+
+    // Update the Firestore document
+    await FirebaseFirestore.instance
+        .collection("neuflo_basic")
+        .doc(userName)
+        .update({
+      'dialyexamReport': dialyexamReport,
+    });
+  }
+
+  int getCurrentDayIndex() {
+    DateTime now = DateTime.now();
+
+    // Get the weekday (1 = Monday, 7 = Sunday)
+    int weekday = now.weekday;
+
+    // Adjust so that 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    int currentDayIndex = (weekday % 7);
+
+    return currentDayIndex;
+  }
+
+  List<int> generateDaysList(int currentDayIndex) {
+    List<int> days = List.filled(7, -1); // Start by filling all days with -1
+
+    // Set the current day to 0
+    days[currentDayIndex] = 0;
+
+    for (int i = currentDayIndex + 1; i < days.length; i++) {
+      days[i] = 1;
+    }
+    return days;
   }
 
   Future addBasicDetails({
@@ -57,22 +381,48 @@ class FirestoreService {
     String? imageUrl,
     required int id,
     bool? isProfileSetupComplete,
+    required List<int> streaklist,
+    required int currentstreakIndex,
   }) async {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('yyyy-MM-dd').format(now);
 
+    // Calculate the start of the week (Sunday)
+    int daysToSunday = now.weekday % 7; // 0 for Sunday, 1 for Monday, etc.
+    DateTime startOfWeek = now.subtract(Duration(days: daysToSunday));
+    DateTime endOfWeek = startOfWeek.add(Duration(days: 6));
+
+    // Format start and end of the week
+    String startOfWeekFormatted = DateFormat('yyyy-MM-dd').format(startOfWeek);
+    String endOfWeekFormatted = DateFormat('yyyy-MM-dd').format(endOfWeek);
+
+    // Prepare the daily exam report
+
+    var dialyexamReport = {
+      "Physics": {"Easy": false, "Medium": false, "Difficult": false},
+      "Chemistry": {"Easy": false, "Medium": false, "Difficult": false},
+      "Biology": {"Easy": false, "Medium": false, "Difficult": false},
+      "currentDate": formattedDate
+    };
+
+    // Add the current week's start and end date to the data
     await FirebaseFirestore.instance
         .collection("neuflo_basic")
         .doc(userName)
         .set({
-      'streakComplted': [-1, -1, -1, -1, -1, -1, -1],
+      'streakComplted': streaklist,
       "Todate": formattedDate,
       "phone": phonenum,
       "email": email,
       "name": name,
       "imageUrl": imageUrl,
       "id": id,
-      "isProfileSetupComplete": isProfileSetupComplete
+      "isProfileSetupComplete": isProfileSetupComplete,
+      "dialyexamReport": dialyexamReport,
+      "startOfWeek": startOfWeekFormatted, // Start of the current week
+      "endOfWeek": endOfWeekFormatted, // End of the current week
+      "currentstreakIndex": currentstreakIndex,
+      "totalTestsDoneperDay": 0
     });
   }
 
@@ -120,10 +470,8 @@ class FirestoreService {
         .get();
     Map<String, dynamic> data = jsonDecode(jsonEncode(snap.data()));
 
-    // streakFromFirebase = data["streakComplted"];
-
     if (kDebugMode) {
-      // log('STREAK COMPLETED ===> $data["streakComplted"]');
+      log('STREAK COMPLETED ===> $data["streakComplted"]');
     }
     return data["streakComplted"];
   }
@@ -137,31 +485,23 @@ class FirestoreService {
     return data["Todate"];
   }
 
-  Future<void> updateListExamId(
-      {required String userName, required List examId}) async {
-    await FirebaseFirestore.instance
-        .collection("neuflo_basic")
-        .doc(userName)
-        .update({"dailyTestIds": examId});
-  }
+  // Future<List> getListExamId({
+  //   required String userName,
+  // }) async {
+  //   DocumentSnapshot snap = await FirebaseFirestore.instance
+  //       .collection("neuflo_basic")
+  //       .doc(userName)
+  //       .get();
+  //   Map<String, dynamic> data = jsonDecode(jsonEncode(snap.data()));
 
-  Future<List> getListExamId({
-    required String userName,
-  }) async {
-    DocumentSnapshot snap = await FirebaseFirestore.instance
-        .collection("neuflo_basic")
-        .doc(userName)
-        .get();
-    Map<String, dynamic> data = jsonDecode(jsonEncode(snap.data()));
+  //   // log('practiceTestId from FIRESTORE ===> $data');
 
-    // log('practiceTestId from FIRESTORE ===> $data');
-
-    if (data['dailyTestIds'] == null) {
-      return [];
-    } else {
-      return data['dailyTestIds'];
-    }
-  }
+  //   if (data['dailyTestIds'] == null) {
+  //     return [];
+  //   } else {
+  //     return data['dailyTestIds'];
+  //   }
+  // }
 
   Future<void> updateTodate(
       {required String userName, required String date}) async {

@@ -20,8 +20,18 @@ class NavigationScreen extends StatelessWidget {
     final List<Widget> pages = [
       Home(),
       Tests(),
-      TestStat(),
       Classes(),
+      TestStat(),
+      Center(
+        child: Text(
+          "Coming soon.....",
+          style: GoogleFonts.aBeeZee(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            color: Color(0xFF02012A),
+          ),
+        ),
+      ),
     ];
     return Scaffold(
       backgroundColor: Color(0xFFEDF1F2),
@@ -67,8 +77,18 @@ class NavigationScreen extends StatelessWidget {
                 label: "TESTS",
               ),
               BottomNavigationBarItem(
+                icon: SizedBox(
+                  height: 26,
+                  width: 20,
+                  child: mainctr.currentIndex.value == 2
+                      ? Image.asset('assets/icons/playerselected.png')
+                      : Image.asset('assets/icons/playernotselected.png'),
+                ),
+                label: "CLASSES",
+              ),
+              BottomNavigationBarItem(
                 icon: Icon(
-                  PhosphorIcons.chartBar(mainctr.currentIndex.value == 2
+                  PhosphorIcons.chartBar(mainctr.currentIndex.value == 3
                       ? PhosphorIconsStyle.fill
                       : PhosphorIconsStyle.regular),
                 ),
@@ -76,7 +96,7 @@ class NavigationScreen extends StatelessWidget {
               ),
               BottomNavigationBarItem(
                 icon: Icon(
-                  PhosphorIcons.chatTeardropText(mainctr.currentIndex.value == 3
+                  PhosphorIcons.chatTeardropText(mainctr.currentIndex.value == 4
                       ? PhosphorIconsStyle.fill
                       : PhosphorIconsStyle.regular),
                 ),
