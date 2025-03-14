@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:neuflo_learn/src/core/config/theme/colors.dart';
-import 'package:neuflo_learn/src/data/yt_player/lib/yt_player.dart';
+
 import 'package:neuflo_learn/src/presentation/controller/videos/videos_controller.dart';
 import 'package:neuflo_learn/src/presentation/widgets/classes/coming_up_videos.dart';
+import 'package:yt_player/yt_player.dart';
 
 class PlayVideo extends StatelessWidget {
   int chapterNo;
@@ -37,7 +38,7 @@ class PlayVideo extends StatelessWidget {
                 backgroundColor: Colors.white,
                 leading: GestureDetector(
                   onTap: () {
-                    log("message");
+                    Get.back();
                   },
                   child: Container(
                     height: 50,
@@ -53,28 +54,14 @@ class PlayVideo extends StatelessWidget {
                     color: Colors.white,
                     child: Column(
                       children: [
-                        // Text(
-                        //   chapterName,
-                        //   maxLines: 2,
-                        //   overflow: TextOverflow.ellipsis,
-                        // style: GoogleFonts.urbanist(
-                        //   color: Colors.black,
-                        //   fontSize: 16,
-                        //   fontWeight: FontWeight.bold,
-                        // ),
-                        // ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width -
-                              120, // Adjust width to prevent overflow
-                          child: Text(
-                            chapterName,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.urbanist(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        Text(
+                          chapterName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.urbanist(
+                            color: Colors.black,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(

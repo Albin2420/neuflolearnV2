@@ -24,7 +24,6 @@ class UserRepoImpl extends UserRepo {
           "mail_id": student.mailId,
           "name": student.name,
           "phone_number": student.phoneNumber,
-          "organization": 1,
           "is_active": true
         }.toString());
       }
@@ -38,7 +37,6 @@ class UserRepoImpl extends UserRepo {
           "mail_id": student.mailId,
           "name": student.name,
           "phone_number": student.phoneNumber,
-          "organization": 1,
           "is_active": true,
           "token_version": 0,
           "current_identifier": "",

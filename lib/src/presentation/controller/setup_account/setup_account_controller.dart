@@ -148,17 +148,45 @@ class SetupAccountController extends GetxController {
 
     Get.find<AppStartupController>().appUser.value = appUserInfo;
 
+    int currentdayindex = getCurrentDayIndex();
+    List<int> streaklist = generateDaysList(currentdayindex);
+
     await firestoreService.addBasicDetails(
-      userName: docName,
-      phonenum: appUserInfo?.phone ?? '',
-      email: appUserInfo?.email ?? '',
-      name: appUserInfo?.name ?? '',
-      id: appUserInfo?.id ?? 0,
-      imageUrl: appUserInfo?.imageUrl ?? '',
-      isProfileSetupComplete: true,
-    );
+        userName: docName,
+        phonenum: appUserInfo?.phone ?? '',
+        email: appUserInfo?.email ?? '',
+        name: appUserInfo?.name ?? '',
+        id: appUserInfo?.id ?? 0,
+        imageUrl: appUserInfo?.imageUrl ?? '',
+        isProfileSetupComplete: true,
+        streaklist: streaklist,
+        currentstreakIndex: currentdayindex);
 
     return true;
+  }
+
+  int getCurrentDayIndex() {
+    DateTime now = DateTime.now();
+
+    // Get the weekday (1 = Monday, 7 = Sunday)
+    int weekday = now.weekday;
+
+    // Adjust so that 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    int currentDayIndex = (weekday % 7);
+
+    return currentDayIndex;
+  }
+
+  List<int> generateDaysList(int currentDayIndex) {
+    List<int> days = List.filled(7, -1); // Start by filling all days with -1
+
+    // Set the current day to 0
+    days[currentDayIndex] = 0;
+
+    for (int i = currentDayIndex + 1; i < days.length; i++) {
+      days[i] = 1;
+    }
+    return days;
   }
 
   /// generate document name
@@ -428,7 +456,6 @@ class SetupAccountController extends GetxController {
     Map<String, dynamic> skillData = {
       "course_id": "${currentSelectedCourse.value?.courseId}",
       "student_id": "${appUserInfo?.id}",
-      "organisation": 1,
       "strong_chapters": strongChapters,
       "weak_chapters": weakChapters,
     };
@@ -545,16 +572,20 @@ class SetupAccountController extends GetxController {
     AppUserInfo? appUserInfo =
         await firestoreService.getCurrentUserDocument(userName: docUsername);
 
+    int currentdayindex = getCurrentDayIndex();
+    List<int> streaklist = generateDaysList(currentdayindex);
+
     if (appUserInfo != null) {
       firestoreService.addBasicDetails(
-        userName: docUsername,
-        phonenum: appUserInfo.phone ?? '',
-        email: appUserInfo.email,
-        name: appUserInfo.name,
-        id: appUserInfo.id ?? 0,
-        imageUrl: appUserInfo.imageUrl,
-        isProfileSetupComplete: true,
-      );
+          userName: docUsername,
+          phonenum: appUserInfo.phone ?? '',
+          email: appUserInfo.email,
+          name: appUserInfo.name,
+          id: appUserInfo.id ?? 0,
+          imageUrl: appUserInfo.imageUrl,
+          isProfileSetupComplete: true,
+          streaklist: streaklist,
+          currentstreakIndex: currentdayindex);
     }
   }
 }

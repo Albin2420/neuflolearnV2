@@ -3,15 +3,18 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:neuflo_learn/src/core/util/constants/app_constants.dart';
 
 class DailyStreak extends StatelessWidget {
-  const DailyStreak({super.key, required this.icon, required this.day});
+  const DailyStreak({super.key, required this.widget, required this.day});
   final String day;
-  final Widget icon;
+  final Widget widget;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        icon,
+        widget,
+        SizedBox(
+          height: 4,
+        ),
         Text(
           day,
           style: GoogleFonts.urbanist(

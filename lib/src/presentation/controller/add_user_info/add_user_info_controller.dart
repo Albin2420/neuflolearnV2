@@ -144,6 +144,9 @@ class AddUserInfoController extends GetxController {
         await firestoreService.getCurrentUserDocument(userName: docUsername);
 
     if (appUserInfo != null) {
+      int day = getCurrentDayIndex();
+      List<int> streaklist = generateDaysList(day);
+      log("newstreaklis:$streaklist");
       firestoreService.addBasicDetails(
         userName: docUsername,
         phonenum: phoneController.text.trim(),
@@ -151,24 +154,54 @@ class AddUserInfoController extends GetxController {
         name: nameController.text.trim(),
         id: appUserInfo.id ?? 0,
         imageUrl: _auth.getCurrentUser()?.photoURL ?? '',
+        streaklist: streaklist,
+        currentstreakIndex: day,
       );
     } else {
+      int day = getCurrentDayIndex();
+      List<int> streaklist = generateDaysList(day);
+      log("newstreaklis:$streaklist");
       String? id = await firestoreService.uniqueid();
 
       int uid = int.parse(id ?? '0') + 1;
       log('ID  =>  $id');
 
       firestoreService.addBasicDetails(
-        userName: docUsername,
-        phonenum: phoneController.text.trim(),
-        email: emailController.text.trim(),
-        name: nameController.text.trim(),
-        id: uid,
-        imageUrl: _auth.getCurrentUser()?.photoURL ?? '',
-      );
+          userName: docUsername,
+          phonenum: phoneController.text.trim(),
+          email: emailController.text.trim(),
+          name: nameController.text.trim(),
+          id: uid,
+          imageUrl: _auth.getCurrentUser()?.photoURL ?? '',
+          streaklist: streaklist,
+          currentstreakIndex: day);
 
       await firestoreService.updateid(uid);
     }
+  }
+
+  int getCurrentDayIndex() {
+    DateTime now = DateTime.now();
+
+    // Get the weekday (1 = Monday, 7 = Sunday)
+    int weekday = now.weekday;
+
+    // Adjust so that 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    int currentDayIndex = (weekday % 7);
+
+    return currentDayIndex;
+  }
+
+  List<int> generateDaysList(int currentDayIndex) {
+    List<int> days = List.filled(7, -1); // Start by filling all days with -1
+
+    // Set the current day to 0
+    days[currentDayIndex] = 0;
+
+    for (int i = currentDayIndex + 1; i < days.length; i++) {
+      days[i] = 1;
+    }
+    return days;
   }
 
   /// check if a user already exits with given phone number

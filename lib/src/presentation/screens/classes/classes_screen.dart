@@ -29,14 +29,6 @@ class Classes extends StatelessWidget {
             child: Column(
               children: [
                 Header(),
-                // const SizedBox(height: 16),
-                // Text(
-                //   "Subjects",
-                //   style: GoogleFonts.urbanist(
-                //     fontSize: 24,
-                //     fontWeight: FontWeight.w600,
-                //   ),
-                // ),
                 const SizedBox(height: 16),
                 Expanded(
                   child: Padding(

@@ -2,11 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:neuflo_learn/src/core/config/theme/colors.dart';
+
 import 'package:neuflo_learn/src/presentation/controller/home/home_controller.dart';
 import 'package:neuflo_learn/src/presentation/screens/home/widgets/daily_streak.dart';
 import 'package:neuflo_learn/src/presentation/screens/home/widgets/shimmer_loading.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class StreakWidget extends StatelessWidget {
   const StreakWidget({super.key});
@@ -21,28 +20,37 @@ class StreakWidget extends StatelessWidget {
         for (int i = 0; i < ctr.currentStreakValues.length; i++) {
           var e = ctr.currentStreakValues[i];
           log("streak e:$e");
-          Icon icon;
+          Widget icon;
 
-          if (e == 0) {
-            icon = Icon(
-              PhosphorIcons.xCircle(PhosphorIconsStyle.fill),
-              color: AppColors.kred,
+          if (e == -1) {
+            icon = SizedBox(
+              height: 24,
+              width: 24,
+              child: Image.asset('assets/icons/incompletedays.png'),
             );
-          } else if (e == 1) {
-            icon = Icon(
-              PhosphorIcons.checkCircle(PhosphorIconsStyle.fill),
-              color: AppColors.kgreen,
+          } else if (e == 2) {
+            icon = SizedBox(
+              height: 24,
+              width: 24,
+              child: Image.asset('assets/icons/CheckCircle.png'),
+            );
+          } else if (e == 0) {
+            icon = SizedBox(
+              height: 24,
+              width: 24,
+              child: Image.asset('assets/icons/currentday.png'),
             );
           } else {
-            icon = Icon(
-              PhosphorIcons.minusCircle(PhosphorIconsStyle.fill),
-              color: AppColors.kinactive,
+            icon = SizedBox(
+              height: 24,
+              width: 24,
+              child: Image.asset('assets/icons/upcomingday.png'),
             );
           }
 
           streakWidgets.add(DailyStreak(
-            icon: icon,
-            day: ctr.weekdaysList[i], // You can adjust this based on `e`
+            widget: icon,
+            day: ctr.weekdaysList[i],
           ));
         }
 
