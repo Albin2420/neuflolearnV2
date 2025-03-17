@@ -100,14 +100,13 @@ class FirestoreService {
 
         Map<String, dynamic> data = jsonDecode(jsonEncode(snap.data()));
 
-        log("data:${data['endOfWeek']}");
+        log("end of weak:${data['endOfWeek']}");
 
         if (isDatePassed(data['endOfWeek'])) {
           log("timesup for reset streaklist");
-          resetStreak(userName: userName, formattedDate: formattedDate);
-        }
-
-        if (formattedDate != data['dialyexamReport']['currentDate']) {
+          resetStreakDailyExamReport(
+              userName: userName, formattedDate: formattedDate);
+        } else if (formattedDate != data['dialyexamReport']['currentDate']) {
           // Convert the formattedDate (current date) and data['dialyexamReport']['currentDate'] to DateTime objects
           DateTime currentDate = DateTime.parse(
               formattedDate); // formattedDate is in yyyy-MM-dd format
@@ -137,19 +136,35 @@ class FirestoreService {
     }
   }
 
-  bool isDatePassed(String dateToCheck) {
-    log("dateToCheck:$dateToCheck");
+  bool isDatePassed(String dateString) {
     try {
-      DateTime parsedDate = DateTime.parse(dateToCheck);
-      DateTime now = DateTime.now();
-      return parsedDate.isBefore(now);
+      // Parse the input string to a DateTime object
+      final inputDate = DateTime.parse(dateString);
+
+      // Get current date with time set to midnight
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+
+      // Extract just the date part of the input
+      final inputDateOnly =
+          DateTime(inputDate.year, inputDate.month, inputDate.day);
+
+      // If dates are the same (today), it's not passed
+      if (inputDateOnly.isAtSameMomentAs(today)) {
+        log("got it................");
+        return false;
+      }
+
+      // Compare dates
+      // If input date is before today, it's passed
+      return inputDateOnly.isBefore(today);
     } catch (e) {
-      log("Error parsing date: $e");
-      return false; // Or handle as per your requirement
+      log('Error parsing date: $e');
+      return false; // Or handle the error as needed
     }
   }
 
-  Future<void> resetStreak({
+  Future<void> resetStreakDailyExamReport({
     required String userName,
     required String formattedDate, // Pass the formatted current date
   }) async {
@@ -167,6 +182,13 @@ class FirestoreService {
       List<int> streaklist = generateDaysList(day);
       log("updated list in resetStreak():$streaklist");
 
+      var dialyexamReport = {
+        "Physics": {"Easy": false, "Medium": false, "Difficult": false},
+        "Chemistry": {"Easy": false, "Medium": false, "Difficult": false},
+        "Biology": {"Easy": false, "Medium": false, "Difficult": false},
+        "currentDate": formattedDate
+      };
+
       // Reset streak and update the start and end of the week as strings
       await FirebaseFirestore.instance
           .collection("neuflo_basic")
@@ -175,6 +197,8 @@ class FirestoreService {
         'streakComplted': streaklist,
         'startOfWeek': startOfWeekString,
         'endOfWeek': endOfWeekString,
+        'dialyexamReport': dialyexamReport,
+        'currentstreakIndex': day
       });
     } catch (e) {
       log("Error in resetStreak():$e");
@@ -309,7 +333,10 @@ class FirestoreService {
       if (docSnapshot.exists) {
         // Retrieve the current streakComplted array
         List<dynamic> streakCompleted = docSnapshot['streakComplted'];
+        log("streakcompleted:$streakCompleted");
         int streakIndex = docSnapshot['currentstreakIndex'];
+
+        log("streakcompleted[index]:${streakCompleted[streakIndex]}");
 
         if (streakCompleted[streakIndex] != 2) {
           streakCompleted[streakIndex] = -1;
@@ -344,9 +371,8 @@ class FirestoreService {
     await FirebaseFirestore.instance
         .collection("neuflo_basic")
         .doc(userName)
-        .update({
-      'dialyexamReport': dialyexamReport,
-    });
+        .update(
+            {'dialyexamReport': dialyexamReport, 'totalTestsDoneperDay': 0});
   }
 
   int getCurrentDayIndex() {

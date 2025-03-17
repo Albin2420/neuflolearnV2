@@ -211,7 +211,7 @@ class SetupAccountController extends GetxController {
     userAccountSetupState.value = Loading();
     try {
       final isSetupSuccess = await saveUserInfo();
-      userAccountSetupState.value = Success(data: isSetupSuccess);
+      // userAccountSetupState.value = Success(data: isSetupSuccess);
     } on Exception catch (e) {
       userAccountSetupState.value = Failed(e: e.toString());
     }
@@ -551,7 +551,7 @@ class SetupAccountController extends GetxController {
 
     return await result.fold((f) async {
       userAccountSetupState.value = Failed(e: f.message);
-      return false; // Return false explicitly
+      return false;
     }, (student) async {
       log("save student success");
       currentStudent.value = student;

@@ -7,7 +7,8 @@ import 'package:neuflo_learn/src/core/config/theme/colors.dart';
 
 import 'package:neuflo_learn/src/presentation/controller/videos/videos_controller.dart';
 import 'package:neuflo_learn/src/presentation/widgets/classes/coming_up_videos.dart';
-import 'package:yt_player/yt_player.dart';
+import 'package:neuflo_learn/src/presentation/widgets/yt_player/yt_player.dart';
+import 'package:yt_player/yt_player.dart' show YtPlayer;
 
 class PlayVideo extends StatelessWidget {
   int chapterNo;
