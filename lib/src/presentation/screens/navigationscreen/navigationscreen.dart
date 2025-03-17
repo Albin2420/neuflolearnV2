@@ -20,7 +20,7 @@ class NavigationScreen extends StatelessWidget {
     final List<Widget> pages = [
       Home(),
       Tests(),
-      Classes(),
+      // Classes(),
       TestStat(),
       Center(
         child: Text(
@@ -76,19 +76,19 @@ class NavigationScreen extends StatelessWidget {
                 ),
                 label: "TESTS",
               ),
-              BottomNavigationBarItem(
-                icon: SizedBox(
-                  height: 26,
-                  width: 20,
-                  child: mainctr.currentIndex.value == 2
-                      ? Image.asset('assets/icons/playerselected.png')
-                      : Image.asset('assets/icons/playernotselected.png'),
-                ),
-                label: "CLASSES",
-              ),
+              // BottomNavigationBarItem(
+              //   icon: SizedBox(
+              //     height: 26,
+              //     width: 20,
+              //     child: mainctr.currentIndex.value == 2
+              //         ? Image.asset('assets/icons/playerselected.png')
+              //         : Image.asset('assets/icons/playernotselected.png'),
+              //   ),
+              //   label: "CLASSES",
+              // ),
               BottomNavigationBarItem(
                 icon: Icon(
-                  PhosphorIcons.chartBar(mainctr.currentIndex.value == 3
+                  PhosphorIcons.chartBar(mainctr.currentIndex.value == 2
                       ? PhosphorIconsStyle.fill
                       : PhosphorIconsStyle.regular),
                 ),
@@ -96,7 +96,7 @@ class NavigationScreen extends StatelessWidget {
               ),
               BottomNavigationBarItem(
                 icon: Icon(
-                  PhosphorIcons.chatTeardropText(mainctr.currentIndex.value == 4
+                  PhosphorIcons.chatTeardropText(mainctr.currentIndex.value == 3
                       ? PhosphorIconsStyle.fill
                       : PhosphorIconsStyle.regular),
                 ),

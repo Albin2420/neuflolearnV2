@@ -29,7 +29,7 @@ class Classes extends StatelessWidget {
             child: Column(
               children: [
                 Header(),
-                const SizedBox(height: 16),
+                const SizedBox(height: 52),
                 Expanded(
                   child: Padding(
                     padding:
@@ -41,11 +41,11 @@ class Classes extends StatelessWidget {
                         Text(
                           "Subjects",
                           style: GoogleFonts.urbanist(
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w500,
                             fontSize: 24,
                           ),
                         ),
-                        SizedBox(height: 12),
+                        SizedBox(height: 18),
                         SubjectCard(
                           subName: "Physics",
                           currentcount: 2,

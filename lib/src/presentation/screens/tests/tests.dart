@@ -17,7 +17,9 @@ class Tests extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ctr = Get.put(HomeController());
+    final ctr = Get.isRegistered<HomeController>()
+        ? Get.find<HomeController>()
+        : Get.put(HomeController());
     final appCtrl = Get.find<AppStartupController>();
 
     return SizedBox(
@@ -148,7 +150,7 @@ class Tests extends StatelessWidget {
                           children: [
                             Obx(
                               () => Text(
-                                "${ctr.phyTestCompletionReport.value?.noOfExamsCompleted ?? '0'}/3",
+                                "${ctr.physicsattendedCount.value ?? '0'}/3",
                                 style: TextStyle(
                                     fontSize: 15, fontWeight: FontWeight.bold),
                               ),
@@ -176,9 +178,7 @@ class Tests extends StatelessWidget {
                         padding: EdgeInsets.only(left: index == 0 ? 16 : 0),
                         child: GestureDetector(
                           onTap: () {
-                            if (ctr.phyTestCompletionReport.value
-                                    ?.completionResult[index].iscompleted ==
-                                true) {
+                            if (ctr.physics[index] == true) {
                               Fluttertoast.showToast(
                                   msg: 'Test already completed');
                               return;
@@ -231,7 +231,7 @@ class Tests extends StatelessWidget {
                           children: [
                             Obx(
                               () => Text(
-                                "${ctr.cheTestCompletionReport.value?.noOfExamsCompleted ?? '0'}/3",
+                                "${ctr.chemattendedCount.value ?? '0'}/3",
                                 style: TextStyle(
                                     fontSize: 15, fontWeight: FontWeight.bold),
                               ),
@@ -259,9 +259,7 @@ class Tests extends StatelessWidget {
                         padding: EdgeInsets.only(left: index == 0 ? 16 : 0),
                         child: GestureDetector(
                           onTap: () {
-                            if (ctr.cheTestCompletionReport.value
-                                    ?.completionResult[index].iscompleted ==
-                                true) {
+                            if (ctr.chemistry[index] == true) {
                               Fluttertoast.showToast(
                                   msg: 'Test already completed');
                               return;
@@ -314,7 +312,7 @@ class Tests extends StatelessWidget {
                           children: [
                             Obx(
                               () => Text(
-                                "${ctr.bioTestCompletionReport.value?.noOfExamsCompleted ?? '0'}/3",
+                                "${ctr.bioattendedCount.value ?? '0'}/3",
                                 style: TextStyle(
                                     fontSize: 15, fontWeight: FontWeight.bold),
                               ),
@@ -342,9 +340,7 @@ class Tests extends StatelessWidget {
                         padding: EdgeInsets.only(left: index == 0 ? 16 : 0),
                         child: GestureDetector(
                           onTap: () {
-                            if (ctr.bioTestCompletionReport.value
-                                    ?.completionResult[index].iscompleted ==
-                                true) {
+                            if (ctr.biology[index]) {
                               Fluttertoast.showToast(
                                   msg: 'Test already completed');
                               return;
