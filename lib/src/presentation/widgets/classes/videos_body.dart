@@ -5,7 +5,7 @@ import 'package:flutter_math_fork/tex.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:neuflo_learn/src/presentation/controller/videos/videos_controller.dart';
-import 'package:validators/validators.dart';
+// import 'package:validators/validators.dart';
 
 import 'video_listtile.dart';
 

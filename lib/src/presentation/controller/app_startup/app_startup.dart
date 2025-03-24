@@ -48,45 +48,50 @@ class AppStartupController extends GetxController {
   }
 
   Future handleUserSession() async {
-    log('--- handling user sessions ---');
-    userState.value = Initial();
-    await getAppStatus();
+    try {
+      log('--- handling user sessions ---');
+      userState.value = Initial();
+      await getAppStatus();
 
-    final userInfoBox = await hiveService.getBox("basic_user_info");
+      final userInfoBox = await hiveService.getBox("basic_user_info");
 
-    String? userInfo = userInfoBox.get('phno');
-    String? curretntUserPhoneNumber = userInfo;
+      String? userInfo = userInfoBox.get('phno');
+      String? curretntUserPhoneNumber = userInfo;
 
-    if (curretntUserPhoneNumber != null || curretntUserPhoneNumber != "") {
-      if (kDebugMode) {
-        log('currentUserPhno : $curretntUserPhoneNumber');
-      }
-      String docName = "$curretntUserPhoneNumber@neuflo.io";
-      docname.value = docName;
-
-      appUser.value =
-          await firestoreService.getCurrentUserDocument(userName: docName);
-
-      if (appUser.value != null) {
-        await firestoreService.dailyExamReportResetandStreakReset(
-            userName: docName);
-
+      if (curretntUserPhoneNumber != null || curretntUserPhoneNumber != "") {
         if (kDebugMode) {
-          log('current userInfo ===========> $appUser');
+          log('currentUserPhno : $curretntUserPhoneNumber');
         }
+        String docName = "$curretntUserPhoneNumber@neuflo.io";
+        docname.value = docName;
 
-        accessToken.value = (await getAccessToken()) ?? '';
-        refreshToken.value = (await getRefreshToken()) ?? '';
+        appUser.value =
+            await firestoreService.getCurrentUserDocument(userName: docName);
 
-        userState.value = Success(data: appUser.value);
+        log("appUser:${appUser.value}");
+        if (appUser.value != null) {
+          await firestoreService.dailyExamReportResetandStreakReset(
+              userName: docName);
+
+          if (kDebugMode) {
+            log('current userInfo ===========> $appUser');
+          }
+
+          accessToken.value = (await getAccessToken()) ?? '';
+          refreshToken.value = (await getRefreshToken()) ?? '';
+
+          userState.value = Success(data: appUser.value);
+        } else {
+          userState.value = Failed(e: 'User not exists');
+        }
       } else {
+        if (!kDebugMode) {
+          log('currentUserPhno : $curretntUserPhoneNumber');
+        }
         userState.value = Failed(e: 'User not exists');
       }
-    } else {
-      if (!kDebugMode) {
-        log('currentUserPhno : $curretntUserPhoneNumber');
-      }
-      userState.value = Failed(e: 'User not exists');
+    } catch (e) {
+      log("Error handleUserSession():$e");
     }
   }
 

@@ -86,6 +86,7 @@ class FirestoreService {
 
   Future dailyExamReportResetandStreakReset({required String userName}) async {
     try {
+      log("dailyExamReportResetandStreakReset():$userName");
       DocumentSnapshot snap = await FirebaseFirestore.instance
           .collection("neuflo_basic")
           .doc(userName)
@@ -96,6 +97,7 @@ class FirestoreService {
       }
       if (snap.data() != null) {
         DateTime now = DateTime.now();
+        log("today:$now");
         String formattedDate = DateFormat('yyyy-MM-dd').format(now);
 
         Map<String, dynamic> data = jsonDecode(jsonEncode(snap.data()));
@@ -205,7 +207,7 @@ class FirestoreService {
     }
   }
 
-  updateDailyExamReport(
+  Future<void> updateDailyExamReport(
       {required String subject,
       required String level,
       required String docname}) async {
@@ -288,7 +290,7 @@ class FirestoreService {
           // If all subjects have completed 3 tests (total 9 tests), update streak list
           if (totalcount == 9) {
             log("time to update streak list");
-            setstreakTocompleted(docName: docname);
+            await setstreakTocompleted(docName: docname);
           }
         }
       } else {
@@ -299,7 +301,7 @@ class FirestoreService {
     }
   }
 
-  setstreakTocompleted({required String docName}) async {
+  Future<void> setstreakTocompleted({required String docName}) async {
     try {
       var docRef =
           FirebaseFirestore.instance.collection("neuflo_basic").doc(docName);

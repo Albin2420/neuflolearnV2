@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:ffi';
 
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
@@ -7,8 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:neuflo_learn/src/core/data_state/data_state.dart';
 import 'package:neuflo_learn/src/data/models/app_user_info.dart';
 import 'package:neuflo_learn/src/data/models/chapter.dart';
-import 'package:neuflo_learn/src/data/models/test_completion_report.dart';
-import 'package:neuflo_learn/src/data/models/test_completion_result.dart';
 import 'package:neuflo_learn/src/data/repositories/chapter/chapter_repo_impl.dart';
 import 'package:neuflo_learn/src/data/repositories/exam/exam_repo_impl.dart';
 import 'package:neuflo_learn/src/data/services/data_access/hive_service.dart';
@@ -286,21 +283,21 @@ class HomeController extends GetxController {
     // log('NO OF TEST COMPLETED TODAY ==> $noOfTestCompletedToday');
   }
 
-  RxInt bioCount = RxInt(0);
-  RxInt phyCount = RxInt(0);
-  RxInt checCount = RxInt(0);
+  // RxInt bioCount = RxInt(0);
+  // RxInt phyCount = RxInt(0);
+  // RxInt checCount = RxInt(0);
 
-  RxList<TestCompletionResult> physicsResult = RxList([]);
-  RxList<TestCompletionResult> chemistryResult = RxList([]);
-  RxList<TestCompletionResult> biologyResult = RxList([]);
+  // RxList<TestCompletionResult> physicsResult = RxList([]);
+  // RxList<TestCompletionResult> chemistryResult = RxList([]);
+  // RxList<TestCompletionResult> biologyResult = RxList([]);
 
-  RxList<TestCompletionReport> physicsTestCompletionReport = RxList([]);
-  RxList<TestCompletionReport> chemistryTestCompletionReport = RxList([]);
-  RxList<TestCompletionReport> biologyTestCompletionReport = RxList([]);
+  // RxList<TestCompletionReport> physicsTestCompletionReport = RxList([]);
+  // RxList<TestCompletionReport> chemistryTestCompletionReport = RxList([]);
+  // RxList<TestCompletionReport> biologyTestCompletionReport = RxList([]);
 
-  Rxn<TestCompletionReport> phyTestCompletionReport = Rxn(null);
-  Rxn<TestCompletionReport> cheTestCompletionReport = Rxn(null);
-  Rxn<TestCompletionReport> bioTestCompletionReport = Rxn(null);
+  // Rxn<TestCompletionReport> phyTestCompletionReport = Rxn(null);
+  // Rxn<TestCompletionReport> cheTestCompletionReport = Rxn(null);
+  // Rxn<TestCompletionReport> bioTestCompletionReport = Rxn(null);
 
   // TestCompletionReport
 

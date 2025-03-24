@@ -16,6 +16,7 @@ class Navigationcontroller extends GetxController {
   var statsData = {}.obs;
   RxInt currentIndex = RxInt(0);
   StatsRepo stRepo = StatsRepoImpl();
+  RxString docName = RxString('');
 
   @override
   void onInit() async {
@@ -24,6 +25,8 @@ class Navigationcontroller extends GetxController {
     if (ctr.appUser.value?.id != 0) {
       setId(ctr.appUser.value?.id ?? 0);
     }
+    docName.value = "${ctr.appUser.value?.phone}@neuflo.io";
+    log("docName:$docName");
   }
 
   Future setId(int id) async {

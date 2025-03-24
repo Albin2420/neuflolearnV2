@@ -161,7 +161,7 @@ class SetupAccountController extends GetxController {
         isProfileSetupComplete: true,
         streaklist: streaklist,
         currentstreakIndex: currentdayindex);
-
+    userAccountSetupState.value = Success(data: true);
     return true;
   }
 

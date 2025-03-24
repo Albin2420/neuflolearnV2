@@ -62,8 +62,7 @@ class AuthController extends GetxController {
 
     if (authStatus == AuthStatus.successful) {
       currentAppUser.value = _auth.getCurrentUser();
-      var token = await currentAppUser.value?.getIdToken();
-      log("token in google():$token");
+
       currentFirestoreAppUser.value =
           await firestoreService.getUserDocumentByEmail(
         email: currentAppUser.value?.email ?? '',

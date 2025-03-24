@@ -19,6 +19,7 @@ class PracticeTestExamView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ctr = Get.put(ExamController());
+
     return Obx(() {
       return ctr.examState.value.onState(
         onInitial: () => DailyTestIntro(

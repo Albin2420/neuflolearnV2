@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:neuflo_learn/src/core/url.dart';
 import 'package:neuflo_learn/src/data/services/firebase/firebase_auth_impl.dart';
+import 'package:neuflo_learn/src/data/services/firestore/firestore_service.dart';
 import 'package:neuflo_learn/src/presentation/controller/app_startup/app_startup.dart';
 import 'package:neuflo_learn/src/presentation/controller/auth/auth_controller.dart';
 import 'package:neuflo_learn/src/presentation/screens/account_setup/account_setup.dart';
@@ -20,6 +21,7 @@ class IntroScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final ctr = Get.put(AuthController());
     final appctrl = Get.find<AppStartupController>();
+    FirestoreService firestoreService = FirestoreService();
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -171,6 +173,10 @@ class IntroScreen extends StatelessWidget {
                               return;
                             }
                           } else {
+                            await firestoreService
+                                .dailyExamReportResetandStreakReset(
+                                    userName:
+                                        "${ctr.currentAppUser.value?.phoneNumber}@neuflo.io");
                             Fluttertoast.showToast(msg: 'Sign in successfull');
                             Get.offAll(() => NavigationScreen());
                             return;
