@@ -15,9 +15,11 @@ import 'package:neuflo_learn/src/data/services/firestore/firestore_service.dart'
 import 'package:neuflo_learn/src/domain/repositories/exam/exam_repo.dart';
 import 'package:neuflo_learn/src/domain/repositories/token/token_repo.dart';
 import 'package:neuflo_learn/src/presentation/controller/app_startup/app_startup.dart';
+import 'package:neuflo_learn/src/presentation/controller/navigation/navigation_controller.dart';
 
 class ExamController extends GetxController {
   final appctrl = Get.find<AppStartupController>();
+  final nctr = Get.find<Navigationcontroller>();
   TokenRepo tokenRepo = TokenRepoImpl();
 
   RxInt min = RxInt(0);
@@ -990,17 +992,16 @@ class ExamController extends GetxController {
       bool isSuccess = false;
       if (type == 'PracticeTest') {
         isSuccess = await submitPractiseTest(level: level, type: type);
+        if (isSuccess) {
+          dailyExamReport(
+              subject: currentSubjectName,
+              level: level,
+              docname: nctr.docName.value);
+        }
       } else if (type == 'mocktest') {
         isSuccess = await submitMockTestAnswers();
       } else {
         isSuccess = await submitCustomTest();
-      }
-      if (type == "PracticeTest") {
-        dailyExamReport(
-          subject: currentSubjectName,
-          level: level,
-          docname: appctrl.docname.value,
-        );
       }
 
       if (isSuccess) {
@@ -1018,8 +1019,9 @@ class ExamController extends GetxController {
     required String subject,
     required String level,
     required String docname,
-  }) {
-    firestoreService.updateDailyExamReport(
+  }) async {
+    log("dailyExamReport() :-> docname:$docname,subject:$subject,level:$level");
+    await firestoreService.updateDailyExamReport(
         subject: subject, level: level, docname: docname);
   }
 
