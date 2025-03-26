@@ -16,10 +16,10 @@ class TestHistoryRepoImpl extends TestHistoryRepo {
       {required String accessToken}) async {
     try {
       if (kDebugMode) {
-        log("${Url.baseUrl}/${Url.studentTestHistory}");
+        log("${Url.baseUrl1}/${Url.studentTestHistory}");
       }
       final response = await http.get(
-          Uri.parse('${Url.baseUrl}/${Url.studentTestHistory}'),
+          Uri.parse('${Url.baseUrl1}/${Url.studentTestHistory}'),
           headers: {"Authorization": "Bearer $accessToken"});
       log("body:${response.body}");
 
@@ -80,11 +80,11 @@ class TestHistoryRepoImpl extends TestHistoryRepo {
       required String testName}) async {
     try {
       if (kDebugMode) {
-        log('${Url.baseUrl}/${Url.detailstudentTestHistory}?test_id=$testId&test_name=$testName');
+        log('${Url.baseUrl1}/${Url.detailstudentTestHistory}?test_id=$testId&test_name=$testName');
       }
       final response = await http.get(
           Uri.parse(
-              '${Url.baseUrl}/${Url.detailstudentTestHistory}?test_id=$testId&test_name=$testName'),
+              '${Url.baseUrl1}/${Url.detailstudentTestHistory}?test_id=$testId&test_name=$testName'),
           headers: {"Authorization": "Bearer $accestoken"});
 
       log("response:${response.statusCode}");

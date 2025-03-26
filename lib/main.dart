@@ -18,7 +18,6 @@ void main() async {
   // options: DefaultFirebaseOptions.currentPlatform
   await preRequisites();
   await NotificationServices.instance.initialize();
-
   runApp(const NeufloLearn());
 
   // runApp(

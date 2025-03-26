@@ -15,11 +15,11 @@ class StatsRepoImpl extends StatsRepo {
     try {
       if (kDebugMode) {
         log("initializing in fetchStatus()");
-        log("${Url.baseUrl}/${Url.weeklystats}");
+        log("${Url.baseUrl1}/${Url.weeklystats}");
       }
 
       final response = await http.get(
-          Uri.parse('${Url.baseUrl}/${Url.weeklystats}/'),
+          Uri.parse('${Url.baseUrl1}/${Url.weeklystats}/'),
           headers: {"Authorization": "Bearer $accessToken"});
 
       dynamic result = handleResponse(response);

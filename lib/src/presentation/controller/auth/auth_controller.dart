@@ -140,26 +140,43 @@ class AuthController extends GetxController {
     }
   }
 
-  void getNewtoken(
+  Future<bool> getNewToken(
       {required int studentId, required String phoneNumber}) async {
-    String? fcmToken = await FirebaseMessaging.instance.getToken();
-    if (studentId == 0 || phoneNumber.isEmpty || fcmToken == '') {
-      log("Invalid input: studentId should not be 0 and phoneNumber should not be empty");
-      return;
-    }
+    try {
+      final fcmToken = await FirebaseMessaging.instance.getToken();
 
-    final tokens = await trp.getToken(
+      if (studentId == 0 ||
+          phoneNumber.isEmpty ||
+          (fcmToken?.isEmpty ?? true)) {
+        log("Invalid input: studentId should not be 0, phoneNumber should not be empty, and FCM token should not be empty.");
+        return false;
+      }
+
+      final tokens = await trp.getToken(
         studentId: studentId,
         phoneNumber: phoneNumber,
-        fcmToken: await FirebaseMessaging.instance.getToken() ?? '');
-    tokens.fold((l) {
-      log("error in getNewtoken()");
-    }, (R) {
-      log("access_token:${R["access_token"]}");
-      log("refresh_token:${R["refresh_token"]}");
-      ctrl.saveToken(
-          accessToken: R["access_token"], refreshToken: R["refresh_token"]);
-    });
+        fcmToken: fcmToken ?? '',
+      );
+
+      return tokens.fold(
+        (l) {
+          log("Error in getNewToken(): $l");
+          return false;
+        },
+        (R) {
+          log("Access Token: ${R["access_token"]}");
+          log("Refresh Token: ${R["refresh_token"]}");
+          ctrl.saveToken(
+            accessToken: R["access_token"],
+            refreshToken: R["refresh_token"],
+          );
+          return true;
+        },
+      );
+    } catch (e) {
+      log("Exception in getNewToken(): $e");
+      return false;
+    }
   }
 
   @override

@@ -35,4 +35,8 @@ class VideosController extends GetxController {
       log("Invalid index: $index");
     }
   }
+
+  Duration convertSecondsToDuration(int seconds) {
+    return Duration(seconds: seconds);
+  }
 }

@@ -13,10 +13,10 @@ class ProfileRepoImpl extends ProfileRepo {
   Future<Either<Failure, Map<String, dynamic>>> fetchweekGrowth(
       {required String accestoken}) async {
     try {
-      final url = Uri.parse('${Url.baseUrl}/${Url.timepercentage}/');
+      final url = Uri.parse('${Url.baseUrl1}/${Url.timepercentage}/');
       if (kDebugMode) {
         log("fetchweekGrowth()");
-        log("${Url.baseUrl}/${Url.timepercentage}/");
+        log("${Url.baseUrl1}/${Url.timepercentage}/");
       }
       final response =
           await http.get(url, headers: {"Authorization": "Bearer $accestoken"});

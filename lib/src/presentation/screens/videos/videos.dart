@@ -164,6 +164,7 @@ class Videos extends StatelessWidget {
                                   chapterNo: chapterNo,
                                   chapterName: chapterName,
                                   videos: videos,
+                                  isLive: false,
                                 ),
                               );
                             },

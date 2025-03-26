@@ -17,11 +17,11 @@ class CourseRepoImpl extends CourseRepo {
   Future<Either<Failure, List<Course>>> getCourses() async {
     if (kDebugMode) {
       log("getCoursesImpl()");
-      log('${Url.baseUrl}/${Url.courses}');
+      log('${Url.baseUrl1}/${Url.courses}');
     }
     try {
       final response =
-          await apiService.get(url: '${Url.baseUrl}/${Url.courses}');
+          await apiService.get(url: '${Url.baseUrl1}/${Url.courses}');
       dynamic result = handleResponse(response);
 
       log("result : $response");
@@ -58,7 +58,7 @@ class CourseRepoImpl extends CourseRepo {
   Future<Either<Failure, List<Course>>> setSkillLevels() async {
     try {
       final response =
-          await apiService.get(url: '${Url.baseUrl}/${Url.setSkillLevels}');
+          await apiService.get(url: '${Url.baseUrl1}/${Url.setSkillLevels}');
       dynamic result = handleResponse(response);
       List<Course> courseList =
           (result as List<dynamic>).map((e) => Course.fromJson(e)).toList();
