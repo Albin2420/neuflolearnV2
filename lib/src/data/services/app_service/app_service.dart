@@ -10,7 +10,7 @@ class AppStatusService {
   ApiService apiService = ApiService();
   Future<Either<Failure, bool>> getStatus() async {
     if (kDebugMode) {
-      log('${Url.baseUrl}/${Url.status}');
+      log('${Url.baseUrl1}/${Url.status}');
     }
     // try {
     //   final response = await apiService.get(

@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:neuflo_learn/src/presentation/widgets/live.dart';
 import 'package:neuflo_learn/src/presentation/controller/navigation/navigation_controller.dart';
 import 'package:neuflo_learn/src/presentation/screens/classes/classes_screen.dart';
 import 'package:neuflo_learn/src/presentation/screens/exams/result/stat/test_stat.dart';
@@ -20,7 +21,7 @@ class NavigationScreen extends StatelessWidget {
     final List<Widget> pages = [
       Home(),
       Tests(),
-      // Classes(),
+      Classes(),
       TestStat(),
       Center(
         child: Text(
@@ -76,19 +77,19 @@ class NavigationScreen extends StatelessWidget {
                 ),
                 label: "TESTS",
               ),
-              // BottomNavigationBarItem(
-              //   icon: SizedBox(
-              //     height: 26,
-              //     width: 20,
-              //     child: mainctr.currentIndex.value == 2
-              //         ? Image.asset('assets/icons/playerselected.png')
-              //         : Image.asset('assets/icons/playernotselected.png'),
-              //   ),
-              //   label: "CLASSES",
-              // ),
+              BottomNavigationBarItem(
+                icon: SizedBox(
+                  height: 26,
+                  width: 20,
+                  child: mainctr.currentIndex.value == 2
+                      ? Image.asset('assets/icons/playerselected.png')
+                      : Image.asset('assets/icons/playernotselected.png'),
+                ),
+                label: "CLASSES",
+              ),
               BottomNavigationBarItem(
                 icon: Icon(
-                  PhosphorIcons.chartBar(mainctr.currentIndex.value == 2
+                  PhosphorIcons.chartBar(mainctr.currentIndex.value == 3
                       ? PhosphorIconsStyle.fill
                       : PhosphorIconsStyle.regular),
                 ),
@@ -96,7 +97,7 @@ class NavigationScreen extends StatelessWidget {
               ),
               BottomNavigationBarItem(
                 icon: Icon(
-                  PhosphorIcons.chatTeardropText(mainctr.currentIndex.value == 3
+                  PhosphorIcons.chatTeardropText(mainctr.currentIndex.value == 4
                       ? PhosphorIconsStyle.fill
                       : PhosphorIconsStyle.regular),
                 ),

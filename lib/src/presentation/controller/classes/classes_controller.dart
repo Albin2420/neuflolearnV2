@@ -1,6 +1,8 @@
 import 'dart:developer';
 
 import 'package:get/get.dart';
+import 'package:neuflo_learn/src/core/data_state/data_state.dart';
+import 'package:neuflo_learn/src/data/models/question.dart';
 import 'package:neuflo_learn/src/data/repositories/subject/subject_repo_impl.dart';
 import 'package:neuflo_learn/src/domain/repositories/subject/subject_repo.dart';
 import 'package:neuflo_learn/src/presentation/screens/chapter/chapter_screen.dart';
@@ -19,18 +21,33 @@ class ClassesController extends GetxController {
   RxList biology = RxList([]);
   RxList currentSelectedList = RxList([]);
 
+  Rx<Ds<List>> chapterstate = Rx(Initial());
+
   @override
   void onInit() {
     super.onInit();
+    fetchLive();
     fetchSubjects();
+  }
+
+  Future<void> fetchLive() async {
+    try {
+      dynamic res = await subjectRepo.fetchLive();
+      res.fold((l) {}, (R) {});
+    } catch (e) {
+      log('Error :$e');
+    }
   }
 
   /// Fetch subjects from repository
   Future<void> fetchSubjects() async {
     try {
+      chapterstate.value = Loading();
       dynamic res = await subjectRepo.fetchSubjects();
-      res.fold((l) {}, (R) {
-        log("api cleared.....");
+      res.fold((l) {
+        log("failed in get classes");
+        chapterstate.value = Failed();
+      }, (R) {
         physics.value = R["Physics"];
         chemistry.value = R["Chemistry"];
         biology.value = R["Biology"];
@@ -41,8 +58,10 @@ class ClassesController extends GetxController {
       log("Fetched subject data: $subjectData");
       subjectNames.value = subjectData.keys.toList();
       log("Subjects fetched successfully: $subjectNames");
+      chapterstate.value = Success(data: subjectNames);
     } catch (e) {
       log("Error in fetchSubjects: $e");
+      chapterstate.value = Failed();
     }
   }
 
@@ -98,7 +117,6 @@ class ClassesController extends GetxController {
   }
 
   String formatDuration(int seconds) {
-    log("Seconds => $seconds");
     int minutes = (seconds % 3600) ~/ 60;
     int secs = seconds % 60;
 

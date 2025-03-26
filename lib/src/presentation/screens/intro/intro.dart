@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -158,29 +161,43 @@ class IntroScreen extends StatelessWidget {
                     onTapFunction: () async {
                       await ctr.singInWithGoogle();
 
-                      if (ctr.currentAppUser.value != null) {
-                        if (ctr.currentFirestoreAppUser.value != null) {
-                          if (ctr.currentFirestoreAppUser.value
-                                  ?.isProfileSetupComplete ==
-                              null) {
-                            if (ctr.currentFirestoreAppUser.value?.name == '' ||
-                                ctr.currentFirestoreAppUser.value?.email ==
-                                    '') {
-                              Get.offAll(() => AddBasicInfo());
-                              return;
-                            } else {
-                              Get.offAll(() => AccountSetup());
-                              return;
-                            }
+                      // if (ctr.currentAppUser.value != null) {
+                      if (ctr.currentFirestoreAppUser.value != null) {
+                        if (ctr.currentFirestoreAppUser.value
+                                ?.isProfileSetupComplete ==
+                            null) {
+                          if (ctr.currentFirestoreAppUser.value?.name == '' ||
+                              ctr.currentFirestoreAppUser.value?.email == '') {
+                            Get.offAll(() => AddBasicInfo());
+                            return;
                           } else {
-                            await firestoreService
-                                .dailyExamReportResetandStreakReset(
-                                    userName:
-                                        "${ctr.currentAppUser.value?.phoneNumber}@neuflo.io");
-                            Fluttertoast.showToast(msg: 'Sign in successfull');
-                            Get.offAll(() => NavigationScreen());
+                            Get.offAll(() => AccountSetup());
                             return;
                           }
+                        } else {
+                          log("navigate to home() :${ctr.currentFirestoreAppUser.value?.phone}");
+                          await firestoreService
+                              .dailyExamReportResetandStreakReset(
+                            userName:
+                                "${ctr.currentFirestoreAppUser.value?.phone}@neuflo.io",
+                          );
+                          Fluttertoast.showToast(msg: 'Sign in successful');
+
+                          bool isTokenFetched = await ctr.getNewToken(
+                            studentId:
+                                ctr.currentFirestoreAppUser.value?.id ?? 0,
+                            phoneNumber:
+                                ctr.currentFirestoreAppUser.value?.phone ?? '',
+                          );
+
+                          if (isTokenFetched) {
+                            Fluttertoast.showToast(msg: 'Sign in successful');
+                            Get.offAll(() => NavigationScreen());
+                          } else {
+                            Fluttertoast.showToast(msg: 'something wrong');
+                          }
+
+                          return;
                         }
                       }
 

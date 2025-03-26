@@ -16,12 +16,12 @@ class SkillsRepoImpl extends SkillsRepo {
   @override
   Future saveSkills({required Map<String, dynamic> data}) async {
     if (kDebugMode) {
-      log('${Url.baseUrl}/${Url.saveSkill}');
+      log('${Url.baseUrl1}/${Url.saveSkill}');
       log("data:$data");
     }
     try {
       final response = await apiService.post(
-        url: '${Url.baseUrl}/${Url.saveSkill}',
+        url: '${Url.baseUrl1}/${Url.saveSkill}',
         headers: {
           "Content-Type": "application/json",
         },

@@ -50,8 +50,8 @@ class SubjectCard extends StatelessWidget {
                     : subName == "Chemistry"
                         ? 'assets/icons/chemistry.png'
                         : 'assets/icons/biology.png',
-                width: 24,
-                height: 24,
+                // width: 24,
+                // height: 24,
               ),
             ),
             const SizedBox(width: 5),
@@ -85,19 +85,21 @@ class SubjectCard extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       color: AppColors.completedTextArrowColor),
                 ),
-                Obx(() => Text(
-                  subName == 'Physics'
-                      ? classesController.physics.length.toString()
-                      : subName == 'Chemistry'
-                          ? classesController.chemistry.length.toString()
-                          : subName == 'Biology'
-                              ? classesController.biology.length.toString()
-                              : '0',
-                  style: GoogleFonts.urbanist(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.completedTextArrowColor),
-                ),),
+                Obx(
+                  () => Text(
+                    subName == 'Physics'
+                        ? classesController.physics.length.toString()
+                        : subName == 'Chemistry'
+                            ? classesController.chemistry.length.toString()
+                            : subName == 'Biology'
+                                ? classesController.biology.length.toString()
+                                : '0',
+                    style: GoogleFonts.urbanist(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.completedTextArrowColor),
+                  ),
+                ),
                 const SizedBox(width: 5),
                 Text(
                   "chapters completed",

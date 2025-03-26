@@ -1,5 +1,6 @@
 class Url {
-  static String baseUrl = 'http://13.233.101.63:8000';
+  static String baseUrl1 = 'http://13.233.101.63:8000';
+  static String baseUrl2 = 'http://13.233.101.63:8010';
   // "http://13.233.101.63:8000"
 
   // 'http://13.232.252.23:8000';

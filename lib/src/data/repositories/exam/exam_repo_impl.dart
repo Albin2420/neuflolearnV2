@@ -21,12 +21,12 @@ class ExamRepoImpl extends ExamRepo {
     required String instanceId,
   }) async {
     if (kDebugMode) {
-      log('${Url.baseUrl}/${Url.checkTestCompletion}');
+      log('${Url.baseUrl1}/${Url.checkTestCompletion}');
     }
     try {
       final response = await apiService.get(
         url:
-            '${Url.baseUrl}/${Url.checkTestCompletion}?instanceId=$instanceId&studentId=$studentId',
+            '${Url.baseUrl1}/${Url.checkTestCompletion}?instanceId=$instanceId&studentId=$studentId',
       );
 
       dynamic result = handleResponse(response);
@@ -186,14 +186,14 @@ class ExamRepoImpl extends ExamRepo {
   Future<Either<Failure, int>> generatePracticeTestId(
       {required String studentId}) async {
     if (kDebugMode) {
-      log('${Url.baseUrl}/${Url.generatePracticeTest}');
+      log('${Url.baseUrl1}/${Url.generatePracticeTest}');
       log({
         'student_id': studentId,
       }.toString());
     }
     try {
       final response = await apiService.post(
-        url: '${Url.baseUrl}/${Url.generatePracticeTest}',
+        url: '${Url.baseUrl1}/${Url.generatePracticeTest}',
         data: jsonEncode({
           'student_id': studentId,
         }),
@@ -236,12 +236,12 @@ class ExamRepoImpl extends ExamRepo {
   Future<Either<Failure, int>> getQuestionIds(
       {required int studentId, required int instanceId}) async {
     if (kDebugMode) {
-      log('${Url.baseUrl}/${Url.getQuestionIds}?instanceId=$instanceId&studentId=$studentId');
+      log('${Url.baseUrl1}/${Url.getQuestionIds}?instanceId=$instanceId&studentId=$studentId');
     }
     try {
       final response = await apiService.get(
         url:
-            '${Url.baseUrl}/${Url.getQuestionIds}?instanceId=$instanceId&studentId=$studentId',
+            '${Url.baseUrl1}/${Url.getQuestionIds}?instanceId=$instanceId&studentId=$studentId',
       );
 
       dynamic result = handleResponse(response);
@@ -278,7 +278,7 @@ class ExamRepoImpl extends ExamRepo {
     required String accessToken,
   }) async {
     if (kDebugMode) {
-      log('${Url.baseUrl}/${Url.getPracticeTestQuestions}');
+      log('${Url.baseUrl1}/${Url.getPracticeTestQuestions}');
       log({
         "student_id:$studentId",
         "subject_name :$subjectName",
@@ -292,7 +292,7 @@ class ExamRepoImpl extends ExamRepo {
           'Authorization': 'Bearer $accessToken',
         },
         url:
-            '${Url.baseUrl}/${Url.getPracticeTestQuestions}/?subject_name=$subjectName&test_level=$testlevel',
+            '${Url.baseUrl1}/${Url.getPracticeTestQuestions}/?subject_name=$subjectName&test_level=$testlevel',
       );
       log("statusCode in getPracticeTestQuestions():${response.statusCode}");
       dynamic result = handleResponse(response);
@@ -352,7 +352,7 @@ class ExamRepoImpl extends ExamRepo {
   }) async {
     if (kDebugMode) {
       log("sumbitPracticeTestAnswers()");
-      log("url:${Uri.parse('${Url.baseUrl}/${Url.submitPracticeTestAnswers}/')}");
+      log("url:${Uri.parse('${Url.baseUrl1}/${Url.submitPracticeTestAnswers}/')}");
       log({
         "practice_test_id": practiceTestId,
         "student_id": studentId,
@@ -362,7 +362,7 @@ class ExamRepoImpl extends ExamRepo {
         "questions": questions
       }.toString());
     }
-    final url = Uri.parse('${Url.baseUrl}/${Url.submitPracticeTestAnswers}/');
+    final url = Uri.parse('${Url.baseUrl1}/${Url.submitPracticeTestAnswers}/');
     try {
       final response = await https.post(url,
           headers: {
@@ -403,7 +403,7 @@ class ExamRepoImpl extends ExamRepo {
   Future<Either<Failure, Map<String, dynamic>>> getmockTestQuestions(
       {required int studentId, required String accesstoken}) async {
     try {
-      final url = Uri.parse('${Url.baseUrl}/${Url.generateMockTest}/');
+      final url = Uri.parse('${Url.baseUrl1}/${Url.generateMockTest}/');
       if (kDebugMode) {
         log("url:$url");
         log("studentId:$studentId");
@@ -548,7 +548,7 @@ class ExamRepoImpl extends ExamRepo {
     required int subjectTestId,
   }) async {
     if (kDebugMode) {
-      log('${Url.baseUrl}/${Url.calculatePracticeTestResultsSubjectwise}');
+      log('${Url.baseUrl1}/${Url.calculatePracticeTestResultsSubjectwise}');
 
       log({
         "student_id": studentId,
@@ -558,7 +558,7 @@ class ExamRepoImpl extends ExamRepo {
     }
     try {
       final https.Response response = await apiService.post(
-        url: '${Url.baseUrl}/${Url.calculatePracticeTestResultsSubjectwise}',
+        url: '${Url.baseUrl1}/${Url.calculatePracticeTestResultsSubjectwise}',
         headers: {'Content-Type': 'application/json'},
         data: json.encode({}),
       );
@@ -603,10 +603,10 @@ class ExamRepoImpl extends ExamRepo {
     required int noOfQuestions,
   }) async {
     if (kDebugMode) {
-      log('${Url.baseUrl}/${Url.generateCustomTest}');
+      log('${Url.baseUrl1}/${Url.generateCustomTest}');
     }
     try {
-      final url = Uri.parse('${Url.baseUrl}/${Url.generateCustomTest}');
+      final url = Uri.parse('${Url.baseUrl1}/${Url.generateCustomTest}');
       if (kDebugMode) {
         log("url:$url  physicsChapter:$physicsChapters");
       }
@@ -689,9 +689,9 @@ class ExamRepoImpl extends ExamRepo {
     required List<dynamic> biologyAnswers,
   }) async {
     try {
-      final url = "${Url.baseUrl}/${Url.submitMockquestion}/";
+      final url = "${Url.baseUrl1}/${Url.submitMockquestion}/";
       if (kDebugMode) {
-        log('url:${Url.baseUrl}/${Url.submitMockquestion}/');
+        log('url:${Url.baseUrl1}/${Url.submitMockquestion}/');
       }
       final response = await https.post(
         Uri.parse(url),
@@ -751,9 +751,9 @@ class ExamRepoImpl extends ExamRepo {
     required var questionAvgTime,
   }) async {
     try {
-      final url = "${Url.baseUrl}/${Url.submitCustomTest1}";
+      final url = "${Url.baseUrl1}/${Url.submitCustomTest1}";
       if (kDebugMode) {
-        log('url:${Url.baseUrl}/${Url.submitCustomTest1}');
+        log('url:${Url.baseUrl1}/${Url.submitCustomTest1}');
         log(({
           "custom_id": customTestId,
           "student_id": studentId,

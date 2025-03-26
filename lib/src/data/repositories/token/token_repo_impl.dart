@@ -18,13 +18,13 @@ class TokenRepoImpl extends TokenRepo {
     try {
       if (kDebugMode) {
         log("getToken()");
-        log('${Url.baseUrl}/${Url.getToken}');
+        log('${Url.baseUrl1}/${Url.getToken}');
         log(
           "studentId:$studentId phoneNumber: $phoneNumber in getToken() ,fcmtoken:$fcmToken",
         );
       }
       final response = await http.post(
-        Uri.parse('${Url.baseUrl}/${Url.getToken}/'),
+        Uri.parse('${Url.baseUrl1}/${Url.getToken}/'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           "student_id": studentId,
@@ -62,7 +62,7 @@ class TokenRepoImpl extends TokenRepo {
         log("refreshToken:$refreshToken");
       }
       final response = await http.post(
-        Uri.parse("${Url.baseUrl}/${Url.refreshToken}/"),
+        Uri.parse("${Url.baseUrl1}/${Url.refreshToken}/"),
         headers: {
           'Content-Type': 'application/json',
         },
