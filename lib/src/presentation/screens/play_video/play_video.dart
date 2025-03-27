@@ -32,7 +32,7 @@ class PlayVideo extends StatelessWidget {
   Widget build(BuildContext context) {
     VideosController videosController = Get.put(VideosController());
     log("chapterNo : $chapterNo, chapterName : $chapterName, subjectName : $subjectName");
-    
+
     return Obx(() {
       return Scaffold(
         backgroundColor: AppColors.scaffoldBackground,
@@ -100,9 +100,8 @@ class PlayVideo extends StatelessWidget {
                     height: 20,
                   )
                 : SizedBox.shrink(),
-            // ComingUpVideos(videos: videos),
             isLive
-                ? LiveChats()
+                ? Expanded(child: LiveChats())
                 : ComingUpVideos(
                     videos: videos,
                   )

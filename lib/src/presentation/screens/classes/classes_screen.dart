@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:neuflo_learn/src/presentation/screens/play_video/play_video.dart';
 
 import 'package:neuflo_learn/src/presentation/widgets/classes/currently_playing.dart';
 import 'package:neuflo_learn/src/presentation/widgets/classes/header.dart';
@@ -87,30 +88,31 @@ class Classes extends StatelessWidget {
                 ),
               ),
               // // Ensure Positioned is placed directly inside Stack
-              // Positioned(
-              //   top: 190,
-              //   left: 20,
-              //   right: 20,
-              //   child: CurrentlyPlaying(
-              //     onTapCallback: () {
-              //       log("live()");
-              //       Get.to(
-              //         () => PlayVideo(
-              //           isLive: true,
-              //           currentVideoUrl: 'https://youtu.be/4qGrteTY1EM?si=bpiuXt4nhTD8BSN-',
-              //           subjectName: 'Physics',
-              //           chapterNo: 1,
-              //           chapterName: 'chemistry',
-              //           videos: [],
-              //         ),
-              //       );
-              //     },
-              //     seconds: 365,
-              //     title: '',
-              //     am_pm: 'PM',
-              //     color: Colors.white,
-              //   ),
-              // ),
+              Positioned(
+                top: 190,
+                left: 20,
+                right: 20,
+                child: CurrentlyPlaying(
+                  onTapCallback: () {
+                    log("live()");
+                    Get.to(
+                      () => PlayVideo(
+                        isLive: true,
+                        currentVideoUrl:
+                            'https://youtu.be/4qGrteTY1EM?si=bpiuXt4nhTD8BSN-',
+                        subjectName: 'Physics',
+                        chapterNo: 1,
+                        chapterName: 'chemistry',
+                        videos: [],
+                      ),
+                    );
+                  },
+                  seconds: 365,
+                  title: '',
+                  am_pm: 'PM',
+                  color: Colors.white,
+                ),
+              ),
             ],
           ),
         );

@@ -57,9 +57,6 @@ class ChapterPage extends StatelessWidget {
                           index: index,
                           onTap: () {
                             log("vdo:${classesController.currentSelectedList[index]['videos']}");
-                            // videosController.setupVideos(
-                            //     listofvideos: classesController
-                            //         .currentSelectedList[index]['videos']);
                             Get.to(
                               () => Videos(
                                 chapterNo: index + 1,
