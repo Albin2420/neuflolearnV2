@@ -11,6 +11,18 @@ class VideosController extends GetxController {
   Rx<UniqueKey> videoKey = Rx(UniqueKey());
   RxBool showAppbar = true.obs;
 
+  @override
+  void onInit() {
+    log("i am here");
+    super.onInit();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    log("i am back disposed");
+  }
+
   void setupVideos({required List<Map<String, dynamic>> listOfVideos}) {
     videoLessons.value = listOfVideos;
     if (videoLessons.isNotEmpty) {
