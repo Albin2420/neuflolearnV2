@@ -7,12 +7,12 @@ import 'package:neuflo_learn/src/core/config/theme/colors.dart';
 
 import 'package:neuflo_learn/src/presentation/controller/videos/videos_controller.dart';
 import 'package:neuflo_learn/src/presentation/widgets/classes/coming_up_videos.dart';
-import 'package:neuflo_learn/src/presentation/widgets/live.dart';
+import 'package:neuflo_learn/src/presentation/widgets/chat/liveChat.dart';
 import 'package:neuflo_learn/src/presentation/widgets/yt_player/yt_player.dart';
 
 class PlayVideo extends StatelessWidget {
   int chapterNo;
-  String chapterName;
+  String topic;
   String subjectName;
   List videos;
   bool isLive;
@@ -21,7 +21,7 @@ class PlayVideo extends StatelessWidget {
       {super.key,
       required this.currentVideoUrl,
       required this.chapterNo,
-      required this.chapterName,
+      required this.topic,
       required this.subjectName,
       required this.videos,
       required this.isLive});
@@ -31,7 +31,6 @@ class PlayVideo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     VideosController videosController = Get.put(VideosController());
-    log("chapterNo : $chapterNo, chapterName : $chapterName, subjectName : $subjectName");
 
     return Obx(() {
       return Scaffold(
@@ -58,7 +57,7 @@ class PlayVideo extends StatelessWidget {
                     child: Column(
                       children: [
                         Text(
-                          chapterName,
+                          topic,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: GoogleFonts.urbanist(
@@ -83,25 +82,19 @@ class PlayVideo extends StatelessWidget {
         body: Column(
           children: [
             YtPlayer(
-              currentduration: videosController.convertSecondsToDuration(300),
+              durationNow: videosController.convertSecondsToDuration(300),
               url: currentVideoUrl,
               isLive: isLive,
               key: videosController.videoKey.value,
               fullScreen: (x) {
-                log("Full screen : $x");
                 x == true
                     ? videosController.showAppbar.value = false
                     : videosController.showAppbar.value = true;
-                // videosController.showAppbar.value = false;
               },
+              isvideoEnded: (y) {},
             ),
-            videosController.showAppbar.value
-                ? SizedBox(
-                    height: 20,
-                  )
-                : SizedBox.shrink(),
             isLive
-                ? Expanded(child: LiveChats())
+                ? Expanded(child: LiveChat())
                 : ComingUpVideos(
                     videos: videos,
                   )

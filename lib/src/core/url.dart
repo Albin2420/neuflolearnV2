@@ -1,16 +1,9 @@
 class Url {
   static String baseUrl1 = 'http://13.233.101.63:8000';
   static String baseUrl2 = 'http://13.233.101.63:8010';
-  // "http://13.233.101.63:8000"
-
-  // 'http://13.232.252.23:8000';
-  // 'http://192.168.1.60:8000';
-  // 'http://192.168.1.66:8000';
-  //http://13.233.101.63:8000
 
   static const generatePracticeTest = 'generate-practice-test/';
   static const getChapterNames = 'get-chapter-names-subjectwise'; //v2
-  // static const getMockTestQuestions = 'generate-mock-test';
   static const generateMockTest = 'generate-mock-test'; //v2
   static const getPracticeTestDetails = 'get-practice-test-details/';
   static const checkTestCompletion = 'check-test-completion';

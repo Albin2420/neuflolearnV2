@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:neuflo_learn/src/core/network/error_handler.dart';
 import 'package:neuflo_learn/src/core/network/failure.dart';
@@ -11,6 +12,9 @@ class SubjectRepoImpl implements SubjectRepo {
   @override
   Future<Either<Failure, Map<String, dynamic>>> fetchSubjects() async {
     try {
+      if (kDebugMode) {
+        log("fetchSubjects()");
+      }
       final response =
           await http.get(Uri.parse("${Url.baseUrl2}/videos-by-chapter"));
 
@@ -51,14 +55,10 @@ class SubjectRepoImpl implements SubjectRepo {
         return Left(Failure(message: 'failed'));
       }
 
-      log("result in fetchLive():${result['Chemistry'][0]['videos']}");
-
-      
+      log("result of fetchLive():$result");
 
       return Right({
-        "Physics": [],
-        "Chemistry": [],
-        "Biology": [],
+        "livevideos": result,
       });
     } catch (e) {
       log("Error fetching live(): $e");

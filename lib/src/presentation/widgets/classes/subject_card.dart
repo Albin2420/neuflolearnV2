@@ -42,33 +42,27 @@ class SubjectCard extends StatelessWidget {
           children: [
             // Subject Icon
             SizedBox(
-              height: 24,
-              width: 24,
+              height: 20,
+              width: 20,
               child: Image.asset(
                 subName == "Physics"
                     ? 'assets/icons/physics.png'
                     : subName == "Chemistry"
                         ? 'assets/icons/chemistry.png'
                         : 'assets/icons/biology.png',
-                // width: 24,
-                // height: 24,
               ),
             ),
-            const SizedBox(width: 5),
-
-            // Subject Name
+            const SizedBox(width: 8),
             Expanded(
               child: Text(
                 subName,
                 style: GoogleFonts.urbanist(
-                    fontSize: 16,
-                    color: AppColors.subjectTextColor,
-                    fontWeight: FontWeight.w600),
+                  fontSize: 14,
+                  color: AppColors.timeTextColor,
+                ),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-
-            // Progress
             Row(
               children: [
                 Text(

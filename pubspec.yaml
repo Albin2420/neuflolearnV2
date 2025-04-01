@@ -68,7 +68,7 @@ dependencies:
   hive: ^2.2.3
   path_provider: ^2.1.5
   fluttertoast: ^8.2.10
-  # device_preview_plus: ^2.2.3
+  device_preview_plus: ^2.2.3
   flutter_easyloading: ^3.0.5
   # flutter_math_fork: ^0.7.3
   # flutter_markdown_latex: ^0.3.4
