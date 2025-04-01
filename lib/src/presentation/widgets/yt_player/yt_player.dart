@@ -15,7 +15,8 @@ class YtPlayer extends StatefulWidget {
   List<String>? playbackspeed;
   Widget? placeholder;
   final Function(bool) fullScreen;
-  Duration? currentduration;
+  final Function(bool) isvideoEnded;
+  Duration? durationNow;
 
   YtPlayer({
     super.key,
@@ -25,7 +26,8 @@ class YtPlayer extends StatefulWidget {
     this.playbackspeed,
     required this.fullScreen,
     this.placeholder,
-    this.currentduration,
+    this.durationNow,
+    required this.isvideoEnded,
   });
 
   @override

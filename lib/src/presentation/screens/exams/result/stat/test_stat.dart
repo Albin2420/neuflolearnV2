@@ -14,10 +14,9 @@ class TestStat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ctr = Get.put(TestStatusController());
-
-    return Scaffold(
-      backgroundColor: Color(0xffEDF1F2),
-      body: SafeArea(
+    return SizedBox(
+      // backgroundColor: Color(0xffEDF1F2),
+      child: SafeArea(
         bottom: false,
         child: Column(
           children: [

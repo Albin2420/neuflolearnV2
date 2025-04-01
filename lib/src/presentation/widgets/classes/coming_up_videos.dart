@@ -23,7 +23,7 @@ class ComingUpVideos extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 20, bottom: 20),
+              padding: const EdgeInsets.only(left: 20, bottom: 20, top: 19),
               child: Text("Coming Up Next",
                   style: GoogleFonts.urbanist(
                       fontSize: 20, fontWeight: FontWeight.bold)),

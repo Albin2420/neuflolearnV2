@@ -162,7 +162,7 @@ class Videos extends StatelessWidget {
                                   currentVideoUrl: videos[index]['video_url'],
                                   subjectName: subjectName,
                                   chapterNo: chapterNo,
-                                  chapterName: chapterName,
+                                  topic: chapterName,
                                   videos: videos,
                                   isLive: false,
                                 ),

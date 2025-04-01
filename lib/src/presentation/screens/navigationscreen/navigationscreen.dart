@@ -4,7 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:neuflo_learn/src/presentation/widgets/live.dart';
+import 'package:neuflo_learn/src/presentation/widgets/chat/liveChat.dart';
 import 'package:neuflo_learn/src/presentation/controller/navigation/navigation_controller.dart';
 import 'package:neuflo_learn/src/presentation/screens/classes/classes_screen.dart';
 import 'package:neuflo_learn/src/presentation/screens/exams/result/stat/test_stat.dart';
