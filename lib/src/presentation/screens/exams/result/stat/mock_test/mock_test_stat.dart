@@ -460,6 +460,9 @@ class MockTestStat extends StatelessWidget {
                 ),
                 Obx(() {
                   return Scoregrowthgraph(
+                    scorePercentage:
+                        (ctrc.stdataMockTest['score_change'] ?? 0).toDouble(),
+                    // '${(ctrc.stdataMockTest['score_change'] ?? 0).toInt()}',
                     map: ctrc.stdataMockTest['daily_average_scoreMap'],
                     score:
                         "${(ctrc.stdataMockTest['average_score'] ?? 0).toInt()}",
@@ -470,6 +473,10 @@ class MockTestStat extends StatelessWidget {
                 ),
                 Obx(() {
                   return TimeGrowthGraph(
+                      timegrowthPercentage:
+                          (ctrc.stdataPracticeTest['time_change'] ?? 0)
+                              .toDouble(),
+                      // '${(ctrc.stdataMockTest['time_change'] ?? 0).toInt()}',
                       map: ctrc.stdataMockTest["daily_average_timeMap"],
                       seconds: (ctrc.stdataMockTest['average_time'] ?? 0)
                           .toDouble());

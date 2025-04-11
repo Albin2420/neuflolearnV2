@@ -82,7 +82,8 @@ class PlayVideo extends StatelessWidget {
         body: Column(
           children: [
             YtPlayer(
-              durationNow: videosController.convertSecondsToDuration(300),
+              // durationNow: videosController.convertSecondsToDuration(300),
+              isfakeLive: isLive,
               url: currentVideoUrl,
               isLive: isLive,
               key: videosController.videoKey.value,
@@ -91,7 +92,7 @@ class PlayVideo extends StatelessWidget {
                     ? videosController.showAppbar.value = false
                     : videosController.showAppbar.value = true;
               },
-              isvideoEnded: (y) {},
+              // isvideoEnded: (y) {},
             ),
             isLive
                 ? Expanded(child: LiveChat())

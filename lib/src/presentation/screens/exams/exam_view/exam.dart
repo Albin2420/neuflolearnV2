@@ -1075,7 +1075,7 @@ class Exam extends StatelessWidget {
                                     Row(
                                       children: [
                                         Text(
-                                          "Question  ${index < 10 ? index + 1 : index}  of ${ctr.questionList.length}",
+                                          "Question  ${index + 1}  of ${ctr.questionList.length}",
                                           style: GoogleFonts.urbanist(
                                             fontWeight: FontWeight.w600,
                                             fontSize: 16,

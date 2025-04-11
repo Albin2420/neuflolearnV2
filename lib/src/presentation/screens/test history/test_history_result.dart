@@ -412,7 +412,6 @@ class TestHistoryResult extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ctr = Get.find<TestHistoryController>();
-    TextEditingController txt = TextEditingController();
     final filters = [
       Allfiltered(),
       CorrectFiltered(),

@@ -159,52 +159,61 @@ class IntroScreen extends StatelessWidget {
                   // ),
                   GoogleLoginButton(
                     onTapFunction: () async {
-                      await ctr.singInWithGoogle();
+                      if (!EasyLoading.isShow) {
+                        await ctr.singInWithGoogle();
+                        EasyLoading.show();
 
-                      // if (ctr.currentAppUser.value != null) {
-                      if (ctr.currentFirestoreAppUser.value != null) {
-                        if (ctr.currentFirestoreAppUser.value
-                                ?.isProfileSetupComplete ==
-                            null) {
-                          if (ctr.currentFirestoreAppUser.value?.name == '' ||
-                              ctr.currentFirestoreAppUser.value?.email == '') {
-                            Get.offAll(() => AddBasicInfo());
-                            return;
+                        // if (ctr.currentAppUser.value != null) {
+                        if (ctr.currentFirestoreAppUser.value != null) {
+                          if (ctr.currentFirestoreAppUser.value
+                                  ?.isProfileSetupComplete ==
+                              null) {
+                            if (ctr.currentFirestoreAppUser.value?.name == '' ||
+                                ctr.currentFirestoreAppUser.value?.email ==
+                                    '') {
+                              EasyLoading.dismiss();
+                              Get.offAll(() => AddBasicInfo());
+                              return;
+                            } else {
+                              EasyLoading.dismiss();
+                              Get.offAll(() => AccountSetup());
+                              return;
+                            }
                           } else {
-                            Get.offAll(() => AccountSetup());
+                            log("navigate to home() :${ctr.currentFirestoreAppUser.value?.phone}");
+                            await firestoreService
+                                .dailyExamReportResetandStreakReset(
+                              userName:
+                                  "${ctr.currentFirestoreAppUser.value?.phone}@neuflo.io",
+                            );
+
+                            bool isTokenFetched = await ctr.getNewToken(
+                              studentId:
+                                  ctr.currentFirestoreAppUser.value?.id ?? 0,
+                              phoneNumber:
+                                  ctr.currentFirestoreAppUser.value?.phone ??
+                                      '',
+                            );
+
+                            if (isTokenFetched) {
+                              EasyLoading.dismiss();
+                              Fluttertoast.showToast(msg: 'Sign in successful');
+                              Get.offAll(() => NavigationScreen());
+                            } else {
+                              EasyLoading.dismiss();
+                              Fluttertoast.showToast(
+                                  msg: 'something went wrong');
+                            }
+                            EasyLoading.dismiss();
                             return;
                           }
-                        } else {
-                          log("navigate to home() :${ctr.currentFirestoreAppUser.value?.phone}");
-                          await firestoreService
-                              .dailyExamReportResetandStreakReset(
-                            userName:
-                                "${ctr.currentFirestoreAppUser.value?.phone}@neuflo.io",
-                          );
-                          Fluttertoast.showToast(msg: 'Sign in successful');
-
-                          bool isTokenFetched = await ctr.getNewToken(
-                            studentId:
-                                ctr.currentFirestoreAppUser.value?.id ?? 0,
-                            phoneNumber:
-                                ctr.currentFirestoreAppUser.value?.phone ?? '',
-                          );
-
-                          if (isTokenFetched) {
-                            Fluttertoast.showToast(msg: 'Sign in successful');
-                            Get.offAll(() => NavigationScreen());
-                          } else {
-                            Fluttertoast.showToast(msg: 'something wrong');
-                          }
-
-                          return;
                         }
-                      }
 
-                      if (ctr.authStatus.value == AuthStatus.successful) {
-                        Fluttertoast.showToast(msg: 'Sign in successfull');
-
-                        Get.to(() => AddBasicInfo());
+                        if (ctr.authStatus.value == AuthStatus.successful) {
+                          EasyLoading.dismiss();
+                          Fluttertoast.showToast(msg: 'Sign in successfull');
+                          Get.to(() => AddBasicInfo());
+                        }
                       }
                     },
                   ),

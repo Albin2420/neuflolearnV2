@@ -23,7 +23,7 @@ class PhysicsFiltered extends StatelessWidget {
         return ListView.separated(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           separatorBuilder: (context, index) => const SizedBox(height: 10),
-          itemCount: ctr.mockTest.length,
+          itemCount: ctr.physics.length,
           itemBuilder: (context, index) {
             return TestCard(
               onTap: () {

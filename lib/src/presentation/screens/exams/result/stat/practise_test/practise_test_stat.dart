@@ -469,6 +469,10 @@ class PractiseTestStat extends StatelessWidget {
                 ),
                 Obx(() {
                   return Scoregrowthgraph(
+                    scorePercentage:
+                        (ctr.stdataPracticeTest['score_change'] ?? 0)
+                            .toDouble(),
+                    // '${(ctr.stdataPracticeTest['score_change'] ?? 0).toInt()}',
                     score:
                         "${(ctr.stdataPracticeTest['average_score'] ?? 0).toInt()}",
                     map: ctr.stdataPracticeTest['daily_average_scoreMap'],
@@ -479,6 +483,8 @@ class PractiseTestStat extends StatelessWidget {
                 ),
                 Obx(() {
                   return TimeGrowthGraph(
+                    timegrowthPercentage:
+                        (ctr.stdataPracticeTest['time_change'] ?? 0).toDouble(),
                     seconds: (ctr.stdataPracticeTest["average_time"] as num)
                         .toDouble(),
                     map: ctr.stdataPracticeTest["daily_average_timeMap"],

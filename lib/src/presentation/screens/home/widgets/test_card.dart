@@ -2,9 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Testcard extends StatelessWidget {
+  final Color color;
   final String subjectName;
   final String level;
-  const Testcard({super.key, required this.subjectName, required this.level});
+  final int count;
+  final String tile;
+  const Testcard(
+      {super.key,
+      required this.subjectName,
+      required this.level,
+      required this.count,
+      required this.color,
+      required this.tile});
 
   @override
   Widget build(BuildContext context) {
@@ -33,36 +42,39 @@ class Testcard extends StatelessWidget {
                             fontWeight: FontWeight.w400, fontSize: 16),
                       ),
                       const SizedBox(
-                        width: 2,
+                        width: 4,
                       ),
-                      // Text(
-                      //   "#24",
-                      //   style: GoogleFonts.urbanist(
-                      //       fontWeight: FontWeight.w600, fontSize: 16),
-                      // )
+                      Text(
+                        "#$count",
+                        style: GoogleFonts.urbanist(
+                            fontWeight: FontWeight.w600, fontSize: 16),
+                      )
                     ],
                   ),
-                  // Text(
-                  //   "Electromagnetic field with a long testtttttttttttttttttttt",
-                  //   overflow: TextOverflow.ellipsis,
-                  //   maxLines: 1,
-                  //   style: GoogleFonts.urbanist(
-                  //     fontWeight: FontWeight.w400,
-                  //     fontSize: 16,
-                  //     color: Colors.black.withOpacity(0.5),
-                  //   ),
-                  // ),
+                  SizedBox(
+                    height: 3,
+                  ),
+                  Text(
+                    tile,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: GoogleFonts.urbanist(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 16,
+                      color: Colors.black.withOpacity(0.5),
+                    ),
+                  ),
                   const SizedBox(
-                    height: 16,
+                    height: 10,
                   ),
                   Row(
                     children: [
                       Container(
                         padding: const EdgeInsets.only(
                             top: 4, right: 12, bottom: 4, left: 12),
-                        height: 25,
+                        // height: 25,
                         decoration: BoxDecoration(
-                            color: const Color(0xFF7000FF),
+                            color: color,
                             borderRadius: BorderRadius.circular(56)),
                         child: Text(
                           level,

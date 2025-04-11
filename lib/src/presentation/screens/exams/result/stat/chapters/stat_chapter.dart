@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -254,19 +256,51 @@ class StatChapter extends StatelessWidget {
                 ListView.builder(
                   primary: false,
                   shrinkWrap: true,
-                  itemCount: selectedList.length,
+                  itemCount: ctr.showmoreproblemAreas.value == true
+                      ? selectedList.length
+                      : selectedList.length <= 5
+                          ? selectedList.length
+                          : 5,
                   itemBuilder: (context, index) {
                     final topic = selectedList.keys.elementAt(index);
                     final percentage =
                         selectedList[topic]["incorrect_percentage"] ?? 0;
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 24),
-                      child: ProblemAreaTopics(
-                        toPic: topic,
-                        inCRCpercentage: percentage,
-                      ),
-                    );
+
+                    log("percentage in Problem areas:$percentage");
+
+                    if (percentage == 0.0) {
+                      return SizedBox();
+                    } else {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 24),
+                        child: ProblemAreaTopics(
+                          toPic: topic,
+                          inCRCpercentage: percentage,
+                        ),
+                      );
+                    }
                   },
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        if (ctr.showmoreproblemAreas.value) {
+                          ctr.setShowMoreProblemAreas(false);
+                        } else {
+                          ctr.setShowMoreProblemAreas(true);
+                        }
+                      },
+                      child: Obx(
+                        () {
+                          return ctr.showmoreproblemAreas.value == true
+                              ? Text("show less")
+                              : Text("show more");
+                        },
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 24),
                 Text(
@@ -280,26 +314,51 @@ class StatChapter extends StatelessWidget {
                 ListView.builder(
                   primary: false,
                   shrinkWrap: true,
-                  itemCount: selectedList.length,
+                  itemCount: ctr.showStrengths.value == true
+                      ? selectedList.length
+                      : selectedList.length <= 5
+                          ? selectedList.length
+                          : 5,
                   itemBuilder: (context, index) {
                     final topic = selectedList.keys.elementAt(index);
                     final percentage =
                         selectedList[topic]["correct_percentage"] ?? 0;
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 24),
-                      child: StrengthAreaTopics(
-                        toPic: topic,
-                        cRCpercentage: percentage,
-                      ),
-                    );
+
+                    log("percentage in Strengths:$percentage");
+                    if (percentage == 0.0) {
+                      return SizedBox();
+                    } else {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 24),
+                        child: StrengthAreaTopics(
+                          toPic: topic,
+                          cRCpercentage: percentage,
+                        ),
+                      );
+                    }
                   },
                 ),
-                // const SizedBox(height: 30),
-                // CustomTextBtn(
-                //   text: 'View detailed summary',
-                //   onTap: () {},
-                // ),
-                // const SizedBox(height: 22),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        if (ctr.showStrengths.value) {
+                          ctr.showStrengths(false);
+                        } else {
+                          ctr.showStrengths(true);
+                        }
+                      },
+                      child: Obx(
+                        () {
+                          return ctr.showStrengths.value == true
+                              ? Text("show less")
+                              : Text("show more");
+                        },
+                      ),
+                    ),
+                  ],
+                )
               ],
             ),
           );

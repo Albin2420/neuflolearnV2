@@ -200,7 +200,8 @@ class FirestoreService {
         'startOfWeek': startOfWeekString,
         'endOfWeek': endOfWeekString,
         'dialyexamReport': dialyexamReport,
-        'currentstreakIndex': day
+        'currentstreakIndex': day,
+        'totalTestsDoneperDay': 0,
       });
     } catch (e) {
       log("Error in resetStreak():$e");

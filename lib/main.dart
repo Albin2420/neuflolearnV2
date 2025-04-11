@@ -1,12 +1,11 @@
 import 'dart:io';
 
-import 'package:device_preview_plus/device_preview_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive/hive.dart';
-import 'package:neuflo_learn/firebase_options.dart';
+
 import 'package:neuflo_learn/src/app.dart';
 import 'package:neuflo_learn/src/data/models/chapter.dart';
 import 'package:neuflo_learn/src/data/models/course.dart';
@@ -20,17 +19,10 @@ void main() async {
   // options: DefaultFirebaseOptions.currentPlatform
   await preRequisites();
   await NotificationServices.instance.initialize();
-  
+
   runApp(const NeufloLearn());
 
-  // runApp(
-  //   DevicePreview(
-  //     enabled: !kReleaseMode,
-  //     builder: (context) {
-  //       return const NeufloLearn();
-  //     }, // Wrap your app
-  //   ),
-  // );
+
 }
 
 Future preRequisites() async {

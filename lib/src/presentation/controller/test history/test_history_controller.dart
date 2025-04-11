@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:neuflo_learn/src/core/data_state/data_state.dart';
 import 'package:neuflo_learn/src/data/models/exam_record.dart';
@@ -96,6 +97,7 @@ class TestHistoryController extends GetxController {
   Future<void> fetchDetailedHistory(
       {required int testId, required String testName}) async {
     log("test Id:$testId");
+    EasyLoading.show();
     final result = await tstRepo.fetchTestDetails(
         testId: testId,
         accestoken: await appctr.getAccessToken() ?? '',
@@ -113,12 +115,12 @@ class TestHistoryController extends GetxController {
           fetchDetailedHistory(testId: testId, testName: testName);
         });
       } else {
+        EasyLoading.dismiss();
         state.value = Failed();
       }
     }, (r) async {
       try {
-        log("detailed test history :${r['']}");
-        Get.to(() => TestHistoryResult());
+        log("detailed test history()");
 
         totalAttended.value = r['totalAttended'] ?? 0;
         correct.value = r['correct'] ?? 0;
@@ -133,9 +135,12 @@ class TestHistoryController extends GetxController {
         filter();
 
         state.value = Success(data: r);
+        EasyLoading.dismiss();
+        Get.to(() => TestHistoryResult());
       } catch (e) {
         log("error:$e");
         state.value = Failed();
+        EasyLoading.dismiss();
       }
     });
   }

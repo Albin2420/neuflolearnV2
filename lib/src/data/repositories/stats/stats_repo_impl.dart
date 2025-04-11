@@ -50,6 +50,8 @@ class StatsRepoImpl extends StatsRepo {
             practiceTestStats["subjectwise_incorrect_percentage"],
         "average_score": practiceTestStats["average_score"],
         "average_time": practiceTestStats["average_time"],
+        "score_change": practiceTestStats["score_change"],
+        "time_change": practiceTestStats["time_change"]
       };
 
       final mockStatsMap = {
@@ -64,6 +66,8 @@ class StatsRepoImpl extends StatsRepo {
             mockTestStats["subjectwise_incorrect_percentage"],
         "average_score": mockTestStats["average_score"],
         "average_time": mockTestStats["average_time"],
+        "score_change": mockTestStats["score_change"],
+        "time_change": mockTestStats["time_change"]
       };
 
       final chapterWiseStatsMap = chapterStats.map((subject, chapters) {

@@ -28,9 +28,9 @@ class SubjectRepoImpl implements SubjectRepo {
       List<dynamic> chemistry = result['Chemistry'] ?? [];
       List<dynamic> biology = result['Biology'] ?? [];
 
-      log("PHYSICS: $physics");
-      log("CHEMISTRY: $chemistry");
-      log("BIOLOGY: $biology");
+      // log("PHYSICS: $physics");
+      // log("CHEMISTRY: $chemistry");
+      // log("BIOLOGY: $biology");
 
       return Right({
         "Physics": physics,

@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:neuflo_learn/src/core/data_state/data_state.dart';
 import 'package:neuflo_learn/src/data/repositories/stats/stats_repo_impl.dart';
+import 'package:neuflo_learn/src/data/repositories/token/token_repo_impl.dart';
 import 'package:neuflo_learn/src/domain/repositories/stats/stats_repo.dart';
+import 'package:neuflo_learn/src/domain/repositories/token/token_repo.dart';
 import 'package:neuflo_learn/src/presentation/controller/app_startup/app_startup.dart';
 import 'package:neuflo_learn/src/presentation/controller/navigation/navigation_controller.dart';
 
@@ -17,6 +19,8 @@ class TestStatusController extends GetxController {
   var stdataMockTest = {}.obs;
   var stdataChaptStatus = {}.obs;
   StatsRepo stRepo = StatsRepoImpl();
+  RxBool showmoreproblemAreas = RxBool(false);
+  RxBool showStrengths = RxBool(false);
 
   Rx<Ds<Map<String, dynamic>>> userState =
       Rx<Ds<Map<String, dynamic>>>(Initial());
@@ -28,13 +32,26 @@ class TestStatusController extends GetxController {
   RxMap biology = RxMap({});
 
   RxInt chapIndex = RxInt(0);
+  TokenRepo tokenRepo = TokenRepoImpl();
 
   @override
   void onInit() {
     super.onInit();
-    log("TestStatusController initialized");
+    log("TestStatusController initialized()");
     userState.value = Loading();
     weeklystats();
+  }
+
+  void setShowMoreProblemAreas(bool x) {
+    log("setShowMoreProblemAreas()");
+    showmoreproblemAreas.value = x;
+    log("showmoreproblemAreas:${showmoreproblemAreas.value}");
+  }
+
+  void setshowStrengths(bool x) {
+    log("setShowMoreProblemAreas()");
+    showStrengths.value = x;
+    log("showStrengths:${showStrengths.value}");
   }
 
   Future<void> weeklystats() async {
@@ -42,10 +59,21 @@ class TestStatusController extends GetxController {
         accessToken: await appctr.getAccessToken() ?? '');
 
     result.fold((f) async {
-      log("Error in weeklystats(): ${f.message}");
-      userState.value = Failed();
+      if (f.message == 'user is not authorised') {
+        final tokenResp = await tokenRepo.getNewTokens(
+            refreshToken: appctr.refreshToken.value);
+
+        tokenResp.fold((l) {
+          userState.value = Failed();
+        }, (R) async {
+          await appctr.saveToken(
+              accessToken: R['access_token'], refreshToken: R['refresh_token']);
+          weeklystats();
+        });
+      } else {
+        userState.value = Failed();
+      }
     }, (r) {
-      log("R:$r");
       stdataPracticeTest.value = r['practice_test_stats'];
       stdataMockTest.value = r['mock_test_stats'];
       stdataChaptStatus.value = r['chapter_stats'];
