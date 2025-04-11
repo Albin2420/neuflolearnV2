@@ -666,19 +666,19 @@ class _TestSettingsSheetState extends State<TestSettingsSheet> {
                           ),
                         ),
                         ...[
-                          Container(
-                            padding: EdgeInsets.only(
-                                top: 16, bottom: 16, left: 24, right: 24),
-                            height: 86,
-                            child: CustomTextField(
-                              hintText: 'Search topic',
-                              onChanged: (text) {
-                                ctr.onSearchChanged(text);
-                              },
-                              textEditingController: ctr.txt,
-                              prefixIcon: PhosphorIcons.magnifyingGlass(),
-                            ),
-                          ),
+                          // Container(
+                          //   padding: EdgeInsets.only(
+                          //       top: 16, bottom: 16, left: 24, right: 24),
+                          //   height: 86,
+                          //   child: CustomTextField(
+                          //     hintText: 'Search topic',
+                          //     onChanged: (text) {
+                          //       ctr.onSearchChanged(text);
+                          //     },
+                          //     textEditingController: ctr.txt,
+                          //     prefixIcon: PhosphorIcons.magnifyingGlass(),
+                          //   ),
+                          // ),
                           ChapterList()
                         ]
                       ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:neuflo_learn/src/core/config/theme/colors.dart';
+import 'package:neuflo_learn/src/presentation/controller/classes/classes_controller.dart';
 import 'package:neuflo_learn/src/presentation/controller/videos/videos_controller.dart';
 import 'package:neuflo_learn/src/presentation/screens/play_video/play_video.dart';
 
@@ -19,6 +20,7 @@ class Videos extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final clsctrl = Get.find<ClassesController>();
     VideosController videosController = Get.find<VideosController>();
     // Fetch the arguments passed from the previous page
     final List videos = Get.arguments ?? []; // Default to an empty list if null
@@ -64,65 +66,6 @@ class Videos extends StatelessWidget {
             ),
           ],
         ),
-        // title: Row(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   mainAxisSize: MainAxisSize.min, // Prevents excessive width expansion
-        //   children: [
-        //     Expanded(
-        //       child: Column(
-        //         mainAxisSize:
-        //             MainAxisSize.min, // Prevents unnecessary stretching
-        //         crossAxisAlignment:
-        //             CrossAxisAlignment.center, // Align text center
-        //         children: [
-        //           Row(
-        //             mainAxisAlignment: MainAxisAlignment.center,
-        //             children: [
-        //               Padding(
-        //                 padding: const EdgeInsets.only(right: 50),
-        //                 child: Column(
-        //                   children: [
-        // Text(
-        //   "Chapter $chapterNo",
-        //   style: GoogleFonts.urbanist(
-        //     color: Colors.black,
-        //     fontSize: 16,
-        //     fontWeight: FontWeight.bold,
-        //   ),
-        // ),
-        // // Text(
-        // //   chapterName,
-        // //   maxLines: 1,
-        // //   overflow: TextOverflow.ellipsis,
-        // //   style: GoogleFonts.urbanist(
-        // //     color: Colors.black,
-        // //     fontSize: 14,
-        // //   ),
-        // // ),
-        // Flexible(
-        //   // Prevents text overflow
-        //   child: Text(
-        //     chapterName,
-        //     maxLines: 1,
-        //     overflow: TextOverflow.ellipsis,
-        //     textAlign: TextAlign.center,
-        //     style: GoogleFonts.urbanist(
-        //       color: Colors.black,
-        //       fontSize: 14,
-        //     ),
-        //   ),
-        // ),
-        //                   ],
-        //                 ),
-        //               ),
-        //             ],
-        //           ),
-
-        // ],
-        // ),
-        // ),
-        // ],
-        // ),
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 20),
@@ -144,7 +87,8 @@ class Videos extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 20),
-            videos.isNotEmpty
+            clsctrl.currentSelectedList[clsctrl.classIndex.value]['videos']
+                    .isNotEmpty
                 ? Expanded(
                     child: ListView.builder(
                       shrinkWrap: true,
@@ -159,17 +103,23 @@ class Videos extends StatelessWidget {
                               videosController.updateKey();
                               Get.to(
                                 () => PlayVideo(
-                                  currentVideoUrl: videos[index]['video_url'],
+                                  currentVideoUrl: clsctrl.currentSelectedList[
+                                          clsctrl.classIndex.value]['videos']
+                                      [index]['video_url'],
                                   subjectName: subjectName,
                                   chapterNo: chapterNo,
                                   topic: chapterName,
-                                  videos: videos,
+                                  videos: clsctrl.currentSelectedList[
+                                      clsctrl.classIndex.value]['videos'],
                                   isLive: false,
                                 ),
                               );
                             },
-                            title: videos[index]['title'],
-                            subTitle: videos[index]['description'],
+                            title: clsctrl.currentSelectedList[clsctrl
+                                .classIndex.value]['videos'][index]['title'],
+                            subTitle: clsctrl.currentSelectedList[clsctrl
+                                .classIndex
+                                .value]['videos'][index]['description'],
                           ),
                         );
                       },

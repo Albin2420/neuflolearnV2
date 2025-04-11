@@ -98,9 +98,7 @@ class _LiveChatState extends State<LiveChat> {
                   builder: (ctx, AsyncSnapshot<QuerySnapshot> chatSnapshot) {
                     if (chatSnapshot.connectionState ==
                         ConnectionState.waiting) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
+                      return SizedBox();
                     }
                     final chatDocs = chatSnapshot.data!.docs;
                     if (chatDocs.isEmpty) {

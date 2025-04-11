@@ -8,13 +8,13 @@ import 'package:neuflo_learn/src/presentation/controller/videos/videos_controlle
 import 'package:neuflo_learn/src/presentation/widgets/classes/video_listtile.dart';
 
 class ComingUpVideos extends StatelessWidget {
-  List videos;
-  ComingUpVideos({super.key, required this.videos});
+  final List videos;
+  const ComingUpVideos({super.key, required this.videos});
 
   @override
   Widget build(BuildContext context) {
     VideosController videosController = Get.find<VideosController>();
-    log("Videos inside coming up => $videos");
+    // log("Videos inside coming up => $videos");
     return Expanded(
       child: Container(
         height: 300,

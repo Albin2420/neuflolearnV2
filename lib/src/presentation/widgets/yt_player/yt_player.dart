@@ -9,14 +9,13 @@ import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 // ignore: must_be_immutable
 class YtPlayer extends StatefulWidget {
+  bool isfakeLive;
   bool isLive;
   String url;
   List<String>? qualities;
   List<String>? playbackspeed;
   Widget? placeholder;
   final Function(bool) fullScreen;
-  final Function(bool) isvideoEnded;
-  Duration? durationNow;
 
   YtPlayer({
     super.key,
@@ -26,8 +25,7 @@ class YtPlayer extends StatefulWidget {
     this.playbackspeed,
     required this.fullScreen,
     this.placeholder,
-    this.durationNow,
-    required this.isvideoEnded,
+    required this.isfakeLive,
   });
 
   @override
@@ -66,21 +64,28 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+
     _seekctrlinitialization();
     _init();
   }
 
   Future<void> _init() async {
     try {
-      videoOnlyStreams = await _fetchStreams();
-      if (videoOnlyStreams.isNotEmpty) {
-        currentStream = await setStream();
-        await _initPlayer(streamUrl: currentStream.url.toString(), live: false);
+      if (widget.isLive == true && widget.isfakeLive == false) {
+        _fetchLiveStreamUrl(videoUrl: widget.url);
       } else {
-        if (mounted) {
-          setState(() {
-            error = 'please try again later';
-          });
+        videoOnlyStreams = await _fetchStreams();
+        log("videoOnlyStreams(1):${videoOnlyStreams.length}");
+
+        if (videoOnlyStreams.isNotEmpty) {
+          currentStream = await setStream();
+          await _initPlayer(
+            streamUrl: currentStream.url.toString(),
+            live: false,
+          );
+        } else {
+          log("stream issue");
+          error = 'stream issue';
         }
       }
     } catch (e) {
@@ -91,6 +96,112 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
         });
       }
     }
+  }
+
+  Future<String?> _fetchLiveStreamUrl({required String videoUrl}) async {
+    log("Initializing _fetchLiveStreamUrl()");
+    final yt = YoutubeExplode();
+
+    try {
+      var videoId = _extractVideoId(videoUrl);
+
+      if (videoId == null) {
+        throw Exception("Invalid video URL");
+      }
+
+      log("videoId__Live():$videoId");
+
+      var liveURL = await yt.videos.streams.getHttpLiveStreamUrl(
+        VideoId(videoId),
+      );
+
+      log("liveURL:$liveURL");
+
+      if (mounted) {
+        setState(() {
+          VideoID = videoId;
+        });
+      }
+
+      await _initPlayer(streamUrl: liveURL, live: true);
+
+      _liveStreamStatusChecking(videoId);
+    } catch (e) {
+      log("Error in _fetchLiveStreamUrl(): $e");
+      return null;
+    } finally {
+      yt.close();
+    }
+    return null;
+  }
+
+  void _liveStreamStatusChecking(String videoId) {
+    log("_liveStreamStatusChecking() in $videoId");
+    Timer.periodic(const Duration(seconds: 2), (timer) async {
+      final yt = YoutubeExplode();
+      try {
+        var video = await yt.videos.get(VideoId(videoId));
+        if (video.isLive) {
+        } else {
+          log("Live stream has ended.");
+          timer.cancel();
+          // Handle live stream end (e.g., stop player, show message, etc.)
+          _handleLiveStreamEnd();
+        }
+      } catch (e) {
+        log("Error in  _liveStreamStatusChecking(): $e");
+        timer.cancel();
+      } finally {
+        yt.close();
+      }
+    });
+  }
+
+  void _handleLiveStreamEnd() {
+    // Implement your logic to handle the end of the live stream
+    // For example, stop the player, show a message, etc.
+    log("Handling live stream end.");
+  }
+
+  String? _extractVideoId(String url) {
+    try {
+      // Regular expression for live stream URL
+      final RegExp livePattern = RegExp(r'youtube\.com/live/([a-zA-Z0-9_-]+)');
+
+      // Regular expression for standard watch URL
+      final RegExp watchPattern = RegExp(
+        r'youtube\.com/watch\?v=([a-zA-Z0-9_-]+)',
+      );
+
+      // Regular expression for embed URL
+      final RegExp embedPattern = RegExp(
+        r'youtube\.com/embed/([a-zA-Z0-9_-]+)',
+      );
+
+      // Check for live stream URL
+      var match = livePattern.firstMatch(url);
+      if (match != null) {
+        return match.group(1);
+      }
+
+      // Check for standard watch URL
+      match = watchPattern.firstMatch(url);
+      if (match != null) {
+        return match.group(1);
+      }
+
+      // Check for embed URL
+      match = embedPattern.firstMatch(url);
+      if (match != null) {
+        return match.group(1);
+      }
+
+      // If no match is found, return null
+      return null;
+    } catch (e) {
+      log("Error in _extractVideoId(): $e");
+    }
+    return null;
   }
 
   Future<Duration> _fetch() async {
@@ -117,8 +228,9 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
   Future<VideoOnlyStreamInfo> setStream() async {
     VideoOnlyStreamInfo tempstream;
     tempstream = videoOnlyStreams.firstWhere(
-        (stream) => stream.qualityLabel == '480p',
-        orElse: () => videoOnlyStreams.last); // by default 360p
+      (stream) => stream.qualityLabel == '480p',
+      orElse: () => videoOnlyStreams.last,
+    ); // by default 360p
     return tempstream;
   }
 
@@ -144,7 +256,9 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
         // Log the details of each stream for debugging
         final resolution = streamInfo.videoResolution;
         final mimeType = streamInfo.codec.mimeType;
-        log("Stream resolution: ${resolution.width}x${resolution.height}, MIME type: $mimeType");
+        log(
+          "Stream resolution: ${resolution.width}x${resolution.height}, MIME type: $mimeType",
+        );
 
         // Check if the MIME type is either mp4 or webm
         if ((mimeType == 'video/mp4' || mimeType == 'video/webm') &&
@@ -158,7 +272,9 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
           return true; // Keep this stream
         } else {
           // Log the reason why a stream was excluded
-          log("Excluding stream with resolution ${resolution.height}p and MIME type: $mimeType");
+          log(
+            "Excluding stream with resolution ${resolution.height}p and MIME type: $mimeType",
+          );
           return false;
         }
       }).toList();
@@ -173,8 +289,10 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
     }
   }
 
-  Future<void> _initPlayer(
-      {required String streamUrl, required bool live}) async {
+  Future<void> _initPlayer({
+    required String streamUrl,
+    required bool live,
+  }) async {
     try {
       vlcPlayerCtrl = VlcPlayerController.network(
         hwAcc: HwAcc.full,
@@ -182,17 +300,13 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
         autoPlay: true,
         autoInitialize: true,
         options: VlcPlayerOptions(
-          advanced: VlcAdvancedOptions(
-            [
-              VlcAdvancedOptions.networkCaching(150),
-              VlcAdvancedOptions.liveCaching(150),
-              VlcAdvancedOptions.clockJitter(0),
-              VlcAdvancedOptions.fileCaching(150),
-            ],
-          ),
-          rtp: VlcRtpOptions([
-            VlcRtpOptions.rtpOverRtsp(true),
+          advanced: VlcAdvancedOptions([
+            VlcAdvancedOptions.networkCaching(60000),
+            VlcAdvancedOptions.liveCaching(300),
+            // VlcAdvancedOptions.clockJitter(0),
+            VlcAdvancedOptions.fileCaching(150),
           ]),
+          rtp: VlcRtpOptions([VlcRtpOptions.rtpOverRtsp(true)]),
         ),
       );
       if (mounted) {
@@ -204,8 +318,9 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
         vlcPlayerCtrl.addOnInitListener(() {
           if (mounted) {
             setState(() {
-              vlcPlayerCtrl
-                  .addAudioFromNetwork(currentAudioStream.url.toString());
+              vlcPlayerCtrl.addAudioFromNetwork(
+                currentAudioStream.url.toString(),
+              );
             });
           }
         });
@@ -266,16 +381,10 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
       vsync: this,
     );
     _LeftAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(
-        parent: _controllerLeftseek,
-        curve: Curves.easeInOut,
-      ),
+      CurvedAnimation(parent: _controllerLeftseek, curve: Curves.easeInOut),
     );
     _RightAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(
-        parent: _controllerRightseek,
-        curve: Curves.easeInOut,
-      ),
+      CurvedAnimation(parent: _controllerRightseek, curve: Curves.easeInOut),
     );
   }
 
@@ -290,11 +399,16 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
       }
 
       await vlcPlayerCtrl
-          .setMediaFromNetwork(currentStream.url.toString(),
-              hwAcc: HwAcc.full, autoPlay: true)
+          .setMediaFromNetwork(
+        currentStream.url.toString(),
+        hwAcc: HwAcc.full,
+        autoPlay: true,
+      )
           .then((_) async {
         await vlcPlayerCtrl.seekTo(backupPosition).then((_) {
-          vlcPlayerCtrl.addAudioFromNetwork(currentAudioStream.url.toString());
+          vlcPlayerCtrl.addAudioFromNetwork(
+            currentAudioStream.url.toString(),
+          );
         });
       });
 
@@ -339,8 +453,9 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
       final currentPosition = vlcPlayerCtrl.value.position;
       final totalDuration = vlcPlayerCtrl.value.duration;
       final newPosition = currentPosition - const Duration(seconds: 10);
-      vlcPlayerCtrl
-          .seekTo(newPosition < totalDuration ? newPosition : totalDuration);
+      vlcPlayerCtrl.seekTo(
+        newPosition < totalDuration ? newPosition : totalDuration,
+      );
     }
   }
 
@@ -354,36 +469,33 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
       final currentPosition = vlcPlayerCtrl.value.position;
       final totalDuration = vlcPlayerCtrl.value.duration;
       final newPosition = currentPosition + const Duration(seconds: 10);
-      vlcPlayerCtrl
-          .seekTo(newPosition < totalDuration ? newPosition : totalDuration);
+      vlcPlayerCtrl.seekTo(
+        newPosition < totalDuration ? newPosition : totalDuration,
+      );
     }
   }
 
   void _hidecontrols() {
     if (mounted) {
-      setState(
-        () {
-          if (hidecontrols == 0) {
-            hidecontrols = 1;
-          } else {
-            hidecontrols = 0;
-          }
-        },
-      );
+      setState(() {
+        if (hidecontrols == 0) {
+          hidecontrols = 1;
+        } else {
+          hidecontrols = 0;
+        }
+      });
     }
   }
 
   Future _onExitFullScreen() async {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [
-      SystemUiOverlay.top,
-      SystemUiOverlay.bottom,
-    ]);
-    SystemChrome.setPreferredOrientations(
-      [
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown,
-      ],
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
     );
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     if (mounted) {
       setState(() {
         isFullscreen = false;
@@ -394,12 +506,10 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
 
   Future _onEnterFullScreen() async {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-    SystemChrome.setPreferredOrientations(
-      [
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight,
-      ],
-    );
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
     if (mounted) {
       setState(() {
         isFullscreen = true;
@@ -435,7 +545,7 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
       switch (vlcPlayerCtrl.value.playingState) {
         case PlayingState.playing:
           log("Pausing the player...");
-          if (widget.isLive) {
+          if (widget.isLive == true && widget.isfakeLive == false) {
             var backup = await _fetch();
             await vlcPlayerCtrl.pause().then((_) {
               setState(() {
@@ -447,6 +557,7 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
               log("Error in : $e");
             });
           } else {
+            log("our br");
             await vlcPlayerCtrl.pause().then((val) {
               log("paused successfully");
               isPlaying.value = false;
@@ -458,7 +569,7 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
 
         case PlayingState.paused:
           log("Resuming play...");
-          if (widget.isLive) {
+          if (widget.isLive == true && widget.isfakeLive == false) {
             await vlcPlayerCtrl.seekTo(liveBackupPosition).then((_) async {
               log("seeking to live_backupPosition:$liveBackupPosition");
               await vlcPlayerCtrl.play().then((_) {
@@ -484,9 +595,7 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
           try {
             vlcPlayerCtrl.stop(); // Ensure it's fully stopped
             await vlcPlayerCtrl
-                .setMediaFromNetwork(
-              vlcPlayerCtrl.dataSource,
-            )
+                .setMediaFromNetwork(vlcPlayerCtrl.dataSource)
                 .then((_) async {
               await vlcPlayerCtrl.addAudioFromNetwork(
                 currentAudioStream.url.toString(),
@@ -516,191 +625,193 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    try {
-      if (isvlcPlayerCtrlinitialized) {
-        log("disposed..........");
-        vlcPlayerCtrl.removeListener(() {});
-        vlcPlayerCtrl.stopRendererScanning();
-        vlcPlayerCtrl.dispose();
-        _controllerLeftseek.dispose();
-        _controllerRightseek.dispose();
-        isPlaying.dispose();
-      } else {
-        log("breakpoint");
-      }
-    } catch (e) {
-      log("Error in yt_player dispose():$e");
+    log("disposed......vlcplayerCtrl :$isvlcPlayerCtrlinitialized");
+    if (isvlcPlayerCtrlinitialized) {
+      vlcPlayerCtrl.removeListener(() {});
+      vlcPlayerCtrl.dispose();
+      _controllerLeftseek.dispose();
+      _controllerRightseek.dispose();
+      isPlaying.dispose();
     }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return OrientationBuilder(builder: (context, orientation) {
-      // ignore: deprecated_member_use
-      return WillPopScope(
-        onWillPop: () async {
-          if (isFullscreen == true) {
-            _toggleFullScreen();
-            return false;
-          }
+    return OrientationBuilder(
+      builder: (context, orientation) {
+        // ignore: deprecated_member_use
+        return WillPopScope(
+          onWillPop: () async {
+            if (isFullscreen == true) {
+              _toggleFullScreen();
+              return false;
+            }
 
-          return true;
-        },
-        child: Container(
-          child: error == null
-              ? isLoading == true
-                  ? AspectRatio(
-                      aspectRatio: 16 / 9,
-                      child: widget.placeholder ??
-                          Container(
-                            color: Colors.black,
-                            child: const Center(
-                              child: CircularProgressIndicator(
-                                color: Colors.purple,
+            return true;
+          },
+          child: Container(
+            child: error == null
+                ? isLoading == true
+                    ? AspectRatio(
+                        aspectRatio: 16 / 9,
+                        child: widget.placeholder ??
+                            Container(
+                              color: Colors.black,
+                              child: const Center(
+                                child: CircularProgressIndicator(
+                                  color: Colors.purple,
+                                ),
+                              ),
+                            ),
+                      )
+                    : GestureDetector(
+                        onTap: _hidecontrols,
+                        child: AspectRatio(
+                          aspectRatio: isFullscreen
+                              ? MediaQuery.of(context).size.aspectRatio
+                              : 16 / 9,
+                          child: GestureDetector(
+                            onScaleStart: (ScaleStartDetails details) {
+                              if (isFullscreen) {
+                                previousScale = scale;
+                              }
+                            },
+                            onScaleUpdate: (ScaleUpdateDetails details) {
+                              if (isFullscreen && mounted) {
+                                setState(() {
+                                  scale = (previousScale * details.scale)
+                                      .clamp(1.0, 1.3); // Set zoom limits
+                                  log("scale:$scale");
+                                });
+                              }
+                            },
+                            onScaleEnd: (ScaleEndDetails details) {
+                              if (isFullscreen) {
+                                previousScale = 1.0;
+                              }
+                            },
+                            child: Container(
+                              color: Colors.black,
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  Transform(
+                                    transform: Matrix4.identity()
+                                      ..scale(scale, 1.0),
+                                    alignment: Alignment.center,
+                                    child: VlcPlayer(
+                                      controller: vlcPlayerCtrl,
+                                      aspectRatio: 16 / 9,
+                                    ),
+                                  ),
+                                  if (hidecontrols > 0)
+                                    AnimatedOpacity(
+                                      opacity: 0.7,
+                                      duration: const Duration(
+                                        milliseconds: 700,
+                                      ),
+                                      child: Container(
+                                        color: const Color.fromARGB(
+                                          144,
+                                          0,
+                                          0,
+                                          0,
+                                        ), // Semi-transparent grey
+                                      ),
+                                    ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        flex:
+                                            1, // The first container on the left
+                                        child: GestureDetector(
+                                          onDoubleTap: _handleLeftTap,
+                                          child: Container(
+                                            color: Colors.transparent,
+                                            height: double.infinity,
+                                            width: double.infinity / 2,
+                                            child: AnimatedBuilder(
+                                              animation: _LeftAnimation,
+                                              builder: (context, child) {
+                                                return Opacity(
+                                                  opacity: _LeftAnimation.value,
+                                                  child: CustomPaint(
+                                                    painter: _LeftCurve(),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Opacity(
+                                        opacity: hidecontrols,
+                                        child: VLCPlayerControls(
+                                          vlcPlayerCtrl: vlcPlayerCtrl,
+                                          isPlaying: isPlaying,
+                                          fetching: fetching,
+                                          hidecontrols: hidecontrols,
+                                          togglePlayPause: _togglePlayPause,
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: GestureDetector(
+                                          onDoubleTap: _handleRightTap,
+                                          child: Container(
+                                            color: Colors.transparent,
+                                            height: double.infinity,
+                                            width: double.infinity / 2,
+                                            child: AnimatedBuilder(
+                                              animation: _RightAnimation,
+                                              builder: (context, child) {
+                                                return Opacity(
+                                                  opacity:
+                                                      _RightAnimation.value,
+                                                  child: CustomPaint(
+                                                    painter: _RightCurve(),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Positioned(
+                                    bottom: 0,
+                                    child: Opacity(
+                                      opacity: hidecontrols,
+                                      child: _buildControls(),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
-                    )
-                  : GestureDetector(
-                      onTap: _hidecontrols,
-                      child: AspectRatio(
-                        aspectRatio: isFullscreen
-                            ? MediaQuery.of(context).size.aspectRatio
-                            : 16 / 9,
-                        child: GestureDetector(
-                          onScaleStart: (ScaleStartDetails details) {
-                            if (isFullscreen) {
-                              previousScale = scale;
-                            }
-                          },
-                          onScaleUpdate: (ScaleUpdateDetails details) {
-                            if (isFullscreen && mounted) {
-                              setState(() {
-                                scale = (previousScale * details.scale)
-                                    .clamp(1.0, 1.3); // Set zoom limits
-                                log("scale:$scale");
-                              });
-                            }
-                          },
-                          onScaleEnd: (ScaleEndDetails details) {
-                            if (isFullscreen) {
-                              previousScale = 1.0;
-                            }
-                          },
-                          child: Container(
-                            color: Colors.black,
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Transform(
-                                  transform: Matrix4.identity()
-                                    ..scale(scale, 1.0),
-                                  alignment: Alignment.center,
-                                  child: VlcPlayer(
-                                    controller: vlcPlayerCtrl,
-                                    aspectRatio: 16 / 9,
-                                  ),
-                                ),
-                                if (hidecontrols > 0)
-                                  AnimatedOpacity(
-                                    opacity: 0.7,
-                                    duration: const Duration(milliseconds: 700),
-                                    child: Container(
-                                      color: const Color.fromARGB(144, 0, 0,
-                                          0), // Semi-transparent grey
-                                    ),
-                                  ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      flex:
-                                          1, // The first container on the left
-                                      child: GestureDetector(
-                                        onDoubleTap: _handleLeftTap,
-                                        child: Container(
-                                          color: Colors.transparent,
-                                          height: double.infinity,
-                                          width: double.infinity / 2,
-                                          child: AnimatedBuilder(
-                                            animation: _LeftAnimation,
-                                            builder: (context, child) {
-                                              return Opacity(
-                                                opacity: _LeftAnimation.value,
-                                                child: CustomPaint(
-                                                  painter: _LeftCurve(),
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Opacity(
-                                      opacity: hidecontrols,
-                                      child: VLCPlayerControls(
-                                        vlcPlayerCtrl: vlcPlayerCtrl,
-                                        isPlaying: isPlaying,
-                                        fetching: fetching,
-                                        hidecontrols: hidecontrols,
-                                        togglePlayPause: _togglePlayPause,
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: GestureDetector(
-                                        onDoubleTap: _handleRightTap,
-                                        child: Container(
-                                          color: Colors.transparent,
-                                          height: double.infinity,
-                                          width: double.infinity / 2,
-                                          child: AnimatedBuilder(
-                                            animation: _RightAnimation,
-                                            builder: (context, child) {
-                                              return Opacity(
-                                                opacity: _RightAnimation.value,
-                                                child: CustomPaint(
-                                                  painter: _RightCurve(),
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Positioned(
-                                  bottom: 0,
-                                  child: Opacity(
-                                    opacity: hidecontrols,
-                                    child: _buildControls(),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
                         ),
-                      ),
-                    )
-              : AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: Container(
-                    color: Colors.black,
-                    child: Center(
-                      child: Text(
-                        '$error',
-                        style: const TextStyle(color: Colors.white),
-                        textAlign: TextAlign.center,
+                      )
+                : AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: Container(
+                      color: Colors.black,
+                      child: Center(
+                        child: Text(
+                          '$error',
+                          style: const TextStyle(color: Colors.white),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
                   ),
-                ),
-        ),
-      );
-    });
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildControls() {
@@ -720,10 +831,7 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             isFullscreen == true
-                ? const SizedBox(
-                    width: 30,
-                    height: 20,
-                  )
+                ? const SizedBox(width: 30, height: 20)
                 : const SizedBox(),
             !widget.isLive
                 ? Padding(
@@ -735,7 +843,11 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
                   )
                 : Container(
                     padding: const EdgeInsets.only(
-                        left: 10, top: 5, right: 5, bottom: 6),
+                      left: 10,
+                      top: 5,
+                      right: 5,
+                      bottom: 6,
+                    ),
                     child: Row(
                       children: [
                         Container(
@@ -746,13 +858,9 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
                             borderRadius: BorderRadius.circular(20),
                           ),
                         ),
-                        const SizedBox(
-                          width: 7,
-                        ),
-                        const Text(
-                          "Live",
-                          style: TextStyle(color: Colors.white),
-                        )
+                        const SizedBox(width: 7),
+                        const Text("Live",
+                            style: TextStyle(color: Colors.white)),
                       ],
                     ),
                   ),
@@ -764,7 +872,8 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
                         data: SliderTheme.of(context).copyWith(
                           trackHeight: 2,
                           thumbShape: const RoundSliderThumbShape(
-                              enabledThumbRadius: 8),
+                            enabledThumbRadius: 8,
+                          ),
                         ),
                         child: Slider(
                           min: 0,
@@ -792,8 +901,9 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
                         onChanged: (newValue) async {
                           if (mounted) {
                             setState(() {
-                              backupPosition =
-                                  Duration(milliseconds: newValue.toInt());
+                              backupPosition = Duration(
+                                milliseconds: newValue.toInt(),
+                              );
                               log("backupPosition: $backupPosition");
                             });
                           }
@@ -803,15 +913,17 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
                             try {
                               await vlcPlayerCtrl
                                   .setMediaFromNetwork(
-                                      currentStream.url.toString(),
-                                      hwAcc: HwAcc.full,
-                                      autoPlay: true)
+                                currentStream.url.toString(),
+                                hwAcc: HwAcc.full,
+                                autoPlay: true,
+                              )
                                   .then((_) async {
                                 await vlcPlayerCtrl
                                     .seekTo(backupPosition)
                                     .then((_) {
                                   vlcPlayerCtrl.addAudioFromNetwork(
-                                      currentAudioStream.url.toString());
+                                    currentAudioStream.url.toString(),
+                                  );
                                 });
                               });
                             } catch (e) {
@@ -832,22 +944,13 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
             if (!widget.isLive)
               IconButton(
                 onPressed: _showmenu,
-                icon: const Icon(
-                  Icons.settings,
-                  color: Colors.white,
-                ),
+                icon: const Icon(Icons.settings, color: Colors.white),
               ),
             IconButton(
               onPressed: _toggleFullScreen,
               icon: isFullscreen
-                  ? const Icon(
-                      Icons.fullscreen_exit,
-                      color: Colors.white,
-                    )
-                  : const Icon(
-                      Icons.fullscreen,
-                      color: Colors.white,
-                    ),
+                  ? const Icon(Icons.fullscreen_exit, color: Colors.white)
+                  : const Icon(Icons.fullscreen, color: Colors.white),
             ),
           ],
         ),
@@ -861,9 +964,7 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
     showModalBottomSheet(
       backgroundColor: Colors.transparent,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(15),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
       ),
       context: context,
       builder: (context) {
@@ -880,21 +981,18 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                   Center(
                     child: Container(
                       decoration: BoxDecoration(
-                          color: Colors.grey,
-                          borderRadius: BorderRadius.circular(10)),
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                       width: 60,
                       height: 7,
                     ),
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                  const SizedBox(height: 20),
                   InkWell(
                     onTap: _showQuality,
                     child: Container(
@@ -904,19 +1002,15 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
                         children: [
                           const Row(
                             children: [
-                              Icon(
-                                Icons.tune,
-                                color: Colors.white,
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
+                              Icon(Icons.tune, color: Colors.white),
+                              SizedBox(width: 10),
                               Text(
                                 'Quality',
                                 style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                              )
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ],
                           ),
                           Row(
@@ -924,22 +1018,21 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
                               Text(
                                 currentStream.qualityLabel,
                                 style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                               const Icon(
                                 Icons.arrow_forward_ios_outlined,
                                 color: Colors.white,
-                              )
+                              ),
                             ],
-                          )
+                          ),
                         ],
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                   InkWell(
                     onTap: _playBackspeedsheet,
                     child: Container(
@@ -953,20 +1046,17 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
                                 Icons.play_circle_outline_rounded,
                                 color: Colors.white,
                               ),
-                              SizedBox(
-                                width: 10,
-                              ),
+                              SizedBox(width: 10),
                               Text(
                                 'Playback speed',
                                 style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                              )
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ],
                           ),
-                          const SizedBox(
-                            height: 10,
-                          ),
+                          const SizedBox(height: 10),
                           Row(
                             children: [
                               Text(
@@ -981,14 +1071,12 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
                                 color: Colors.white,
                               ),
                             ],
-                          )
+                          ),
                         ],
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                 ],
               ),
             ),
@@ -1004,9 +1092,7 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
     showModalBottomSheet(
       backgroundColor: Colors.transparent,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(15),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
       ),
       isScrollControlled: true,
       context: context,
@@ -1034,9 +1120,7 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
                   height: 7,
                 ),
               ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.only(left: 16, top: 16, right: 10),
                 child: Row(
@@ -1053,7 +1137,7 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
                     Text(
                       '${vlcPlayerCtrl.value.playbackSpeed}x',
                       style: const TextStyle(color: Colors.white),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -1065,7 +1149,8 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
                   itemBuilder: (BuildContext ctx, index) {
                     return InkWell(
                       customBorder: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                       onTap: () => playbackspeed(double.parse(speed[index])),
                       child: Container(
                         height: 50,
@@ -1076,8 +1161,9 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
                             Text(
                               "${speed[index]}x",
                               style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             if (vlcPlayerCtrl.value.playbackSpeed ==
                                 double.parse(speed[index]))
@@ -1088,16 +1174,14 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
                                   color: Colors.white,
                                   shape: BoxShape.circle,
                                 ),
-                              )
+                              ),
                           ],
                         ),
                       ),
                     );
                   },
                   separatorBuilder: (BuildContext ctx, index) {
-                    return const SizedBox(
-                      height: 10,
-                    );
+                    return const SizedBox(height: 10);
                   },
                   itemCount: speed.length,
                 ),
@@ -1119,9 +1203,7 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
     showModalBottomSheet(
       backgroundColor: Colors.transparent,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(15),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
       ),
       isScrollControlled: true,
       context: context,
@@ -1149,9 +1231,7 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
                   height: 7,
                 ),
               ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.only(left: 16, top: 16, right: 10),
                 child: Row(
@@ -1168,7 +1248,7 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
                     Text(
                       currentStream.qualityLabel,
                       style: const TextStyle(color: Colors.white),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -1178,14 +1258,18 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
                 child: ListView.separated(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   itemBuilder: (BuildContext ctx, index) {
+                    // String resolution =
+                    //     videoOnlyStreams[index].videoResolution.toString();
+                    // String height = resolution.split('x').last;
                     return InkWell(
                       customBorder: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                       onTap: () {
                         _changeQuality(stream: videoOnlyStreams[index]);
                       },
                       child: Container(
-                        height: 50,
+                         height: 50,
                         padding: const EdgeInsets.all(10),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1193,8 +1277,9 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
                             Text(
                               videoOnlyStreams[index].qualityLabel,
                               style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             if (currentStream.qualityLabel ==
                                 videoOnlyStreams[index].qualityLabel)
@@ -1205,16 +1290,14 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
                                   color: Colors.white,
                                   shape: BoxShape.circle,
                                 ),
-                              )
+                              ),
                           ],
                         ),
                       ),
                     );
                   },
                   separatorBuilder: (BuildContext ctx, index) {
-                    return const SizedBox(
-                      height: 10,
-                    );
+                    return const SizedBox(height: 10);
                   },
                   itemCount: videoOnlyStreams.length,
                 ),
@@ -1281,16 +1364,10 @@ class VLCPlayerControls extends StatelessWidget {
     return vlcPlayerCtrl.value.playingState == PlayingState.ended
         ? IconButton(
             onPressed: togglePlayPause,
-            icon: const Icon(
-              Icons.replay,
-              size: 50,
-              color: Colors.white,
-            ),
+            icon: const Icon(Icons.replay, size: 50, color: Colors.white),
           )
         : vlcPlayerCtrl.value.playingState == PlayingState.buffering || fetching
-            ? const CircularProgressIndicator(
-                color: Colors.white,
-              )
+            ? const CircularProgressIndicator(color: Colors.white)
             : PlayPause(
                 isPlaying: isPlaying,
                 togglePlay: () {
@@ -1339,10 +1416,7 @@ class _LeftCurve extends CustomPainter {
     // Text to be displayed
     const textSpan = TextSpan(
       text: '-10 sec',
-      style: TextStyle(
-        color: Colors.white,
-        fontSize: 10,
-      ),
+      style: TextStyle(color: Colors.white, fontSize: 10),
     );
 
     // Configure the text painter
@@ -1405,10 +1479,7 @@ class _RightCurve extends CustomPainter {
     // Text to be displayed
     const textSpan = TextSpan(
       text: '+10 sec',
-      style: TextStyle(
-        color: Colors.white,
-        fontSize: 10,
-      ),
+      style: TextStyle(color: Colors.white, fontSize: 10),
     );
 
     // Configure the text painter

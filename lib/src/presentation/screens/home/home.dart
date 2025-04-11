@@ -347,8 +347,23 @@ class Home extends StatelessWidget {
                             );
                           },
                           child: Testcard(
+                            tile: index == 0
+                                ? "Physics is like a puzzle. Start with the small pieces, and you'll see the bigger picture unfold"
+                                : index == 1
+                                    ? "The more you understand the laws of nature, the more you'll realize how much beauty lies in the universe's simplicity"
+                                    : "Physics is the language of the cosmos, and every equation is a conversation with the universe waiting to be understood",
+                            color: index == 0
+                                ? Color(0xff18AC00)
+                                : index == 1
+                                    ? Color(0xffFF6C00)
+                                    : Color(0xff02012A),
+                            count: 01,
                             subjectName: 'Physics',
-                            level: ctr.level[index],
+                            level: index == 0
+                                ? 'Beginner'
+                                : index == 1
+                                    ? 'Intermediate'
+                                    : 'Advanced',
                           ),
                         ),
                       ),
@@ -428,8 +443,23 @@ class Home extends StatelessWidget {
                             );
                           },
                           child: Testcard(
+                            tile: index == 0
+                                ? "Chemistry is the study of everything around us, from the air we breathe to the food we eat. Every molecule has a story"
+                                : index == 1
+                                    ? "In chemistry, understanding the bonds between atoms helps us unlock the mysteries of matter and change"
+                                    : "Chemistry is the art of transformation, where atoms dance, rearrange, and create the world as we know it, governed by the elegant laws of nature",
+                            color: index == 0
+                                ? Color(0xffFF6C00)
+                                : index == 1
+                                    ? Color(0xff18AC00)
+                                    : Color(0xff02012A),
+                            count: 01,
                             subjectName: 'Chemistry',
-                            level: ctr.level[index],
+                            level: index == 0
+                                ? 'Beginner'
+                                : index == 1
+                                    ? 'Intermediate'
+                                    : 'Advanced',
                           ),
                         ),
                       ),
@@ -509,8 +539,23 @@ class Home extends StatelessWidget {
                             );
                           },
                           child: Testcard(
+                            tile: index == 0
+                                ? "Biology is the study of life, from the tiniest cell to the vastness of ecosystems. Every living thing has a story to tell"
+                                : index == 1
+                                    ? "In biology, every organism is a masterpiece of evolution, shaped by the forces of nature and time"
+                                    : "Biology is the intricate dance of life at every scale, where molecular processes, genetic codes, and ecological systems intertwine to create the complexity of living organisms",
+                            color: index == 0
+                                ? Color(0xff02012A)
+                                : index == 1
+                                    ? Color(0xffFF6C00)
+                                    : Color(0xff18AC00),
+                            count: 01,
                             subjectName: 'Biology',
-                            level: ctr.level[index],
+                            level: index == 0
+                                ? 'Beginner'
+                                : index == 1
+                                    ? 'Intermediate'
+                                    : 'Advanced',
                           ),
                         ),
                       ),
