@@ -24,7 +24,7 @@ class UserRepoImpl extends UserRepo {
           "mail_id": student.mailId,
           "name": student.name,
           "phone_number": student.phoneNumber,
-          "is_active": true
+          "is_active": true,
         }.toString());
       }
       final response = await apiService.post(
@@ -44,12 +44,12 @@ class UserRepoImpl extends UserRepo {
       );
 
       dynamic result = handleResponse(response);
+
       log("status code for saveStudent():${response.statusCode}");
 
-      log("response body for savestudent():$result");
-
       if (result is Failure) {
-        return Left(result);
+        dynamic t1 = jsonDecode(response.body);
+        return Left(Failure(message: t1['detail']));
       }
 
       log("result =>: $result");
