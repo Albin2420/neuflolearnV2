@@ -84,6 +84,7 @@ class HomeController extends GetxController {
   RxInt physicsattendedCount = RxInt(0);
   RxInt chemattendedCount = RxInt(0);
   RxInt bioattendedCount = RxInt(0);
+  DateTime now = DateTime.now();
 
   @override
   void onInit() {

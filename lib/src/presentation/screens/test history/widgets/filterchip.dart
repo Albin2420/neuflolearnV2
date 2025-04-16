@@ -14,8 +14,7 @@ class Filterchip extends StatelessWidget {
     final ctr = Get.find<TestHistoryController>();
     return Obx(() {
       return Container(
-        height: 33,
-        width: 88,
+        width: 100,
         decoration: BoxDecoration(
           border: Border.all(
             color: ctr.selectedFilter.value == selectedIndex

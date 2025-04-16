@@ -178,7 +178,7 @@ class Tests extends StatelessWidget {
                         padding: EdgeInsets.only(left: index == 0 ? 16 : 0),
                         child: DailyTestCard(
                           subName: 'Physics',
-                          count: 20,
+                          count: ctr.now.day,
                           chapterName: index == 0
                               ? 'Physics is not about how the world looks, it\'s about how the world works.'
                               : index == 1
@@ -265,7 +265,7 @@ class Tests extends StatelessWidget {
                         padding: EdgeInsets.only(left: index == 0 ? 16 : 0),
                         child: DailyTestCard(
                           subName: 'Chemistry',
-                          count: 20,
+                          count: ctr.now.day,
                           chapterName: index == 0
                               ? 'Chemistry is the science of matter and change.'
                               : index == 1
@@ -352,7 +352,7 @@ class Tests extends StatelessWidget {
                         padding: EdgeInsets.only(left: index == 0 ? 16 : 0),
                         child: DailyTestCard(
                           subName: 'Biology',
-                          count: 20,
+                          count: ctr.now.day,
                           chapterName: index == 0
                               ? 'Biology is the science of life.'
                               : index == 1

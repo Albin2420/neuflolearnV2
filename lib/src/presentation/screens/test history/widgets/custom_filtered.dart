@@ -20,21 +20,22 @@ class CustomFiltered extends StatelessWidget {
           ); // Show empty state message
         }
 
-        return ListView.separated(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          separatorBuilder: (context, index) => const SizedBox(height: 10),
+        return ListView.builder(
           itemCount: ctr.customTest.length,
           itemBuilder: (context, index) {
-            return TestCard(
-              onTap: () {
-                ctr.fetchDetailedHistory(
-                    testId: ctr.customTest[index].testId,
-                    testName: ctr.customTest[index].testName);
-              },
-              currentScore: ctr.customTest[index].score,
-              totalScore: ctr.customTest[index].totalScore,
-              testName: ctr.customTest[index].testName,
-              testDate: ctr.customTest[index].completionDate.toString(),
+            return Padding(
+              padding: EdgeInsets.only(bottom: 10, left: 16, right: 16),
+              child: TestCard(
+                onTap: () {
+                  ctr.fetchDetailedHistory(
+                      testId: ctr.customTest[index].testId,
+                      testName: ctr.customTest[index].testName);
+                },
+                currentScore: ctr.customTest[index].score,
+                totalScore: ctr.customTest[index].totalScore,
+                testName: ctr.customTest[index].testName,
+                testDate: ctr.customTest[index].completionDate.toString(),
+              ),
             );
           },
         );

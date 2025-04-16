@@ -295,8 +295,18 @@ class StatChapter extends StatelessWidget {
                       child: Obx(
                         () {
                           return ctr.showmoreproblemAreas.value == true
-                              ? Text("show less")
-                              : Text("show more");
+                              ? Text(
+                                  "show less",
+                                  style: GoogleFonts.urbanist(
+                                      color: Color(0xff010029)
+                                          .withValues(alpha: 0.5)),
+                                )
+                              : Text(
+                                  "show more",
+                                  style: GoogleFonts.urbanist(
+                                      color: Color(0xff010029)
+                                          .withValues(alpha: 0.5)),
+                                );
                         },
                       ),
                     ),
@@ -352,8 +362,18 @@ class StatChapter extends StatelessWidget {
                       child: Obx(
                         () {
                           return ctr.showStrengths.value == true
-                              ? Text("show less")
-                              : Text("show more");
+                              ? Text(
+                                  "show less",
+                                  style: GoogleFonts.urbanist(
+                                      color: Color(0xff010029)
+                                          .withValues(alpha: 0.5)),
+                                )
+                              : Text(
+                                  "show more",
+                                  style: GoogleFonts.urbanist(
+                                      color: Color(0xff010029)
+                                          .withValues(alpha: 0.5)),
+                                );
                         },
                       ),
                     ),

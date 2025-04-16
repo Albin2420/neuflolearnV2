@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -330,12 +331,11 @@ class ExamController extends GetxController {
   initiatemockTest() async {
     try {
       examState.value = Loading();
-      await getMockTestQuestions(studentId: studentId.value);
       setSubjectName(subj: 'MockTest');
-      examState.value = Success(data: questionList);
-      startTimer();
+      getMockTestQuestions(studentId: studentId.value);
     } catch (e) {
       log("Error:$e");
+      examState.value = Failed();
     }
   }
 
@@ -362,6 +362,7 @@ class ExamController extends GetxController {
       }
 
       questionList.value = [];
+      examState.value = Failed();
     }, (data) {
       testId.value = data["mock_test_id"];
       physicsIds = data["physicsIds"];
@@ -370,6 +371,8 @@ class ExamController extends GetxController {
       zoologyIds = data["ZoologyIds"];
       questionList.value = data["questions"];
       tempQuestionList.value = data["questions"];
+      examState.value = Success(data: questionList);
+      startTimer();
     });
   }
 

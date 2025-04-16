@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:neuflo_learn/src/presentation/screens/play_video/play_video.dart';
+import 'package:neuflo_learn/src/presentation/widgets/failure/failureResponse.dart';
 
 import 'package:neuflo_learn/src/presentation/widgets/classes/currently_playing.dart';
 import 'package:neuflo_learn/src/presentation/widgets/classes/header.dart';
@@ -27,7 +29,17 @@ class Classes extends StatelessWidget {
 
     return Obx(() {
       return classesController.chapterstate.value.onState(onInitial: () {
-        return Center(child: CircularProgressIndicator());
+        return Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          color: Colors.white,
+          child: Center(
+            child: LoadingAnimationWidget.threeArchedCircle(
+              color: Color(0xFF010029),
+              size: 45,
+            ),
+          ),
+        );
       }, success: (data) {
         return SizedBox(
           width: MediaQuery.of(context).size.width,
@@ -214,11 +226,23 @@ class Classes extends StatelessWidget {
           ),
         );
       }, onFailed: (failed) {
-        return Center(
-          child: Text("pls try again later"),
+        return FailureUi(
+          onTapFunction: () {
+            classesController.reFresh();
+          },
         );
       }, onLoading: () {
-        return Center(child: CircularProgressIndicator());
+        return Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          color: Colors.white,
+          child: Center(
+            child: LoadingAnimationWidget.threeArchedCircle(
+              color: Color(0xFF010029),
+              size: 45,
+            ),
+          ),
+        );
       });
     });
   }

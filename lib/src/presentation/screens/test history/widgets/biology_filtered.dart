@@ -20,21 +20,22 @@ class BiologyFiltered extends StatelessWidget {
           ); // Show empty state message
         }
 
-        return ListView.separated(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          separatorBuilder: (context, index) => const SizedBox(height: 10),
+        return ListView.builder(
           itemCount: ctr.biology.length,
           itemBuilder: (context, index) {
-            return TestCard(
-              onTap: () {
-                ctr.fetchDetailedHistory(
-                    testId: ctr.biology[index].testId,
-                    testName: ctr.biology[index].testName);
-              },
-              currentScore: ctr.biology[index].score,
-              totalScore: ctr.biology[index].totalScore,
-              testName: ctr.biology[index].testName,
-              testDate: ctr.biology[index].completionDate.toString(),
+            return Padding(
+              padding: EdgeInsets.only(bottom: 10, left: 16, right: 16),
+              child: TestCard(
+                onTap: () {
+                  ctr.fetchDetailedHistory(
+                      testId: ctr.biology[index].testId,
+                      testName: ctr.biology[index].testName);
+                },
+                currentScore: ctr.biology[index].score,
+                totalScore: ctr.biology[index].totalScore,
+                testName: ctr.biology[index].testName,
+                testDate: ctr.biology[index].completionDate.toString(),
+              ),
             );
           },
         );

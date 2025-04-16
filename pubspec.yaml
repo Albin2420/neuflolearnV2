@@ -79,6 +79,7 @@ dependencies:
   flutter_local_notifications: ^18.0.1
   flutter_vlc_player: ^7.4.3
   youtube_explode_dart: ^2.3.10
+  loading_animation_widget: ^1.3.0
 
 dev_dependencies:
   flutter_test:

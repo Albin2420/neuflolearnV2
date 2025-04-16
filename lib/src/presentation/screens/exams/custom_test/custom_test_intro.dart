@@ -226,7 +226,7 @@ class CustomTestIntro extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ctr = Get.put(CustomTestController());
+    final customctr = Get.find<CustomTestController>();
     final examCtr = Get.find<ExamController>();
     return Scaffold(
       backgroundColor: Colors.white,
@@ -315,8 +315,8 @@ class CustomTestIntro extends StatelessWidget {
                 () {
                   return CustomtestExamcriteria(
                       shadow: false,
-                      timeLimit: '${ctr.questionCount.value}',
-                      noOfQuestion: '${ctr.questionCount.value}');
+                      timeLimit: '${customctr.questionCount.value}',
+                      noOfQuestion: '${customctr.questionCount.value}');
                 },
               ),
               Container(
@@ -332,7 +332,7 @@ class CustomTestIntro extends StatelessWidget {
                     runAlignment: WrapAlignment.center,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      ...ctr.selectedChapters.map(
+                      ...customctr.selectedChapters.map(
                         (e) => Text(
                           "${e.chapterName},",
                           textAlign: TextAlign.center,
@@ -363,8 +363,8 @@ class CustomTestIntro extends StatelessWidget {
             ),
             GestureDetector(
               onTap: () {
-                ctr.setCurrentSubjectName(sub: "Physics");
-                ctr.fetchChapters(subId: 1);
+                customctr.setCurrentSubjectName(sub: "Physics");
+                customctr.fetchChapters(subId: 1);
                 Get.to(
                   () => TestSettingsSheet(),
                   transition: Transition.downToUp,
@@ -408,19 +408,18 @@ class CustomTestIntro extends StatelessWidget {
             AppBtn(
               btnName: 'Start Test',
               onTapFunction: () async {
-                if (ctr.selectedChapters.isEmpty) {
+                if (customctr.selectedChapters.isEmpty) {
                   Fluttertoast.showToast(
                       msg: 'Select chapters from test settings to continue',
-                      backgroundColor: Colors.black,
                       textColor: Colors.white);
                   return;
                 }
 
                 await examCtr.initiateCustomTestExam(
-                  physicsChapters: ctr.physicsSelectedChapters,
-                  chemistryChapters: ctr.chemistrySelectedChapters,
-                  biologyChapters: ctr.biologySelectedChapters,
-                  noOfQuestions: ctr.questionCount.value,
+                  physicsChapters: customctr.physicsSelectedChapters,
+                  chemistryChapters: customctr.chemistrySelectedChapters,
+                  biologyChapters: customctr.biologySelectedChapters,
+                  noOfQuestions: customctr.questionCount.value,
                 );
               },
               iconImg: Icons.arrow_forward,

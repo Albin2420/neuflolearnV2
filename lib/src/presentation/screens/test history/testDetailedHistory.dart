@@ -406,8 +406,8 @@ import 'package:neuflo_learn/src/presentation/screens/test%20history/widgets/Fil
 
 import '../exams/result/widgets/result_info.dart';
 
-class TestHistoryResult extends StatelessWidget {
-  const TestHistoryResult({super.key});
+class TestDetailedHistory extends StatelessWidget {
+  const TestDetailedHistory({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -420,7 +420,7 @@ class TestHistoryResult extends StatelessWidget {
     ];
     return Obx(
       () {
-        return ctr.state.value.onState(
+        return ctr.testDetailedHistoryState.value.onState(
           onInitial: () {
             return ExamLoading();
           },

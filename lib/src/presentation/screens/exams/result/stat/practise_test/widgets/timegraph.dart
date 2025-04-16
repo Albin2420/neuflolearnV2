@@ -149,7 +149,7 @@ class TimeGrowthGraph extends StatelessWidget {
                       width: 14,
                       child: Image.asset("assets/icons/timer4.png"),
                     ),
-                    const SizedBox(width: 5),
+                    const SizedBox(width: 4),
                     Text(
                       "${timegrowthPercentage.toStringAsFixed(1)}%",
                       style: GoogleFonts.urbanist(
@@ -176,7 +176,7 @@ class TimeGrowthGraph extends StatelessWidget {
             ),
           ),
           SizedBox(
-            width: 6,
+            width: 4,
           ),
           Expanded(
             child: Container(
