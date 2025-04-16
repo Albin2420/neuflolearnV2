@@ -1000,11 +1000,19 @@ class ExamController extends GetxController {
               subject: currentSubjectName,
               level: level,
               docname: nctr.docName.value);
+        } else {
+          isReportLoading.value = false;
         }
       } else if (type == 'mocktest') {
         isSuccess = await submitMockTestAnswers();
+        if (!isSuccess) {
+          isReportLoading.value = false;
+        }
       } else {
         isSuccess = await submitCustomTest();
+        if (!isSuccess) {
+          isReportLoading.value = false;
+        }
       }
 
       if (isSuccess) {
@@ -1014,6 +1022,7 @@ class ExamController extends GetxController {
       }
     } catch (e) {
       log("Error in generateExamReport: $e");
+      isReportLoading.value = false;
       return false;
     }
   }

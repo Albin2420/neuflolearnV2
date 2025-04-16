@@ -21,8 +21,6 @@ void main() async {
   await NotificationServices.instance.initialize();
 
   runApp(const NeufloLearn());
-
-
 }
 
 Future preRequisites() async {
