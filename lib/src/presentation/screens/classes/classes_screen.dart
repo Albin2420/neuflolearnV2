@@ -6,11 +6,10 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:neuflo_learn/src/presentation/screens/play_video/play_video.dart';
-import 'package:neuflo_learn/src/presentation/widgets/failure/failureResponse.dart';
-
 import 'package:neuflo_learn/src/presentation/widgets/classes/currently_playing.dart';
 import 'package:neuflo_learn/src/presentation/widgets/classes/header.dart';
 import 'package:neuflo_learn/src/presentation/widgets/classes/subject_card.dart';
+import 'package:neuflo_learn/src/presentation/widgets/failure/failureResponse.dart';
 
 import '../../../core/config/theme/colors.dart';
 import '../../controller/classes/classes_controller.dart';

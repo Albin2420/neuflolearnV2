@@ -1,40 +1,63 @@
-// import 'dart:async';
+import 'dart:async';
+import 'dart:developer';
 
-// import 'package:get/get.dart';
-// import 'package:connectivity_plus/connectivity_plus.dart';
-// import 'package:neuflo_learn/src/data/services/connectivity_service.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 
-// class ConnectivityController extends GetxController {
-//   // Observable to hold the current connectivity status
-//   Rx<List<ConnectivityResult>> connectivityStatus =
-//       Rx([ConnectivityResult.none]);
+class ConnectivityController extends GetxController {
+  final Connectivity _connectivity = Connectivity();
+  Rx<ConnectivityResult> previousConnectivityResult =
+      Rx(ConnectivityResult.none);
+  bool _isInitialCheckDone = false;
 
-//   final ConnectivityService _connectivityService = ConnectivityService();
-//   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+  @override
+  void onInit() {
+    super.onInit();
+    _checkInitialConnection();
+    _connectivity.onConnectivityChanged.listen(netStatus);
+  }
 
-//   @override
-//   void onInit() {
-//     super.onInit();
+  // Check connection status when the app launches
+  Future<void> _checkInitialConnection() async {
+    log("Checking initial connection");
+    List<ConnectivityResult> connectivityResult =
+        await _connectivity.checkConnectivity();
+    log("Initial connection status: $connectivityResult");
+    if (connectivityResult.first == ConnectivityResult.none) {
+      showConnectivityToast(message: "Connection Lost", isConnected: false);
+    }
+    previousConnectivityResult.value = connectivityResult.first;
+  }
 
-//     // Initial connectivity check
-//     _checkConnectivity();
+  // Listen to the changes in connection
 
-//     // Listen for connectivity changes
-//     _connectivitySubscription =
-//         _connectivityService.onConnectivityChanged.listen((result) {
-//       connectivityStatus.value = result;
-//     });
-//   }
+  void netStatus(List<ConnectivityResult> connectivityResult) {
+    log('previousConnectivityResult => $previousConnectivityResult');
+    log('currentConnectivityResult => $connectivityResult');
+    // Skip the first check when app opens
+    if (!_isInitialCheckDone) {
+      previousConnectivityResult.value = connectivityResult.first;
+      _isInitialCheckDone = true;
+      return;
+    }
 
-//   @override
-//   void onClose() {
-//     // Cancel the stream subscription when the controller is disposed
-//     _connectivitySubscription.cancel();
-//     super.onClose();
-//   }
+    if (previousConnectivityResult != ConnectivityResult.none &&
+        connectivityResult.first == ConnectivityResult.none) {
+      showConnectivityToast(message: "Connection Lost", isConnected: false);
+    }
+    if (previousConnectivityResult == ConnectivityResult.none &&
+        connectivityResult.first != ConnectivityResult.none) {
+      showConnectivityToast(message: "Back Online", isConnected: true);
+    }
 
-//   // Method to check the initial connectivity status
-//   Future<void> _checkConnectivity() async {
-//     connectivityStatus.value = await _connectivityService.checkConnectivity();
-//   }
-// }
+    previousConnectivityResult.value = connectivityResult.first;
+  }
+
+  // Show the toast when the connection is connected/disconnected
+  void showConnectivityToast(
+      {required String message, required bool isConnected}) {
+    Fluttertoast.showToast(msg: message, textColor: Colors.white, fontSize: 26);
+  }
+}
