@@ -48,8 +48,7 @@ class ClassesController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchLive();
-    fetchSubjects();
+    reFresh();
   }
 
   Future<void> reFresh() async {
@@ -198,6 +197,7 @@ class ClassesController extends GetxController {
       subjectNames.value = subjectData.keys.toList();
       isalreadyFetched.value = true;
       chapterstate.value = Success(data: subjectNames);
+      // chapterstate.value = Loading();
     } catch (e) {
       log("Error in fetchSubjects: $e");
       chapterstate.value = Failed();

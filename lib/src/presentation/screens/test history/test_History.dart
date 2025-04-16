@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -65,8 +67,7 @@ class TestHistory extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 24),
-            // Filter Chip Section
+            const SizedBox(height: 18),
             SizedBox(
               height: 33,
               child: Obx(() {
@@ -90,58 +91,10 @@ class TestHistory extends StatelessWidget {
                 );
               }),
             ),
-            //change based on index is required
-            const SizedBox(height: 32),
+            const SizedBox(height: 18),
             Obx(() {
               return filters[ctr.selectedFilter.value];
             }),
-            SizedBox(
-              height: 30,
-            )
-            // Padding(
-            //   padding: const EdgeInsets.symmetric(horizontal: 16),
-            //   child: Row(
-            //     children: [
-            //       Text(
-            //         "THIS WEEK",
-            //         style: GoogleFonts.urbanist(
-            //           fontWeight: FontWeight.w500,
-            //           fontSize: 12,
-            //           color: const Color(0xff02012A).withOpacity(0.7),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-            // const SizedBox(height: 16),
-
-            // SizedBox(
-            //   height: 11,
-            // ),
-            // Padding(
-            //   padding: const EdgeInsets.only(left: 16),
-            //   child: Row(
-            //     children: [
-            //       Text(
-            //         "LAST WEEK",
-            //         style: GoogleFonts.urbanist(
-            //           fontWeight: FontWeight.w500,
-            //           fontSize: 12,
-            //           color: const Color(0xff02012A).withOpacity(0.7),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-            // SizedBox(
-            //   height: 11,
-            // ),
-            // Expanded(
-            //   flex: 2,
-            //   child: Container(
-            //     color: Colors.yellow,
-            //   ),
-            // )
           ],
         ),
       ),

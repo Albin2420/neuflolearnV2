@@ -78,7 +78,6 @@ class FirebaseAuthService extends Auth {
         ));
         if (userCredential.user != null) {
           status = AuthStatus.successful;
-
         } else {
           status = AuthStatus.undefined;
         }
@@ -127,9 +126,7 @@ class FirebaseAuthService extends Auth {
   @override
   Future updateUserPhoneNumber() async {
     final User? user = _firebaseAuth.currentUser;
-    if (user != null) {
-    
-    }
+    if (user != null) {}
   }
 }
 

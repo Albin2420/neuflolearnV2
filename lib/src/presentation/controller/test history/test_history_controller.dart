@@ -1,6 +1,8 @@
 import 'dart:developer';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:neuflo_learn/src/core/data_state/data_state.dart';
 import 'package:neuflo_learn/src/data/models/exam_record.dart';
@@ -10,7 +12,7 @@ import 'package:neuflo_learn/src/data/repositories/token/token_repo_impl.dart';
 import 'package:neuflo_learn/src/domain/repositories/testHistory/test_history_repo.dart';
 import 'package:neuflo_learn/src/domain/repositories/token/token_repo.dart';
 import 'package:neuflo_learn/src/presentation/controller/app_startup/app_startup.dart';
-import 'package:neuflo_learn/src/presentation/screens/test%20history/test_history_result.dart';
+import 'package:neuflo_learn/src/presentation/screens/test%20history/testDetailedHistory.dart';
 
 class TestHistoryController extends GetxController {
   final appctr = Get.find<AppStartupController>();
@@ -32,7 +34,8 @@ class TestHistoryController extends GetxController {
   RxList<ExamRecord> chemistry = RxList();
   RxList<ExamRecord> biology = RxList();
 
-  Rx<Ds> state = Rx(Initial());
+  Rx<Ds> testDetailedHistoryState = Rx(Initial());
+  Rx<Ds> testHistoryState = Rx(Initial());
   RxString sub = RxString("");
 
   RxInt timetaken = RxInt(-1);
@@ -60,6 +63,7 @@ class TestHistoryController extends GetxController {
   }
 
   Future<void> fetch() async {
+    testHistoryState.value = Loading();
     final result = await tstRepo.fetchTestHistorys(
         accessToken: await appctr.getAccessToken() ?? '');
     result.fold((l) async {
@@ -77,7 +81,7 @@ class TestHistoryController extends GetxController {
           fetch();
         });
       } else {
-        state.value = Failed();
+        testHistoryState.value = Failed();
       }
     }, (r) {
       testHistorys.value = r['mockTests'] +
@@ -91,6 +95,8 @@ class TestHistoryController extends GetxController {
       biology.value = r['biology'];
       mockTest.value = r['mockTests'];
       customTest.value = r['customTests'];
+
+      testHistoryState.value = Success(data: testHistorys);
     });
   }
 
@@ -116,7 +122,8 @@ class TestHistoryController extends GetxController {
         });
       } else {
         EasyLoading.dismiss();
-        state.value = Failed();
+        testDetailedHistoryState.value = Failed();
+        Fluttertoast.showToast(msg: 'something went wrong');
       }
     }, (r) async {
       try {
@@ -134,12 +141,12 @@ class TestHistoryController extends GetxController {
 
         filter();
 
-        state.value = Success(data: r);
+        testDetailedHistoryState.value = Success(data: r);
         EasyLoading.dismiss();
-        Get.to(() => TestHistoryResult());
+        Get.to(() => TestDetailedHistory());
       } catch (e) {
         log("error:$e");
-        state.value = Failed();
+        testDetailedHistoryState.value = Failed();
         EasyLoading.dismiss();
       }
     });
@@ -147,17 +154,6 @@ class TestHistoryController extends GetxController {
 
   void filter() {
     try {
-      // correctfiltered.value = qstnsAll
-      //     .where((q) => q.submittedAnswer == (q.answer)?.toUpperCase())
-      //     .toList();
-      // incorrectfiltered.value = qstnsAll
-      //     .where((q) =>
-      //         q.submittedAnswer != (q.answer)?.toUpperCase() &&
-      //         q.submittedAnswer != "UNATTEMPTED")
-      //     .toList();
-      // skipped.value =
-      //     qstnsAll.where((q) => q.submittedAnswer == "UNATTEMPTED").toList();
-
       correctfiltered.value = qstnsAll
           .where((q) =>
               q.submittedAnswer?.trim().toLowerCase() ==

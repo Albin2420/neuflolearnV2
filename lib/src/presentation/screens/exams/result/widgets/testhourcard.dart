@@ -90,43 +90,57 @@ class Testhourcard extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        if (hours.isNotEmpty) ...[
-                          Text(
-                            hours,
-                            style: GoogleFonts.urbanist(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 24,
+                        if (hours.isNotEmpty)
+                          RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: hours,
+                                  style: GoogleFonts.urbanist(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 24,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: ' hr  ',
+                                  style: GoogleFonts.urbanist(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 10,
+                                    color: const Color(0xff02013d80)
+                                        .withOpacity(0.5),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(width: 5),
-                          Text(
-                            "hr",
-                            style: GoogleFonts.urbanist(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 10,
-                              color: const Color(0xff02013d80).withOpacity(0.5),
-                            ),
-                          ),
-                          const SizedBox(width: 5),
-                        ],
-                        Text(
-                          minutes,
-                          style: GoogleFonts.urbanist(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 24,
-                          ),
-                        ),
-                        const SizedBox(width: 5),
-                        Text(
-                          "min",
-                          style: GoogleFonts.urbanist(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 10,
-                            color: const Color.fromARGB(2, 3, 64, 134)
-                                .withOpacity(0.5),
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: minutes,
+                                style: GoogleFonts.urbanist(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 24,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              TextSpan(
+                                text: ' min',
+                                style: GoogleFonts.urbanist(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 10,
+                                  color: const Color.fromARGB(2, 3, 64, 134)
+                                      .withOpacity(0.5),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
+                    ),
+                    SizedBox(
+                      height: 4,
                     ),
                     Text(
                       "TOTAL TIME SPENT",

@@ -70,35 +70,6 @@ class IntroScreen extends StatelessWidget {
             Expanded(
               child: Column(
                 children: [
-                  // Obx(() {
-                  //   if (appctrl.isDemo.value == true) {
-                  //     return Padding(
-                  //       padding: const EdgeInsets.only(left: 8, right: 8),
-                  //       child: SizedBox(
-                  //         height: 100,
-                  //         child: Row(
-                  //           children: [
-                  //             Expanded(
-                  //               child: TextField(
-                  //                 controller: ctr.textCtr,
-                  //               ),
-                  //             ),
-                  //             TextButton(
-                  //               onPressed: () {
-                  //                 Url.baseUrl = ctr.textCtr.text;
-
-                  //                 ctr.textCtr.clear();
-                  //               },
-                  //               child: const Text('Submit'),
-                  //             )
-                  //           ],
-                  //         ),
-                  //       ),
-                  //     );
-                  //   } else {
-                  //     return SizedBox();
-                  //   }
-                  // }),
                   Expanded(
                     child: PageView(
                       controller: ctr.controller,
@@ -153,16 +124,11 @@ class IntroScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  // const PhoneLoginButton(),
-                  // const SizedBox(
-                  //   height: 12,
-                  // ),
                   GoogleLoginButton(
                     onTapFunction: () async {
                       if (!EasyLoading.isShow) {
                         await ctr.singInWithGoogle();
                         EasyLoading.show();
-
                         // if (ctr.currentAppUser.value != null) {
                         if (ctr.currentFirestoreAppUser.value != null) {
                           if (ctr.currentFirestoreAppUser.value
@@ -181,11 +147,6 @@ class IntroScreen extends StatelessWidget {
                             }
                           } else {
                             log("navigate to home() :${ctr.currentFirestoreAppUser.value?.phone}");
-                            await firestoreService
-                                .dailyExamReportResetandStreakReset(
-                              userName:
-                                  "${ctr.currentFirestoreAppUser.value?.phone}@neuflo.io",
-                            );
 
                             bool isTokenFetched = await ctr.getNewToken(
                               studentId:
@@ -196,6 +157,11 @@ class IntroScreen extends StatelessWidget {
                             );
 
                             if (isTokenFetched) {
+                              firestoreService
+                                  .dailyExamReportResetandStreakReset(
+                                userName:
+                                    "${ctr.currentFirestoreAppUser.value?.phone}@neuflo.io",
+                              );
                               EasyLoading.dismiss();
                               Fluttertoast.showToast(msg: 'Sign in successful');
                               Get.offAll(() => NavigationScreen());

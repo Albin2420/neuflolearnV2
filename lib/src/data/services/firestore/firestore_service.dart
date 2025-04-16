@@ -135,6 +135,7 @@ class FirestoreService {
       }
     } catch (e) {
       log('Error:$e');
+      return null;
     }
   }
 

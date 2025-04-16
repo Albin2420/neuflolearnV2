@@ -81,6 +81,8 @@ class StatsRepoImpl extends StatsRepo {
               });
             }));
       });
+
+      log("Br in mockTest:$mockStatsMap");
       return Right(({
         "message": result["message"],
         "practice_test_stats": practiceStatsMap,

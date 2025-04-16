@@ -20,21 +20,22 @@ class ChemistryFiltered extends StatelessWidget {
           ); // Show empty state message
         }
 
-        return ListView.separated(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          separatorBuilder: (context, index) => const SizedBox(height: 10),
+        return ListView.builder(
           itemCount: ctr.chemistry.length,
           itemBuilder: (context, index) {
-            return TestCard(
-              onTap: () {
-                ctr.fetchDetailedHistory(
-                    testId: ctr.chemistry[index].testId,
-                    testName: ctr.chemistry[index].testName);
-              },
-              currentScore: ctr.chemistry[index].score,
-              totalScore: ctr.chemistry[index].totalScore,
-              testName: ctr.chemistry[index].testName,
-              testDate: ctr.chemistry[index].completionDate.toString(),
+            return Padding(
+              padding: EdgeInsets.only(bottom: 10, left: 16, right: 16),
+              child: TestCard(
+                onTap: () {
+                  ctr.fetchDetailedHistory(
+                      testId: ctr.chemistry[index].testId,
+                      testName: ctr.chemistry[index].testName);
+                },
+                currentScore: ctr.chemistry[index].score,
+                totalScore: ctr.chemistry[index].totalScore,
+                testName: ctr.chemistry[index].testName,
+                testDate: ctr.chemistry[index].completionDate.toString(),
+              ),
             );
           },
         );

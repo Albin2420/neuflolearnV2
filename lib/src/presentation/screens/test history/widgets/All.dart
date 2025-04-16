@@ -19,24 +19,25 @@ class All extends StatelessWidget {
               "No test history available",
               style: TextStyle(fontSize: 14, color: Colors.grey),
             ),
-          ); // Show empty state message
+          );
         }
 
-        return ListView.separated(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          separatorBuilder: (context, index) => const SizedBox(height: 10),
+        return ListView.builder(
           itemCount: ctr.testHistorys.length,
           itemBuilder: (context, index) {
-            return TestCard(
-              onTap: () {
-                ctr.fetchDetailedHistory(
-                    testId: ctr.testHistorys[index].testId,
-                    testName: ctr.testHistorys[index].testName);
-              },
-              currentScore: ctr.testHistorys[index].score,
-              totalScore: ctr.testHistorys[index].totalScore,
-              testName: ctr.testHistorys[index].testName,
-              testDate: ctr.testHistorys[index].completionDate.toString(),
+            return Padding(
+              padding: EdgeInsets.only(bottom: 10, left: 16, right: 16),
+              child: TestCard(
+                onTap: () {
+                  ctr.fetchDetailedHistory(
+                      testId: ctr.testHistorys[index].testId,
+                      testName: ctr.testHistorys[index].testName);
+                },
+                currentScore: ctr.testHistorys[index].score,
+                totalScore: ctr.testHistorys[index].totalScore,
+                testName: ctr.testHistorys[index].testName,
+                testDate: ctr.testHistorys[index].completionDate.toString(),
+              ),
             );
           },
         );

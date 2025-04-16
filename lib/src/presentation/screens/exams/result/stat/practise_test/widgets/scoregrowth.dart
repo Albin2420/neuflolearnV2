@@ -68,7 +68,7 @@ class Scoregrowthgraph extends StatelessWidget {
                         fontSize: 10,
                       ),
                     ),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: 6),
                     const SizedBox(
                       height: 12,
                       width: 14,
@@ -76,7 +76,7 @@ class Scoregrowthgraph extends StatelessWidget {
                         image: AssetImage("assets/icons/book.png"),
                       ),
                     ),
-                    const SizedBox(width: 5),
+                    const SizedBox(width: 6),
                     Text(
                       "${scorePercentage.toStringAsFixed(1)} %",
                       style: GoogleFonts.urbanist(
@@ -87,7 +87,7 @@ class Scoregrowthgraph extends StatelessWidget {
                         fontSize: 10,
                       ),
                     ),
-                    const SizedBox(width: 2),
+                    // const SizedBox(width: 2),
                     SizedBox(
                       height: 8,
                       width: 8,
@@ -96,23 +96,26 @@ class Scoregrowthgraph extends StatelessWidget {
                             ? "assets/icons/down_arrow.png"
                             : "assets/icons/uparrow.png"),
                       ),
-                    )
+                    ),
                   ],
                 )
               ],
             ),
           ),
-          const SizedBox(width: 2),
+          const SizedBox(width: 4),
           Expanded(
             child: Container(
-              padding: const EdgeInsets.only(bottom: 10, left: 6),
+              padding: const EdgeInsets.only(bottom: 10, left: 12),
               child: LineChart(
                 LineChartData(
                   lineBarsData: [
                     LineChartBarData(
                       spots: spots,
                       gradient: const LinearGradient(
-                        colors: [Colors.green, Colors.red],
+                        colors: [
+                          Colors.green,
+                          Colors.red,
+                        ],
                       ),
                       isCurved: true,
                       color: Colors.green,

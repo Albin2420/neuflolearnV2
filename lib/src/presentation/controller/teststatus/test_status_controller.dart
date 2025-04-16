@@ -22,7 +22,7 @@ class TestStatusController extends GetxController {
   RxBool showmoreproblemAreas = RxBool(false);
   RxBool showStrengths = RxBool(false);
 
-  Rx<Ds<Map<String, dynamic>>> userState =
+  Rx<Ds<Map<String, dynamic>>> statState =
       Rx<Ds<Map<String, dynamic>>>(Initial());
 
   //chapter status;
@@ -38,7 +38,6 @@ class TestStatusController extends GetxController {
   void onInit() {
     super.onInit();
     log("TestStatusController initialized()");
-    userState.value = Loading();
     weeklystats();
   }
 
@@ -55,6 +54,7 @@ class TestStatusController extends GetxController {
   }
 
   Future<void> weeklystats() async {
+    statState.value = Loading();
     final result = await stRepo.weeklystats(
         accessToken: await appctr.getAccessToken() ?? '');
 
@@ -64,14 +64,14 @@ class TestStatusController extends GetxController {
             refreshToken: appctr.refreshToken.value);
 
         tokenResp.fold((l) {
-          userState.value = Failed();
+          statState.value = Failed();
         }, (R) async {
           await appctr.saveToken(
               accessToken: R['access_token'], refreshToken: R['refresh_token']);
           weeklystats();
         });
       } else {
-        userState.value = Failed();
+        statState.value = Failed();
       }
     }, (r) {
       stdataPracticeTest.value = r['practice_test_stats'];
@@ -97,7 +97,8 @@ class TestStatusController extends GetxController {
     if (stdataChaptStatus.containsKey("Biology")) {
       biology.value = stdataChaptStatus["Biology"];
     }
-    userState.value = Success(data: {});
+    statState.value = Success(data: {});
+    // statState.value = Loading();
   }
 
   void changeChapIndex({required int index}) {
