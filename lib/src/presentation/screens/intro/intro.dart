@@ -5,7 +5,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:neuflo_learn/src/core/url.dart';
 import 'package:neuflo_learn/src/data/services/firebase/firebase_auth_impl.dart';
 import 'package:neuflo_learn/src/data/services/firestore/firestore_service.dart';
 import 'package:neuflo_learn/src/presentation/controller/app_startup/app_startup.dart';
