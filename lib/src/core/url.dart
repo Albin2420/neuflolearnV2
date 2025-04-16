@@ -20,7 +20,7 @@ class Url {
   static const studentProfile = 'student-profile';
   static const setSkillLevels = 'student-skill-level';
   static const generateCustomTest = 'generate-custom-test/';
-  static const status = "status";
+  static const status = "app-status/";
 
   static const getQuestionIds = "practice-test/questions";
   static const submitMockquestion = "submit-mock-test";
