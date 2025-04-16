@@ -46,6 +46,8 @@ class SetupAccountController extends GetxController {
   /// courseId
   RxInt courseId = RxInt(0);
 
+  RxString isFailed = RxString("");
+
   /// selected course
   Rx<Course?> currentSelectedCourse = Rx(null);
 
@@ -210,7 +212,7 @@ class SetupAccountController extends GetxController {
   Future completeUserSetup() async {
     userAccountSetupState.value = Loading();
     try {
-      final isSetupSuccess = await saveUserInfo();
+      await saveUserInfo();
       // userAccountSetupState.value = Success(data: isSetupSuccess);
     } on Exception catch (e) {
       userAccountSetupState.value = Failed(e: e.toString());
@@ -499,44 +501,6 @@ class SetupAccountController extends GetxController {
   Rx<Ds<bool>> userAccountSetupState = Rx(Initial());
   Rx<Student> currentStudent = Rx(Student());
 
-  // RxBool isReadytoSaveskill = RxBool(false);
-
-  // Future<bool> saveUserInfo() async {
-  //   AppUserInfo? appUserInfo = await getUserInfo();
-
-  //   final result = await userRepo.saveStudent(
-  //     student: Student(
-  //       studentId: appUserInfo?.id,
-  //       mailId: appUserInfo?.email,
-  //       name: appUserInfo?.name,
-  //       phoneNumber: appUserInfo?.phone,
-  //     ),
-  //   );
-
-  //   result.fold((f) {
-  //     userAccountSetupState.value = Failed(e: f.message);
-  //     throw Exception(f.message);
-  //   }, (student) async {
-  //     log("save student success");
-  //     currentStudent.value = student;
-  //     final token = await tokenRepo.getToken(
-  //         studentId: student.studentId ?? 0,
-  //         phoneNumber: student.phoneNumber ?? '');
-
-  //     token.fold((l) {
-  //       log("token failed");
-  //       userAccountSetupState.value = Failed(e: l.message);
-  //       return false;
-  //     }, (r) async {
-  //       log("accestoken:${r["access_token"]}");
-  //       log("refresh_token:${r["refresh_token"]}");
-  //       await appCtr.saveToken(
-  //           accessToken: r['access_token'], refreshToken: r['refresh_token']);
-  //       return await saveSkills();
-  //     });
-  //   });
-  // }
-
   Future<bool> saveUserInfo() async {
     AppUserInfo? appUserInfo = await getUserInfo();
 
@@ -550,10 +514,10 @@ class SetupAccountController extends GetxController {
     );
 
     return await result.fold((f) async {
+      isFailed.value = f.message;
       userAccountSetupState.value = Failed(e: f.message);
       return false;
     }, (student) async {
-      log("save student success");
       currentStudent.value = student;
       return await saveSkills();
     });

@@ -56,14 +56,17 @@ class SetupSuccessBtn extends StatelessWidget {
               }
 
               if (ctr.userAccountSetupState.value.state == DataState.error) {
-                log('----------  if data state is ERROR');
-                EasyLoading.dismiss();
-                Fluttertoast.showToast(
-                  backgroundColor: Colors.red.shade400,
-                  textColor: Colors.white,
-                  msg: 'Account setup failed. Try again',
-                );
-
+                if (ctr.isFailed.value != '') {
+                  EasyLoading.dismiss();
+                  Fluttertoast.showToast(
+                    msg: ctr.isFailed.value,
+                  );
+                } else {
+                  EasyLoading.dismiss();
+                  Fluttertoast.showToast(
+                    msg: "something went wrong",
+                  );
+                }
                 return;
               }
             },
