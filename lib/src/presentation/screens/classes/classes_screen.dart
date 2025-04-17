@@ -33,7 +33,7 @@ class Classes extends StatelessWidget {
           width: MediaQuery.of(context).size.width,
           color: Colors.white,
           child: Center(
-            child: LoadingAnimationWidget.threeArchedCircle(
+            child: LoadingAnimationWidget.hexagonDots(
               color: Color(0xFF010029),
               size: 45,
             ),
@@ -236,7 +236,7 @@ class Classes extends StatelessWidget {
           width: MediaQuery.of(context).size.width,
           color: Colors.white,
           child: Center(
-            child: LoadingAnimationWidget.threeArchedCircle(
+            child: LoadingAnimationWidget.hexagonDots(
               color: Color(0xFF010029),
               size: 45,
             ),
