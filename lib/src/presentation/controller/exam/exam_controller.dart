@@ -496,7 +496,7 @@ class ExamController extends GetxController {
           isSuccess = await subMitMockTest(); // Retry API call with new token
         });
       } else {
-        examReportState.value = Failed(e: f.message);
+        examReportState.value = Failed(e: 'something went wrong');
         isSuccess = false;
       }
     }, (r) async {
