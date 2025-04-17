@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:neuflo_learn/src/core/data_state/data_state.dart';
@@ -9,6 +10,7 @@ import 'package:neuflo_learn/src/data/services/app_service/app_service.dart';
 import 'package:neuflo_learn/src/data/services/data_access/hive_service.dart';
 import 'package:neuflo_learn/src/data/services/firestore/firestore_service.dart';
 import 'package:neuflo_learn/src/domain/repositories/token/token_repo.dart';
+import 'package:neuflo_learn/src/presentation/controller/connectivity/connectivity_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppStartupController extends GetxController {
@@ -40,14 +42,38 @@ class AppStartupController extends GetxController {
   RxString accessToken = RxString('');
   RxString refreshToken = RxString('');
 
+  final ConnectivityController connectivityController =
+      Get.find<ConnectivityController>();
+
   @override
   void onInit() {
     super.onInit();
     log("initializing AppStartupController()");
-    handleUserSession();
+    if (connectivityController.previousConnectivityResult.value !=
+        ConnectivityResult.none) {
+      handleUserSession();
+    } else {
+      log("No internet at launch. Waiting for reconnection...");
+    }
+
+    ever(connectivityController.previousConnectivityResult, (result) {
+      if (result != ConnectivityResult.none &&
+          userState.value is! Success &&
+          isDone.isFalse) {
+        log("Internet reconnected, trying to handle user session...");
+        handleUserSession();
+      }
+    });
   }
 
   Future handleUserSession() async {
+    if (connectivityController.previousConnectivityResult.value ==
+        ConnectivityResult.none) {
+      log("❌ No internet. Skipping handleUserSession");
+      userState.value = Failed(e: 'No internet connection');
+      isDone.value = false;
+      return;
+    }
     try {
       log('--- handling user sessions ---');
       userState.value = Initial();
