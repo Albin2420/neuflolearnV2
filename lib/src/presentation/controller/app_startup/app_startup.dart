@@ -35,7 +35,7 @@ class AppStartupController extends GetxController {
 
   RxBool isDisabled = RxBool(false);
 
-  RxBool isDemo = RxBool(true);
+  RxBool isDone = RxBool(false);
 
   RxString accessToken = RxString('');
   RxString refreshToken = RxString('');
@@ -80,7 +80,26 @@ class AppStartupController extends GetxController {
           accessToken.value = (await getAccessToken()) ?? '';
           refreshToken.value = (await getRefreshToken()) ?? '';
 
-          userState.value = Success(data: appUser.value);
+          if (refreshToken.value != '') {
+            final token1 =
+                await tokenRepo.getNewTokens(refreshToken: refreshToken.value);
+            token1.fold((l) {
+              log("got it token expired()");
+              userState.value = Failed(e: 'token Expired');
+              isDone.value = false;
+            }, (r) async {
+              accessToken.value = r['access_token'];
+              refreshToken.value = r['refresh_token'];
+              await saveToken(
+                  accessToken: r['access_token'],
+                  refreshToken: r['refresh_token']);
+              isDone.value = true;
+              userState.value = Success(data: appUser.value);
+            });
+          } else {
+            isDone.value = false;
+            userState.value = Failed(e: 'no token');
+          }
         } else {
           userState.value = Failed(e: 'User not exists');
         }

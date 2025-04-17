@@ -18,9 +18,7 @@ class Splash extends StatelessWidget {
           if (ctr.isDisabled.value == false) {
             return const SplashWidget();
           }
-          if (userInfo?.isProfileSetupComplete == true &&
-              (ctr.accessToken.value.isNotEmpty) &&
-              ctr.refreshToken.value.isNotEmpty) {
+          if (userInfo?.isProfileSetupComplete == true && ctr.isDone.value) {
             return const NavigationScreen();
           } else {
             return IntroScreen();
