@@ -112,11 +112,6 @@ class Exam extends StatelessWidget {
                                                   msg: ctr.examReportState.value
                                                           .error ??
                                                       'something went wrong',
-                                                  toastLength:
-                                                      Toast.LENGTH_SHORT,
-                                                  gravity: ToastGravity.BOTTOM,
-                                                  timeInSecForIosWeb: 1,
-                                                  backgroundColor: Colors.red,
                                                   textColor: Colors.white,
                                                   fontSize: 16.0,
                                                 );
@@ -1030,10 +1025,6 @@ class Exam extends StatelessWidget {
                           Fluttertoast.showToast(
                             msg: ctr.examReportState.value.error ??
                                 'Something went wrong',
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.BOTTOM,
-                            timeInSecForIosWeb: 1,
-                            backgroundColor: Colors.red,
                             textColor: Colors.white,
                             fontSize: 16.0,
                           );
@@ -1234,10 +1225,6 @@ class Exam extends StatelessWidget {
                           Fluttertoast.showToast(
                             msg: ctr.examReportState.value.error ??
                                 'something went wrong',
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.BOTTOM,
-                            timeInSecForIosWeb: 1,
-                            backgroundColor: Colors.red,
                             textColor: Colors.white,
                             fontSize: 16.0,
                           );
