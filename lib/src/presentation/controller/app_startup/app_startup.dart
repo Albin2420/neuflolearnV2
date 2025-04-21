@@ -39,6 +39,8 @@ class AppStartupController extends GetxController {
 
   RxBool isDone = RxBool(false);
 
+  RxBool isSplashpAssed = RxBool(false);
+
   RxString accessToken = RxString('');
   RxString refreshToken = RxString('');
 
@@ -57,11 +59,13 @@ class AppStartupController extends GetxController {
     }
 
     ever(connectivityController.previousConnectivityResult, (result) {
-      if (result != ConnectivityResult.none &&
-          userState.value is! Success &&
-          isDone.isFalse) {
-        log("Internet reconnected, trying to handle user session...");
-        handleUserSession();
+      if (isSplashpAssed.value == false) {
+        if (result != ConnectivityResult.none &&
+            userState.value is! Success &&
+            isDone.isFalse) {
+          log("Internet reconnected, trying to handle user session...");
+          handleUserSession();
+        }
       }
     });
   }

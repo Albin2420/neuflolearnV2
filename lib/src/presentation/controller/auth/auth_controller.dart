@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+
 import 'package:get/get.dart';
 import 'package:neuflo_learn/src/data/models/app_user_info.dart';
 import 'package:neuflo_learn/src/data/repositories/token/token_repo_impl.dart';
@@ -47,53 +47,64 @@ class AuthController extends GetxController {
 
   final appctr = Get.find<AppStartupController>();
 
+  RxBool isgLoginTriggered = RxBool(false);
+
   /// sign in with googel
   Future singInWithGoogle() async {
-    if (_auth.getCurrentUser() == null) {
-      await _auth.signOut();
-    }
-
-    if (_auth.getCurrentUser() != null) {
-      await _auth.signOut();
-    }
-
-    AuthStatus? authStatus = await _auth.signInWithGoogle();
-
-    log('authStatus : $authStatus');
-
-    if (authStatus == AuthStatus.successful) {
-      currentAppUser.value = _auth.getCurrentUser();
-
-      currentFirestoreAppUser.value =
-          await firestoreService.getUserDocumentByEmail(
-        email: currentAppUser.value?.email ?? '',
-      );
-
-      Get.find<AppStartupController>().appUser.value =
-          currentFirestoreAppUser.value;
-
-      final userInfoBox = await hiveService.getBox("basic_user_info");
-      await userInfoBox.put("phno", currentFirestoreAppUser.value?.phone ?? '');
-
-      log("currentFirestoreUser => $currentFirestoreAppUser");
-
-      final String fcmToken = await FirebaseMessaging.instance.getToken() ?? '';
-
-      if (fcmToken != '' &&
-          currentFirestoreAppUser.value?.phone != null &&
-          currentFirestoreAppUser.value?.id != null) {
-        appctr.getToken(
-            fcmToken: fcmToken,
-            studentId: currentFirestoreAppUser.value?.id ?? 0,
-            phoneNumber: currentFirestoreAppUser.value?.phone ?? '');
+    try {
+      if (_auth.getCurrentUser() == null) {
+        await _auth.signOut();
       }
-      setAuthStatus(status: AuthStatus.successful);
-    } else {
-      await _auth.signOut();
-      setAuthStatus(status: AuthStatus.failed);
-    }
 
-    log(_auth.getCurrentUser().toString());
+      if (_auth.getCurrentUser() != null) {
+        await _auth.signOut();
+      }
+
+      AuthStatus? authStatus = await _auth.signInWithGoogle();
+
+      log('authStatus : $authStatus');
+
+      if (authStatus == AuthStatus.successful) {
+        currentAppUser.value = _auth.getCurrentUser();
+
+        currentFirestoreAppUser.value =
+            await firestoreService.getUserDocumentByEmail(
+          email: currentAppUser.value?.email ?? '',
+        );
+
+        Get.find<AppStartupController>().appUser.value =
+            currentFirestoreAppUser.value;
+
+        final userInfoBox = await hiveService.getBox("basic_user_info");
+        await userInfoBox.put(
+            "phno", currentFirestoreAppUser.value?.phone ?? '');
+
+        log("currentFirestoreUser => $currentFirestoreAppUser");
+
+        final String fcmToken =
+            await FirebaseMessaging.instance.getToken() ?? '';
+
+        if (fcmToken != '' &&
+            currentFirestoreAppUser.value?.phone != null &&
+            currentFirestoreAppUser.value?.id != null) {
+          appctr.getToken(
+              fcmToken: fcmToken,
+              studentId: currentFirestoreAppUser.value?.id ?? 0,
+              phoneNumber: currentFirestoreAppUser.value?.phone ?? '');
+        }
+
+        setAuthStatus(status: AuthStatus.successful);
+      } else {
+        await _auth.signOut();
+        isgLoginTriggered.value = false;
+        setAuthStatus(status: AuthStatus.failed);
+      }
+
+      log(_auth.getCurrentUser().toString());
+    } catch (e) {
+      log("triggered here:$e");
+      isgLoginTriggered.value = false;
+    }
   }
 
   Future signOut() async {

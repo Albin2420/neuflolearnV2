@@ -125,9 +125,10 @@ class IntroScreen extends StatelessWidget {
                 children: [
                   GoogleLoginButton(
                     onTapFunction: () async {
-                      if (!EasyLoading.isShow) {
+                      if (ctr.isgLoginTriggered.value != true) {
+                        ctr.isgLoginTriggered.value = true;
                         await ctr.singInWithGoogle();
-                        EasyLoading.show();
+
                         // if (ctr.currentAppUser.value != null) {
                         if (ctr.currentFirestoreAppUser.value != null) {
                           if (ctr.currentFirestoreAppUser.value
@@ -136,16 +137,17 @@ class IntroScreen extends StatelessWidget {
                             if (ctr.currentFirestoreAppUser.value?.name == '' ||
                                 ctr.currentFirestoreAppUser.value?.email ==
                                     '') {
-                              EasyLoading.dismiss();
+                              ctr.isgLoginTriggered.value = false;
                               Get.offAll(() => AddBasicInfo());
                               return;
                             } else {
-                              EasyLoading.dismiss();
+                              ctr.isgLoginTriggered.value = false;
                               Get.offAll(() => AccountSetup());
                               return;
                             }
                           } else {
                             log("navigate to home() :${ctr.currentFirestoreAppUser.value?.phone}");
+                            EasyLoading.show();
 
                             bool isTokenFetched = await ctr.getNewToken(
                               studentId:
@@ -163,20 +165,21 @@ class IntroScreen extends StatelessWidget {
                               );
                               EasyLoading.dismiss();
                               Fluttertoast.showToast(msg: 'Sign in successful');
+                              ctr.isgLoginTriggered.value = false;
                               Get.offAll(() => NavigationScreen());
                             } else {
                               EasyLoading.dismiss();
+                              ctr.isgLoginTriggered.value = false;
                               Fluttertoast.showToast(
                                   msg: 'something went wrong');
                             }
-                            EasyLoading.dismiss();
                             return;
                           }
                         }
 
                         if (ctr.authStatus.value == AuthStatus.successful) {
-                          EasyLoading.dismiss();
                           Fluttertoast.showToast(msg: 'Sign in successfull');
+                          ctr.isgLoginTriggered.value = false;
                           Get.to(() => AddBasicInfo());
                         }
                       }
