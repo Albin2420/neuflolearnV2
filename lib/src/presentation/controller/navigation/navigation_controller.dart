@@ -9,7 +9,7 @@ import 'package:neuflo_learn/src/presentation/controller/app_startup/app_startup
 import 'package:neuflo_learn/src/presentation/controller/profile/profile_controller.dart';
 
 class Navigationcontroller extends GetxController {
-  final ctrlr = Get.put(ProfileController());
+  // final ctrlr = Get.put(ProfileController());
   final ctr = Get.find<AppStartupController>();
   TokenRepo trp = TokenRepoImpl();
   RxBool isLoading = false.obs;
@@ -32,7 +32,7 @@ class Navigationcontroller extends GetxController {
   Future setId(int id) async {
     log("id:$id");
     ctr.studentId.value = id;
-    await ctrlr.fetchweekgrowth(); // for profiler
+    // await ctrlr.fetchweekgrowth(); // for profiler
     update();
   }
 
