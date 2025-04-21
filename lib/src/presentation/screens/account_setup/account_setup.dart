@@ -165,13 +165,11 @@ class AccountSetup extends StatelessWidget {
                       );
                       return;
                     }
-    
                     if (ctr.currentPageIndex.value == 1) {
                       Get.to(() => AccountSetupSuccess());
-    
+
                       return;
                     }
-    
                     ctr.setPageIndex(ctr.currentPageIndex.value + 1);
                     ctr.pageController
                         .jumpToPage(ctr.currentPageIndex.value + 1);

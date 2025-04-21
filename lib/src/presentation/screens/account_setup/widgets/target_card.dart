@@ -53,10 +53,7 @@ class TargetCard extends StatelessWidget {
                   return SingleChildScrollView(
                     controller: ctr.scrollController,
                     child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: Constant.screenWidth *
-                            (16 / Constant.figmaScreenWidth),
-                      ),
+                      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
                       height: Constant.screenHeight - 45,
                       width: Constant.screenWidth,
                       child: Column(
@@ -113,202 +110,94 @@ class TargetCard extends StatelessWidget {
                               ),
                             ],
                           ),
-                          Scrollbar(
-                            controller: ctr.scrollController,
-                            scrollbarOrientation: ScrollbarOrientation.right,
-                            thickness: 2,
-                            trackVisibility: true,
-                            thumbVisibility: true,
-                            child: SingleChildScrollView(
+                          SizedBox(
+                            height: 15,
+                          ),
+                          Expanded(
                               child: SizedBox(
-                                height: Constant.screenHeight * 0.74,
-                                child: Obx(() {
-                                  List<int> excludedIds = type == "Strength"
-                                      ? ctr.weaknessMap.values
-                                          .expand((list) => list)
-                                          .cast<int>()
-                                          .toList()
-                                      : ctr.strengthMap.values
-                                          .expand((list) => list)
-                                          .cast<int>()
-                                          .toList();
+                            height: Constant.screenHeight * 0.74,
+                            child: Obx(() {
+                              List<int> excludedIds = type == "Strength"
+                                  ? ctr.weaknessMap.values
+                                      .expand((list) => list)
+                                      .cast<int>()
+                                      .toList()
+                                  : ctr.strengthMap.values
+                                      .expand((list) => list)
+                                      .cast<int>()
+                                      .toList();
+                              return ctr.chapterState.value.onState(
+                                onInitial: () => SizedBox(),
+                                success: (data) {
+                                  // Filter out the chapters that are already selected in the opposite list
+                                  var filteredChapters = data
+                                      .where((chapter) => !excludedIds
+                                          .contains(chapter.chapterId))
+                                      .toList();
 
-                                  return ctr.chapterState.value.onState(
-                                    onInitial: () => SizedBox(),
-                                    success: (data) {
-                                      // Filter out the chapters that are already selected in the opposite list
-                                      var filteredChapters = data
-                                          .where((chapter) => !excludedIds
-                                              .contains(chapter.chapterId))
-                                          .toList();
+                                  return ListView.builder(
+                                    padding: EdgeInsets.only(bottom: 10),
+                                    controller: ScrollController(),
+                                    scrollDirection: Axis.vertical,
+                                    physics: const ScrollPhysics(),
+                                    itemCount: filteredChapters.length,
+                                    shrinkWrap: true,
+                                    itemBuilder: (context, index) {
+                                      var chapter = filteredChapters[index];
 
-                                      return ListView.builder(
-                                        controller: ScrollController(),
-                                        scrollDirection: Axis.vertical,
-                                        physics: const ScrollPhysics(),
-                                        itemCount: filteredChapters.length,
-                                        shrinkWrap: true,
-                                        itemBuilder: (context, index) {
-                                          var chapter = filteredChapters[index];
+                                      int key = ctr.mapSubjectToId(
+                                          title.substring(0, 3));
 
-                                          int key = ctr.mapSubjectToId(
-                                              title.substring(0, 3));
+                                      List<int> list = [];
+                                      if (type == "Strength") {
+                                        list = List.from(
+                                            ctr.strengthMap['$key'] ?? []);
+                                      } else {
+                                        list = List.from(
+                                            ctr.weaknessMap['$key'] ?? []);
+                                      }
 
-                                          List<int> list = [];
+                                      return AddTopicCard(
+                                        text: chapter.chapterName ?? '',
+                                        value: list.contains(chapter.chapterId),
+                                        onTap: (isSelected) {
                                           if (type == "Strength") {
-                                            list = List.from(
-                                                ctr.strengthMap['$key'] ?? []);
+                                            ctr.addStrength(
+                                              subject: title,
+                                              chapterName:
+                                                  chapter.chapterName ?? '',
+                                              chapterId: chapter.chapterId ?? 0,
+                                            );
                                           } else {
-                                            list = List.from(
-                                                ctr.weaknessMap['$key'] ?? []);
+                                            ctr.addWeakness(
+                                              subject: title,
+                                              chapterName:
+                                                  chapter.chapterName ?? '',
+                                              chapterId: chapter.chapterId ?? 0,
+                                            );
                                           }
-
-                                          return AddTopicCard(
-                                            text: chapter.chapterName ?? '',
-                                            value: list
-                                                .contains(chapter.chapterId),
-                                            onTap: (isSelected) {
-                                              if (type == "Strength") {
-                                                ctr.addStrength(
-                                                  subject: title,
-                                                  chapterName:
-                                                      chapter.chapterName ?? '',
-                                                  chapterId:
-                                                      chapter.chapterId ?? 0,
-                                                );
-                                              } else {
-                                                ctr.addWeakness(
-                                                  subject: title,
-                                                  chapterName:
-                                                      chapter.chapterName ?? '',
-                                                  chapterId:
-                                                      chapter.chapterId ?? 0,
-                                                );
-                                              }
-                                            },
-                                          );
                                         },
                                       );
                                     },
-                                    onFailed: (error) => SizedBox(
-                                      height: Constant.screenHeight * 0.74,
-                                      child: Center(
-                                        child: Text(
-                                            'Chapter failed to load! Try again'),
-                                      ),
-                                    ),
-                                    onLoading: () => SizedBox(
-                                      height: Constant.screenHeight * 0.74,
-                                      child: Center(
-                                        child: CircularProgressIndicator(
-                                            color: Colors.green),
-                                      ),
-                                    ),
                                   );
-                                }),
-
-                                // child: Obx(
-                                //   () {
-                                //     return ctr.chapterState.value.onState(
-                                //       onInitial: () => SizedBox(),
-                                //       success: (data) {
-                                //         return ListView.builder(
-                                //           controller: ScrollController(),
-                                //           scrollDirection: Axis.vertical,
-                                //           physics: const ScrollPhysics(),
-                                //           itemCount: data.length,
-                                //           shrinkWrap: true,
-                                //           itemBuilder: (context, index) {
-                                //             log("id:${data[index].chapterId}");
-
-                                //             int key = ctr.mapSubjectToId(
-                                //                 title.substring(0, 3));
-
-                                //             List<int> list = [];
-
-                                //             if (type == "Strength") {
-                                //               if (ctr.strengthMap.isNotEmpty) {
-                                //                 list = List.from(
-                                //                     ctr.strengthMap['$key'] ??
-                                //                         []);
-                                //               }
-                                //               log('strenth list:$list');
-                                //             } else {
-                                //               if (ctr.weaknessMap.isNotEmpty) {
-                                //                 list = List.from(
-                                //                     ctr.weaknessMap['$key'] ??
-                                //                         []);
-                                //                 log('week list:$list');
-                                //               }
-                                //             }
-
-                                //             return AddTopicCard(
-                                //               text:
-                                //                   data[index].chapterName ?? '',
-                                //               value: list.isEmpty
-                                //                   ? false
-                                //                   : list.contains(
-                                //                       data[index].chapterId),
-                                //               onTap: (isSelected) {
-                                //                 log("key:$key");
-
-                                //                 if (type == "Strength") {
-                                //                   ctr.addStrength(
-                                //                     subject: title,
-                                //                     chapterName: data[index]
-                                //                             .chapterName ??
-                                //                         '',
-                                //                     chapterId:
-                                //                         data[index].chapterId ??
-                                //                             0,
-                                //                   );
-                                //                 } else {
-                                //                   ctr.addWeakness(
-                                //                     subject: title,
-                                //                     chapterName: data[index]
-                                //                             .chapterName ??
-                                //                         '',
-                                //                     chapterId:
-                                //                         data[index].chapterId ??
-                                //                             0,
-                                //                   );
-                                //                 }
-                                //               },
-                                //             );
-                                //           },
-                                //         );
-                                //       },
-                                //       onFailed: (error) => SizedBox(
-                                //         height: Constant.screenHeight * 0.74,
-                                //         child: Center(
-                                //           child: Column(
-                                //             mainAxisAlignment:
-                                //                 MainAxisAlignment.center,
-                                //             children: [
-                                //               Text(
-                                //                   'Chapter failed to load! Try again'),
-                                //             ],
-                                //           ),
-                                //         ),
-                                //       ),
-                                //       onLoading: () => SizedBox(
-                                //         height: Constant.screenHeight * 0.74,
-                                //         child: Center(
-                                //           child: Transform.scale(
-                                //             scale: 0.5,
-                                //             child: CircularProgressIndicator(
-                                //               color: Colors.green,
-                                //             ),
-                                //           ),
-                                //         ),
-                                //       ),
-                                //     );
-                                //   },
-                                // ),
-                              ),
-                            ),
-                          ),
-                          const Spacer(),
+                                },
+                                onFailed: (error) => SizedBox(
+                                  height: Constant.screenHeight * 0.74,
+                                  child: Center(
+                                    child: Text(
+                                        'Chapter failed to load! Try again'),
+                                  ),
+                                ),
+                                onLoading: () => SizedBox(
+                                  height: Constant.screenHeight * 0.74,
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                        color: Colors.green),
+                                  ),
+                                ),
+                              );
+                            }),
+                          )),
                           AppBtn(
                               btnName: "Done",
                               onTapFunction: () => Navigator.pop(context)),
