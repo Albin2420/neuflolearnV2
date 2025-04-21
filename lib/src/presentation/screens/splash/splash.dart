@@ -19,8 +19,10 @@ class Splash extends StatelessWidget {
             return const SplashWidget();
           }
           if (userInfo?.isProfileSetupComplete == true && ctr.isDone.value) {
+            ctr.isSplashpAssed.value = true;
             return const NavigationScreen();
           } else {
+            ctr.isSplashpAssed.value = true;
             return IntroScreen();
           }
         },
@@ -28,7 +30,7 @@ class Splash extends StatelessWidget {
           if (ctr.isDisabled.value == false) {
             return const SplashWidget();
           }
-
+          ctr.isSplashpAssed.value = true;
           return const IntroScreen();
         },
         onLoading: () {
