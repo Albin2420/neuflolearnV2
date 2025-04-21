@@ -27,6 +27,8 @@ class SetupAccountController extends GetxController {
   /// hive service
   HiveService hiveService = HiveService();
 
+  RxInt organization = RxInt(-1);
+
   //user Repo
 
   UserRepo userRepo = UserRepoImpl();
@@ -154,15 +156,17 @@ class SetupAccountController extends GetxController {
     List<int> streaklist = generateDaysList(currentdayindex);
 
     await firestoreService.addBasicDetails(
-        userName: docName,
-        phonenum: appUserInfo?.phone ?? '',
-        email: appUserInfo?.email ?? '',
-        name: appUserInfo?.name ?? '',
-        id: appUserInfo?.id ?? 0,
-        imageUrl: appUserInfo?.imageUrl ?? '',
-        isProfileSetupComplete: true,
-        streaklist: streaklist,
-        currentstreakIndex: currentdayindex);
+      userName: docName,
+      phonenum: appUserInfo?.phone ?? '',
+      email: appUserInfo?.email ?? '',
+      name: appUserInfo?.name ?? '',
+      id: appUserInfo?.id ?? 0,
+      imageUrl: appUserInfo?.imageUrl ?? '',
+      isProfileSetupComplete: true,
+      streaklist: streaklist,
+      currentstreakIndex: currentdayindex,
+      organization: organization.value,
+    );
     userAccountSetupState.value = Success(data: true);
     return true;
   }
@@ -519,6 +523,7 @@ class SetupAccountController extends GetxController {
       return false;
     }, (student) async {
       currentStudent.value = student;
+      organization.value = student.organization ?? -1;
       return await saveSkills();
     });
   }
@@ -549,7 +554,8 @@ class SetupAccountController extends GetxController {
           imageUrl: appUserInfo.imageUrl,
           isProfileSetupComplete: true,
           streaklist: streaklist,
-          currentstreakIndex: currentdayindex);
+          currentstreakIndex: currentdayindex,
+          organization: organization.value);
     }
   }
 }
