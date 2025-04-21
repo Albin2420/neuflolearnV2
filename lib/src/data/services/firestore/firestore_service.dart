@@ -413,6 +413,7 @@ class FirestoreService {
     bool? isProfileSetupComplete,
     required List<int> streaklist,
     required int currentstreakIndex,
+    required int organization,
   }) async {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('yyyy-MM-dd').format(now);
@@ -440,7 +441,7 @@ class FirestoreService {
         .collection("neuflo_basic")
         .doc(userName)
         .set({
-      'streakComplted': streaklist,
+      "streakComplted": streaklist,
       "Todate": formattedDate,
       "phone": phonenum,
       "email": email,
@@ -452,7 +453,8 @@ class FirestoreService {
       "startOfWeek": startOfWeekFormatted, // Start of the current week
       "endOfWeek": endOfWeekFormatted, // End of the current week
       "currentstreakIndex": currentstreakIndex,
-      "totalTestsDoneperDay": 0
+      "totalTestsDoneperDay": 0,
+      "organization": organization
     });
   }
 

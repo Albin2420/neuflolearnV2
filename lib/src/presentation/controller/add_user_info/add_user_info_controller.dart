@@ -148,15 +148,15 @@ class AddUserInfoController extends GetxController {
       List<int> streaklist = generateDaysList(day);
       log("newstreaklis:$streaklist");
       firestoreService.addBasicDetails(
-        userName: docUsername,
-        phonenum: phoneController.text.trim(),
-        email: emailController.text.trim(),
-        name: nameController.text.trim(),
-        id: appUserInfo.id ?? 0,
-        imageUrl: _auth.getCurrentUser()?.photoURL ?? '',
-        streaklist: streaklist,
-        currentstreakIndex: day,
-      );
+          userName: docUsername,
+          phonenum: phoneController.text.trim(),
+          email: emailController.text.trim(),
+          name: nameController.text.trim(),
+          id: appUserInfo.id ?? 0,
+          imageUrl: _auth.getCurrentUser()?.photoURL ?? '',
+          streaklist: streaklist,
+          currentstreakIndex: day,
+          organization: -1);
     } else {
       int day = getCurrentDayIndex();
       List<int> streaklist = generateDaysList(day);
@@ -167,14 +167,16 @@ class AddUserInfoController extends GetxController {
       log('ID  =>  $id');
 
       firestoreService.addBasicDetails(
-          userName: docUsername,
-          phonenum: phoneController.text.trim(),
-          email: emailController.text.trim(),
-          name: nameController.text.trim(),
-          id: uid,
-          imageUrl: _auth.getCurrentUser()?.photoURL ?? '',
-          streaklist: streaklist,
-          currentstreakIndex: day);
+        userName: docUsername,
+        phonenum: phoneController.text.trim(),
+        email: emailController.text.trim(),
+        name: nameController.text.trim(),
+        id: uid,
+        imageUrl: _auth.getCurrentUser()?.photoURL ?? '',
+        streaklist: streaklist,
+        currentstreakIndex: day,
+        organization: -1,
+      );
 
       await firestoreService.updateid(uid);
     }

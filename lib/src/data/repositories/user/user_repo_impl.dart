@@ -52,7 +52,7 @@ class UserRepoImpl extends UserRepo {
         return Left(Failure(message: t1['detail']));
       }
 
-      log("result =>: $result");
+      log("result of Savestudent =>: $result");
       return Right(Student.fromJson(result));
     } on FormatException catch (e) {
       debugPrint('exception : $e');
