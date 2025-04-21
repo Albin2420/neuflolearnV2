@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -232,8 +233,10 @@ class VerifyOtp extends StatelessWidget {
                 btnName: 'Continue',
                 onTapFunction: () async {
                   if (ctr.currentOtp == int.parse(ctr.finalOtp.value)) {
+                    EasyLoading.show();
                     await ctr.saveBasicDetails();
                     ctr.resetTimer();
+                    EasyLoading.dismiss();
                     Get.to(() => AccountSetup());
                   } else {
                     Fluttertoast.showToast(
