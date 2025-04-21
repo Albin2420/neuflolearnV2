@@ -39,7 +39,7 @@ class AppStartupController extends GetxController {
 
   RxBool isDone = RxBool(false);
 
-  RxBool isSplashpAssed = RxBool(false);
+  RxBool isSplashscreenPassed = RxBool(false);
 
   RxString accessToken = RxString('');
   RxString refreshToken = RxString('');
@@ -59,7 +59,7 @@ class AppStartupController extends GetxController {
     }
 
     ever(connectivityController.previousConnectivityResult, (result) {
-      if (isSplashpAssed.value == false) {
+      if (isSplashscreenPassed.value == false) {
         if (result != ConnectivityResult.none &&
             userState.value is! Success &&
             isDone.isFalse) {
@@ -73,7 +73,7 @@ class AppStartupController extends GetxController {
   Future handleUserSession() async {
     if (connectivityController.previousConnectivityResult.value ==
         ConnectivityResult.none) {
-      log("❌ No internet. Skipping handleUserSession");
+      log("No internet. Skipping handleUserSession");
       userState.value = Failed(e: 'No internet connection');
       isDone.value = false;
       return;
