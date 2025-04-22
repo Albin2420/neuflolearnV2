@@ -602,7 +602,7 @@ class Home extends StatelessWidget {
                               Get.to(() => CustomTestExamView());
                             } else {
                               Fluttertoast.showToast(
-                                msg: "you are in offline",
+                                msg: "please check your Internet connection",
                                 textColor: Colors.white,
                                 fontSize: 26,
                               );

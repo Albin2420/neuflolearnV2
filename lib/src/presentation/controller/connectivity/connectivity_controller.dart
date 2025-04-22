@@ -31,7 +31,8 @@ class ConnectivityController extends GetxController {
 
     if (connectivityResult.first == ConnectivityResult.none) {
       isnetConnected.value = false;
-      showConnectivityToast(message: "Connection Lost", isConnected: false);
+      showConnectivityToast(
+          message: "please check your Internet connection", isConnected: false);
     } else {
       isnetConnected.value = true;
     }
@@ -53,12 +54,14 @@ class ConnectivityController extends GetxController {
     if (connectivityResult.first == ConnectivityResult.none) {
       isnetConnected.value = false;
       if (previousConnectivityResult.value != ConnectivityResult.none) {
-        showConnectivityToast(message: "Connection Lost", isConnected: false);
+        showConnectivityToast(
+            message: "Uh-oh! Looks like you lost connection. We’ll keep trying",
+            isConnected: false);
       }
     } else {
       isnetConnected.value = true;
       if (previousConnectivityResult.value == ConnectivityResult.none) {
-        showConnectivityToast(message: "Back Online", isConnected: true);
+        showConnectivityToast(message: "You're back online", isConnected: true);
       }
     }
 

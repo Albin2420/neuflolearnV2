@@ -4,6 +4,8 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:neuflo_learn/src/data/models/app_user_info.dart';
 import 'package:neuflo_learn/src/data/repositories/user/user_repo_impl.dart';
@@ -13,6 +15,7 @@ import 'package:neuflo_learn/src/data/services/firebase/firebase_auth_impl.dart'
 import 'package:neuflo_learn/src/data/services/firestore/firestore_service.dart';
 import 'package:neuflo_learn/src/data/services/twilio/twilio_service.dart';
 import 'package:neuflo_learn/src/domain/repositories/user/user_repo.dart';
+import 'package:neuflo_learn/src/presentation/screens/account_setup/account_setup.dart';
 
 class AddUserInfoController extends GetxController {
 //Twilio Services
@@ -131,6 +134,22 @@ class AddUserInfoController extends GetxController {
       toNumber: '+91${phoneController.text.trim()}',
       messageBody: '$currentOtp is your verification code for neuflo-learn',
     );
+  }
+
+  Future saveDetails() async {
+    try {
+      EasyLoading.show();
+      await saveBasicDetails();
+      EasyLoading.dismiss();
+      Get.to(() => AccountSetup());
+    } catch (e) {
+      log("Error:$e");
+      Fluttertoast.showToast(
+        msg: "something went wrong",
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
   }
 
   Future saveBasicDetails() async {
