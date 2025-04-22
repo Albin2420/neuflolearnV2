@@ -183,12 +183,10 @@ class AddPhoneNumber extends StatelessWidget {
                   if (ctr.phoneError.value == null) {
                     AppUserInfo? existingUser = await ctr.checkIsUserExists();
 
-                    log("existingUser : $existingUser");
                     if (existingUser != null) {
                       Fluttertoast.showToast(
                         msg:
                             'This phone number is already associated with an existing account. Please log in, or use a different phone number to register.',
-                        backgroundColor: Colors.red,
                       );
                       return;
                     } else {

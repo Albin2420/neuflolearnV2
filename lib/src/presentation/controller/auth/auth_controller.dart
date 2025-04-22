@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:get/get.dart';
 import 'package:neuflo_learn/src/data/models/app_user_info.dart';
@@ -15,6 +16,7 @@ import 'package:neuflo_learn/src/data/services/firestore/firestore_service.dart'
 import 'package:neuflo_learn/src/data/services/twilio/twilio_service.dart';
 import 'package:neuflo_learn/src/domain/repositories/token/token_repo.dart';
 import 'package:neuflo_learn/src/presentation/controller/app_startup/app_startup.dart';
+import 'package:neuflo_learn/src/presentation/controller/connectivity/connectivity_controller.dart';
 
 class AuthController extends GetxController {
   TextEditingController textCtr = TextEditingController();
@@ -48,6 +50,8 @@ class AuthController extends GetxController {
   final appctr = Get.find<AppStartupController>();
 
   RxBool isgLoginTriggered = RxBool(false);
+
+  final connectivityctrl = Get.find<ConnectivityController>();
 
   /// sign in with googel
   Future singInWithGoogle() async {
@@ -103,6 +107,13 @@ class AuthController extends GetxController {
       log(_auth.getCurrentUser().toString());
     } catch (e) {
       log("triggered here:$e");
+      if (connectivityctrl.isnetConnected.value == false) {
+        Fluttertoast.showToast(
+          msg: "please check your Internet connection",
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
       isgLoginTriggered.value = false;
     }
   }

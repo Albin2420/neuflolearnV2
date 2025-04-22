@@ -3,8 +3,10 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:neuflo_learn/src/core/util/constants/app_constants.dart';
 import 'package:neuflo_learn/src/data/services/firebase/firebase_auth_impl.dart';
 import 'package:neuflo_learn/src/data/services/firestore/firestore_service.dart';
 import 'package:neuflo_learn/src/presentation/controller/app_startup/app_startup.dart';
@@ -63,135 +65,127 @@ class IntroScreen extends StatelessWidget {
             ],
           ),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Expanded(
-              child: Column(
-                children: [
-                  Expanded(
-                    child: PageView(
-                      controller: ctr.controller,
-                      children: const [
-                        IntroItems(
-                          image: "assets/images/intro1.png",
-                          title: "Your Personal NEET Guide",
-                          description:
-                              "Our app is designed to make your preparation journey smooth and effective.",
-                        ),
-                        IntroItems(
-                          image: "assets/images/intro2.png",
-                          title: "Practice with mock-tests",
-                          description:
-                              "Elevate your NEET preparation with meticulously crafted mock tests aligned with the syllabus.",
-                        ),
-                        IntroItems(
-                          image: "assets/images/intro3.png",
-                          title: "Advanced Learning Analytics",
-                          description:
-                              "Gain insights into your strengths and weaknesses, track study patterns, and more.",
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 24,
-                  ),
-                  // Gap(
-                  //   Constant.screenHeight * (32 / Constant.figmaScreenHeight),
-                  // ),
-                  Center(
-                    child: SmoothPageIndicator(
-                      controller: ctr.controller,
-                      effect: const WormEffect(
-                        activeDotColor: Color(0xFF010029),
-                        dotHeight: 8,
-                        dotWidth: 8,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Expanded(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: PageView(
+                        controller: ctr.controller,
+                        children: const [
+                          IntroItems(
+                            image: "assets/images/intro1.png",
+                            title: "Your Personal NEET Guide",
+                            description:
+                                "Our app is designed to make your preparation journey smooth and effective.",
+                          ),
+                          IntroItems(
+                            image: "assets/images/intro2.png",
+                            title: "Practice with mock-tests",
+                            description:
+                                "Elevate your NEET preparation with meticulously crafted mock tests aligned with the syllabus.",
+                          ),
+                          IntroItems(
+                            image: "assets/images/intro3.png",
+                            title: "Advanced Learning Analytics",
+                            description:
+                                "Gain insights into your strengths and weaknesses, track study patterns, and more.",
+                          ),
+                        ],
                       ),
-                      count: 3,
                     ),
-                  ),
-                ],
+                    const SizedBox(
+                      height: 24,
+                    ),
+                    Gap(
+                      Constant.screenHeight * (32 / Constant.figmaScreenHeight),
+                    ),
+                    Center(
+                      child: SmoothPageIndicator(
+                        controller: ctr.controller,
+                        effect: const WormEffect(
+                          activeDotColor: Color(0xFF010029),
+                          dotHeight: 8,
+                          dotWidth: 8,
+                        ),
+                        count: 3,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(
-              height: 48,
-            ),
-            Container(
-              padding: const EdgeInsets.only(left: 16, right: 16, bottom: 32),
-              // color: Colors.yellow,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  GoogleLoginButton(
-                    onTapFunction: () async {
-                      if (ctr.isgLoginTriggered.value != true) {
-                        ctr.isgLoginTriggered.value = true;
-                        await ctr.singInWithGoogle();
+              const SizedBox(
+                height: 48,
+              ),
+              BottomAppBar(
+                color: Colors.transparent,
+                child: GoogleLoginButton(
+                  onTapFunction: () async {
+                    if (ctr.isgLoginTriggered.value != true) {
+                      ctr.isgLoginTriggered.value = true;
+                      await ctr.singInWithGoogle();
 
-                        // if (ctr.currentAppUser.value != null) {
-                        if (ctr.currentFirestoreAppUser.value != null) {
-                          if (ctr.currentFirestoreAppUser.value
-                                  ?.isProfileSetupComplete ==
-                              null) {
-                            if (ctr.currentFirestoreAppUser.value?.name == '' ||
-                                ctr.currentFirestoreAppUser.value?.email ==
-                                    '') {
-                              ctr.isgLoginTriggered.value = false;
-                              Get.offAll(() => AddBasicInfo());
-                              return;
-                            } else {
-                              ctr.isgLoginTriggered.value = false;
-                              Get.offAll(() => AccountSetup());
-                              return;
-                            }
+                      log("auth status1:${ctr.authStatus}");
+
+                      // if (ctr.currentAppUser.value != null) {
+                      if (ctr.currentFirestoreAppUser.value != null &&
+                          ctr.authStatus.value == AuthStatus.successful) {
+                        if (ctr.currentFirestoreAppUser.value
+                                ?.isProfileSetupComplete ==
+                            null) {
+                          if (ctr.currentFirestoreAppUser.value?.name == '' ||
+                              ctr.currentFirestoreAppUser.value?.email == '') {
+                            ctr.isgLoginTriggered.value = false;
+                            Get.offAll(() => AddBasicInfo());
+                            return;
                           } else {
-                            log("navigate to home() :${ctr.currentFirestoreAppUser.value?.phone}");
-                            EasyLoading.show();
-
-                            bool isTokenFetched = await ctr.getNewToken(
-                              studentId:
-                                  ctr.currentFirestoreAppUser.value?.id ?? 0,
-                              phoneNumber:
-                                  ctr.currentFirestoreAppUser.value?.phone ??
-                                      '',
-                            );
-
-                            if (isTokenFetched) {
-                              firestoreService
-                                  .dailyExamReportResetandStreakReset(
-                                userName:
-                                    "${ctr.currentFirestoreAppUser.value?.phone}@neuflo.io",
-                              );
-                              EasyLoading.dismiss();
-                              Fluttertoast.showToast(msg: 'Sign in successful');
-                              ctr.isgLoginTriggered.value = false;
-                              Get.offAll(() => NavigationScreen());
-                            } else {
-                              EasyLoading.dismiss();
-                              ctr.isgLoginTriggered.value = false;
-                              Fluttertoast.showToast(
-                                  msg: 'something went wrong');
-                            }
+                            ctr.isgLoginTriggered.value = false;
+                            Get.offAll(() => AccountSetup());
                             return;
                           }
-                        }
+                        } else {
+                          log("navigate to home() :${ctr.currentFirestoreAppUser.value?.phone}");
+                          EasyLoading.show();
 
-                        if (ctr.authStatus.value == AuthStatus.successful) {
-                          Fluttertoast.showToast(msg: 'Sign in successfull');
-                          ctr.isgLoginTriggered.value = false;
-                          Get.to(() => AddBasicInfo());
+                          bool isTokenFetched = await ctr.getNewToken(
+                            studentId:
+                                ctr.currentFirestoreAppUser.value?.id ?? 0,
+                            phoneNumber:
+                                ctr.currentFirestoreAppUser.value?.phone ?? '',
+                          );
+
+                          if (isTokenFetched) {
+                            firestoreService.dailyExamReportResetandStreakReset(
+                              userName:
+                                  "${ctr.currentFirestoreAppUser.value?.phone}@neuflo.io",
+                            );
+                            EasyLoading.dismiss();
+                            Fluttertoast.showToast(msg: 'Sign in successful');
+                            ctr.isgLoginTriggered.value = false;
+                            Get.offAll(() => NavigationScreen());
+                          } else {
+                            EasyLoading.dismiss();
+                            ctr.isgLoginTriggered.value = false;
+                            Fluttertoast.showToast(msg: 'something went wrong');
+                          }
+                          return;
                         }
                       }
-                    },
-                  ),
-                  const SizedBox(
-                    height: 32,
-                  ),
-                ],
-              ),
-            )
-          ],
+
+                      if (ctr.authStatus.value == AuthStatus.successful) {
+                        Fluttertoast.showToast(msg: 'Sign in successfull');
+                        ctr.isgLoginTriggered.value = false;
+                        Get.to(() => AddBasicInfo());
+                      }
+                    }
+                  },
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
