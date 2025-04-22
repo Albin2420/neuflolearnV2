@@ -189,4 +189,13 @@ class AppStartupController extends GetxController {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('refreshToken');
   }
+
+  Future<void> clearTokens() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('accessToken');
+    await prefs.remove('refreshToken');
+    if (kDebugMode) {
+      log("Tokens cleared from SharedPreferences.");
+    }
+  }
 }
