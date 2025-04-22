@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
@@ -5,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:neuflo_learn/src/core/util/constants/app_constants.dart';
 import 'package:neuflo_learn/src/presentation/controller/app_startup/app_startup.dart';
+import 'package:neuflo_learn/src/presentation/controller/connectivity/connectivity_controller.dart';
 import 'package:neuflo_learn/src/presentation/controller/home/home_controller.dart';
 import 'package:neuflo_learn/src/presentation/screens/Home/widgets/test_navigate_card.dart';
 import 'package:neuflo_learn/src/presentation/screens/exams/exam_view/widgets/custom_exam_view.dart';
@@ -22,6 +25,7 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     final ctr = Get.put(HomeController());
     final appCtrl = Get.find<AppStartupController>();
+    final netwrkconnectivity = Get.find<ConnectivityController>();
 
     return SizedBox(
       height: Constant.screenHeight,
@@ -594,7 +598,15 @@ class Home extends StatelessWidget {
                           title: "Custom test",
                           description: "Practise any topic",
                           onTap: () {
-                            Get.to(() => CustomTestExamView());
+                            if (netwrkconnectivity.isnetConnected.value) {
+                              Get.to(() => CustomTestExamView());
+                            } else {
+                              Fluttertoast.showToast(
+                                msg: "you are in offline",
+                                textColor: Colors.white,
+                                fontSize: 26,
+                              );
+                            }
                           },
                         ),
                       ],

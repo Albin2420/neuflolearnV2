@@ -12,6 +12,9 @@ class ConnectivityController extends GetxController {
       Rx(ConnectivityResult.none);
   bool _isInitialCheckDone = false;
 
+  // Observable to track internet connection status
+  RxBool isnetConnected = RxBool(false);
+
   @override
   void onInit() {
     super.onInit();
@@ -19,45 +22,56 @@ class ConnectivityController extends GetxController {
     _connectivity.onConnectivityChanged.listen(netStatus);
   }
 
-  // Check connection status when the app launches
+  // Initial connection check
   Future<void> _checkInitialConnection() async {
     log("Checking initial connection");
     List<ConnectivityResult> connectivityResult =
         await _connectivity.checkConnectivity();
     log("Initial connection status: $connectivityResult");
+
     if (connectivityResult.first == ConnectivityResult.none) {
+      isnetConnected.value = false;
       showConnectivityToast(message: "Connection Lost", isConnected: false);
+    } else {
+      isnetConnected.value = true;
     }
+
     previousConnectivityResult.value = connectivityResult.first;
   }
 
-  // Listen to the changes in connection
-
+  // Handle connectivity changes
   void netStatus(List<ConnectivityResult> connectivityResult) {
-    log('previousConnectivityResult => $previousConnectivityResult');
+    log('previousConnectivityResult => ${previousConnectivityResult.value}');
     log('currentConnectivityResult => $connectivityResult');
-    // Skip the first check when app opens
+
     if (!_isInitialCheckDone) {
       previousConnectivityResult.value = connectivityResult.first;
       _isInitialCheckDone = true;
       return;
     }
 
-    if (previousConnectivityResult != ConnectivityResult.none &&
-        connectivityResult.first == ConnectivityResult.none) {
-      showConnectivityToast(message: "Connection Lost", isConnected: false);
-    }
-    if (previousConnectivityResult == ConnectivityResult.none &&
-        connectivityResult.first != ConnectivityResult.none) {
-      showConnectivityToast(message: "Back Online", isConnected: true);
+    if (connectivityResult.first == ConnectivityResult.none) {
+      isnetConnected.value = false;
+      if (previousConnectivityResult.value != ConnectivityResult.none) {
+        showConnectivityToast(message: "Connection Lost", isConnected: false);
+      }
+    } else {
+      isnetConnected.value = true;
+      if (previousConnectivityResult.value == ConnectivityResult.none) {
+        showConnectivityToast(message: "Back Online", isConnected: true);
+      }
     }
 
     previousConnectivityResult.value = connectivityResult.first;
   }
 
-  // Show the toast when the connection is connected/disconnected
+  // Show toast (color not changed)
   void showConnectivityToast(
       {required String message, required bool isConnected}) {
-    Fluttertoast.showToast(msg: message, textColor: Colors.white, fontSize: 26);
+    Fluttertoast.showToast(
+      msg: message,
+      textColor: Colors.white,
+      fontSize: 26,
+    );
   }
 }
