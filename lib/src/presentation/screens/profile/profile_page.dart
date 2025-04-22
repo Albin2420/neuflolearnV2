@@ -232,8 +232,9 @@ class ProfilePage extends StatelessWidget {
                                         child: AppBtn(
                                           btnName: "yes",
                                           onTapFunction: () async {
+                                            await ctr.clearTokens();
                                             await authCtr.signOut();
-                                            Get.offAll(IntroScreen());
+                                            Get.offAll(() => IntroScreen());
                                           },
                                         ),
                                       ),
