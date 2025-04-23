@@ -233,10 +233,8 @@ class VerifyOtp extends StatelessWidget {
                 btnName: 'Continue',
                 onTapFunction: () async {
                   if (ctr.currentOtp == int.parse(ctr.finalOtp.value)) {
-                    // EasyLoading.show();
-                    await ctr.saveDetails();
-                    // ctr.resetTimer();
-                    // EasyLoading.dismiss();
+                    ctr.resetTimer();
+                    await ctr.saveBasicDetails();
                   } else {
                     Fluttertoast.showToast(
                       msg: "Invalid OTP. Please try again.",
