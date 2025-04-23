@@ -15,6 +15,7 @@ import 'package:neuflo_learn/src/data/services/firebase/firebase_auth_impl.dart'
 import 'package:neuflo_learn/src/data/services/firestore/firestore_service.dart';
 import 'package:neuflo_learn/src/data/services/twilio/twilio_service.dart';
 import 'package:neuflo_learn/src/domain/repositories/user/user_repo.dart';
+import 'package:neuflo_learn/src/presentation/controller/connectivity/connectivity_controller.dart';
 import 'package:neuflo_learn/src/presentation/screens/account_setup/account_setup.dart';
 
 class AddUserInfoController extends GetxController {
@@ -59,6 +60,8 @@ class AddUserInfoController extends GetxController {
   UserRepo userRepo = UserRepoImpl();
 
   int currentOtp = 123456;
+
+  final connectivityCtrl = Get.find<ConnectivityController>();
 
   @override
   void onInit() {
@@ -136,37 +139,23 @@ class AddUserInfoController extends GetxController {
     );
   }
 
-  Future saveDetails() async {
+  Future saveBasicDetails() async {
     try {
       EasyLoading.show();
-      await saveBasicDetails();
-      EasyLoading.dismiss();
-      Get.to(() => AccountSetup());
-    } catch (e) {
-      log("Error:$e");
-      Fluttertoast.showToast(
-        msg: "something went wrong",
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
-    }
-  }
 
-  Future saveBasicDetails() async {
-    /// saving user phone number
-    final userInfoBox = await hiveService.getBox("basic_user_info");
-    await userInfoBox.put("phno", phoneController.text.trim());
+      /// saving user phone number
+      final userInfoBox = await hiveService.getBox("basic_user_info");
+      await userInfoBox.put("phno", phoneController.text.trim());
 
-    String docUsername = "${phoneController.text.trim()}@neuflo.io";
+      String docUsername = "${phoneController.text.trim()}@neuflo.io";
 
-    AppUserInfo? appUserInfo =
-        await firestoreService.getCurrentUserDocument(userName: docUsername);
+      AppUserInfo? appUserInfo =
+          await firestoreService.getCurrentUserDocument(userName: docUsername);
 
-    if (appUserInfo != null) {
-      int day = getCurrentDayIndex();
-      List<int> streaklist = generateDaysList(day);
-      log("newstreaklis:$streaklist");
-      firestoreService.addBasicDetails(
+      if (appUserInfo != null) {
+        int day = getCurrentDayIndex();
+        List<int> streaklist = generateDaysList(day);
+        firestoreService.addBasicDetails(
           userName: docUsername,
           phonenum: phoneController.text.trim(),
           email: emailController.text.trim(),
@@ -175,29 +164,46 @@ class AddUserInfoController extends GetxController {
           imageUrl: _auth.getCurrentUser()?.photoURL ?? '',
           streaklist: streaklist,
           currentstreakIndex: day,
-          organization: -1);
-    } else {
-      int day = getCurrentDayIndex();
-      List<int> streaklist = generateDaysList(day);
-      log("newstreaklis:$streaklist");
-      String? id = await firestoreService.uniqueid();
+          organization: -1,
+        );
+      } else {
+        int day = getCurrentDayIndex();
+        List<int> streaklist = generateDaysList(day);
+        String? id = await firestoreService.uniqueid();
+        int uid = int.parse(id ?? '0') + 1;
+        log('ID  =>  $id');
+        firestoreService.addBasicDetails(
+          userName: docUsername,
+          phonenum: phoneController.text.trim(),
+          email: emailController.text.trim(),
+          name: nameController.text.trim(),
+          id: uid,
+          imageUrl: _auth.getCurrentUser()?.photoURL ?? '',
+          streaklist: streaklist,
+          currentstreakIndex: day,
+          organization: -1,
+        );
 
-      int uid = int.parse(id ?? '0') + 1;
-      log('ID  =>  $id');
-
-      firestoreService.addBasicDetails(
-        userName: docUsername,
-        phonenum: phoneController.text.trim(),
-        email: emailController.text.trim(),
-        name: nameController.text.trim(),
-        id: uid,
-        imageUrl: _auth.getCurrentUser()?.photoURL ?? '',
-        streaklist: streaklist,
-        currentstreakIndex: day,
-        organization: -1,
-      );
-
-      await firestoreService.updateid(uid);
+        await firestoreService.updateid(uid);
+      }
+      EasyLoading.dismiss();
+      Get.to(() => AccountSetup());
+    } catch (e) {
+      log("Error in saveBasicDetails():$e");
+      EasyLoading.dismiss();
+      if (connectivityCtrl.isnetConnected.value == false) {
+        Fluttertoast.showToast(
+          msg: "please check your Internet Connection",
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      } else {
+        Fluttertoast.showToast(
+          msg: "Error : $e",
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
     }
   }
 
@@ -229,15 +235,6 @@ class AddUserInfoController extends GetxController {
   Future<AppUserInfo?> checkIsUserExists() async {
     String docUsername = "${phoneController.text.trim()}@neuflo.io";
     return await firestoreService.getCurrentUserDocument(userName: docUsername);
-  }
-
-  @override
-  void onClose() {
-    nameController.dispose();
-    emailController.dispose();
-    phoneController.dispose();
-    _timer?.cancel();
-    super.onClose();
   }
 
   static const int totalDuration = 3 * 60; // 3 minutes in seconds
@@ -278,8 +275,12 @@ class AddUserInfoController extends GetxController {
     startTimer();
   }
 
-  void resendOtp() {
-    // Add OTP resend logic
-    startTimer();
+  @override
+  void onClose() {
+    nameController.dispose();
+    emailController.dispose();
+    phoneController.dispose();
+    _timer?.cancel();
+    super.onClose();
   }
 }
