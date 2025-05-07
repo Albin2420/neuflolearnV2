@@ -99,14 +99,17 @@ class SetupAccountController extends GetxController {
     courseState.value = Loading();
     final result = await courseRepo.getCourses();
 
-    result.fold((failure) {
-      log('failure : $failure');
-      courseState.value = Failed(e: failure.message);
-    }, (data) async {
-      log('data : success :$data');
-      await saveCoursesToLocal(list: data);
-      courseState.value = Success(data: data);
-    });
+    result.fold(
+      (failure) {
+        log('failure : $failure');
+        courseState.value = Failed(e: failure.message);
+      },
+      (data) async {
+        log('data : success :$data');
+        await saveCoursesToLocal(list: data);
+        courseState.value = Success(data: data);
+      },
+    );
   }
 
   Future saveCoursesToLocal({required List<Course> list}) async {
@@ -132,7 +135,7 @@ class SetupAccountController extends GetxController {
     log('Course ID => $courseId');
   }
 
-// Function to update the current page index
+  // Function to update the current page index
   void setPageIndex(int index) {
     currentPageIndex.value = index;
   }
@@ -144,7 +147,35 @@ class SetupAccountController extends GetxController {
   }
 
   /// handle profile
-  Future<bool> completeAccountSetup() async {
+  // Future<bool> completeAccountSetup() async {
+  //   log("initiating complteAccountsetup");
+  //   String docName = await getDocumentName();
+
+  //   AppUserInfo? appUserInfo = await getUserInfo();
+
+  //   Get.find<AppStartupController>().appUser.value = appUserInfo;
+
+  //   int currentdayindex = getCurrentDayIndex();
+  //   List<int> streaklist = generateDaysList(currentdayindex);
+
+  //   await firestoreService.addBasicDetails(
+  //     userName: docName,
+  //     phonenum: appUserInfo?.phone ?? '',
+  //     email: appUserInfo?.email ?? '',
+  //     name: appUserInfo?.name ?? '',
+  //     id: appUserInfo?.id ?? 0,
+  //     imageUrl: appUserInfo?.imageUrl ?? '',
+  //     isProfileSetupComplete: true,
+  //     streaklist: streaklist,
+  //     currentstreakIndex: currentdayindex,
+  //     organization: organization.value,
+  //   );
+  //   userAccountSetupState.value = Success(data: true);
+  //   iscompleteUserSetup.value = false;
+  //   return true;
+  // }
+
+  Future<bool> completeAccountSetup({required int studentId}) async {
     log("initiating complteAccountsetup");
     String docName = await getDocumentName();
 
@@ -160,7 +191,7 @@ class SetupAccountController extends GetxController {
       phonenum: appUserInfo?.phone ?? '',
       email: appUserInfo?.email ?? '',
       name: appUserInfo?.name ?? '',
-      id: appUserInfo?.id ?? 0,
+      id: studentId,
       imageUrl: appUserInfo?.imageUrl ?? '',
       isProfileSetupComplete: true,
       streaklist: streaklist,
@@ -168,6 +199,7 @@ class SetupAccountController extends GetxController {
       organization: organization.value,
     );
     userAccountSetupState.value = Success(data: true);
+    iscompleteUserSetup.value = false;
     return true;
   }
 
@@ -208,12 +240,16 @@ class SetupAccountController extends GetxController {
 
   Future<AppUserInfo?> getUserInfo() async {
     String docName = await getDocumentName();
-    AppUserInfo? userInfo =
-        await firestoreService.getCurrentUserDocument(userName: docName);
+    AppUserInfo? userInfo = await firestoreService.getCurrentUserDocument(
+      userName: docName,
+    );
     return userInfo;
   }
 
+  RxBool iscompleteUserSetup = RxBool(false);
+
   Future completeUserSetup() async {
+    iscompleteUserSetup.value = true;
     userAccountSetupState.value = Loading();
     try {
       await saveUserInfo();
@@ -412,14 +448,114 @@ class SetupAccountController extends GetxController {
     }
   }
 
-// Helper method to save chapters to the local box
-  Future<void> saveChaptersToLocal(
-      {required int subId, required List<dynamic> list}) async {
+  // Helper method to save chapters to the local box
+  Future<void> saveChaptersToLocal({
+    required int subId,
+    required List<dynamic> list,
+  }) async {
     await hiveService.put('${subId}_chapters', "chapters", list);
   }
 
   /// save skills
-  Future<bool> saveSkills() async {
+  // Future<bool> saveSkills({required int studentId}) async {
+  //   iscompleteUserSetup.value = true;
+  //   log("saveSkills()");
+  //   if (userAccountSetupState.value is! Loading) {
+  //     userAccountSetupState.value = Loading();
+  //   }
+  //   AppUserInfo? appUserInfo = await getUserInfo();
+
+  //   List<String> subjectIdOfStrengths = strengthMap.keys.toList();
+  //   List<String> subjectIdOfWeaknes = weaknessMap.keys.toList();
+
+  //   List<String> uniqueSubIdList = List.from(
+  //     Set.from(subjectIdOfStrengths + subjectIdOfWeaknes),
+  //   );
+
+  //   Map<String, dynamic> subjectInfoMap = {};
+  //   List<Map<String, dynamic>> subjectInfoMapList = [];
+
+  //   for (var i = 0; i < uniqueSubIdList.length; i++) {
+  //     List<int> strengths = [];
+  //     List<int> weakness = [];
+
+  //     if (strengthMap.containsKey(uniqueSubIdList[i])) {
+  //       strengths = List<int>.from(strengthMap[uniqueSubIdList[i]]);
+  //     }
+
+  //     if (weaknessMap.containsKey(uniqueSubIdList[i])) {
+  //       weakness = List<int>.from(weaknessMap[uniqueSubIdList[i]]);
+  //     }
+
+  //     subjectInfoMap = {
+  //       "subject_id": uniqueSubIdList[i],
+  //       "strong_chapters": strengths,
+  //       "weak_chapters": weakness,
+  //     };
+  //     subjectInfoMapList.add(subjectInfoMap);
+  //   }
+  //   strongChapters = strengthMap.values.expand((list) => list).toList();
+  //   log("strongChapters:$strongChapters");
+  //   weakChapters = weaknessMap.values.expand((list) => list).toList();
+  //   log("weakchapters:$weakChapters");
+
+  //   Map<String, dynamic> skillData = {
+  //     "course_id": "${currentSelectedCourse.value?.courseId}",
+  //     "student_id": "${appUserInfo?.id}",
+  //     "strong_chapters": strongChapters,
+  //     "weak_chapters": weakChapters,
+  //   };
+
+  //   log('skillData : $skillData');
+
+  //   final result = await skillsRepo.saveSkills(data: skillData);
+
+  //   return result.fold(
+  //     (failure) {
+  //       log("skill save failed");
+  //       iscompleteUserSetup.value = false;
+  //       userAccountSetupState.value = Failed(e: failure.message);
+  //       throw Exception(failure.message);
+  //     },
+  //     (data) async {
+  //       log("skill saved successfully");
+  //       iscompleteUserSetup.value = true;
+  //       String? fcmToken = await FirebaseMessaging.instance.getToken();
+
+  //       final token = await tokenRepo.getToken(
+  //         studentId: appUserInfo?.id ?? 0,
+  //         phoneNumber: appUserInfo?.phone ?? '',
+  //         fcmToken: fcmToken ?? '',
+  //       );
+
+  //       return await token.fold(
+  //         (l) async {
+  //           log("token failed");
+  //           iscompleteUserSetup.value = false;
+  //           userAccountSetupState.value = Failed(e: l.message);
+  //           return false; // Return false if token retrieval fails
+  //         },
+  //         (r) async {
+  //           log("access_token: ${r["access_token"]}");
+  //           log("refresh_token: ${r["refresh_token"]}");
+  //           iscompleteUserSetup.value = true;
+
+  //           await appCtr.saveToken(
+  //             accessToken: r['access_token'],
+  //             refreshToken: r['refresh_token'],
+  //           );
+
+  //           return await completeAccountSetup(); // Return the result of `saveSkills`
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
+
+  Rx<Ds<bool>> userAccountSetupState = Rx(Initial());
+  Rx<Student> currentStudent = Rx(Student());
+
+  Future<bool> saveSkills({required int studentId}) async {
     log("saveSkills()");
     if (userAccountSetupState.value is! Loading) {
       userAccountSetupState.value = Loading();
@@ -429,8 +565,9 @@ class SetupAccountController extends GetxController {
     List<String> subjectIdOfStrengths = strengthMap.keys.toList();
     List<String> subjectIdOfWeaknes = weaknessMap.keys.toList();
 
-    List<String> uniqueSubIdList =
-        List.from(Set.from(subjectIdOfStrengths + subjectIdOfWeaknes));
+    List<String> uniqueSubIdList = List.from(
+      Set.from(subjectIdOfStrengths + subjectIdOfWeaknes),
+    );
 
     Map<String, dynamic> subjectInfoMap = {};
     List<Map<String, dynamic>> subjectInfoMapList = [];
@@ -461,7 +598,7 @@ class SetupAccountController extends GetxController {
 
     Map<String, dynamic> skillData = {
       "course_id": "${currentSelectedCourse.value?.courseId}",
-      "student_id": "${appUserInfo?.id}",
+      "student_id": "$studentId",
       "strong_chapters": strongChapters,
       "weak_chapters": weakChapters,
     };
@@ -470,43 +607,88 @@ class SetupAccountController extends GetxController {
 
     final result = await skillsRepo.saveSkills(data: skillData);
 
-    return result.fold((failure) {
-      log("skill save failed");
-      userAccountSetupState.value = Failed(e: failure.message);
-      throw Exception(failure.message);
-    }, (data) async {
-      log("skill saved successfully");
-      String? fcmToken = await FirebaseMessaging.instance.getToken();
+    return result.fold(
+      (failure) {
+        log("skill save failed");
+        userAccountSetupState.value = Failed(e: failure.message);
+        iscompleteUserSetup.value = false;
+        throw Exception(failure.message);
+      },
+      (data) async {
+        log("skill saved successfully");
+        String? fcmToken = await FirebaseMessaging.instance.getToken();
 
-      final token = await tokenRepo.getToken(
-        studentId: appUserInfo?.id ?? 0,
-        phoneNumber: appUserInfo?.phone ?? '',
-        fcmToken: fcmToken ?? '',
-      );
+        if (studentverificationpending.value) {
+          isFailed.value = 'pending cases';
+          iscompleteUserSetup.value = true;
+          userAccountSetupState.value = Failed(e: "pending case");
+          return false;
+        } else {
+          final token = await tokenRepo.getToken(
+            studentId: studentId,
+            phoneNumber: appUserInfo?.phone ?? '',
+            fcmToken: fcmToken ?? '',
+          );
+          return await token.fold(
+            (l) async {
+              log("token failed");
+              userAccountSetupState.value = Failed(e: l.message);
+              iscompleteUserSetup.value = false;
+              return false; // Return false if token retrieval fails
+            },
+            (r) async {
+              log("access_token: ${r["access_token"]}");
+              log("refresh_token: ${r["refresh_token"]}");
 
-      return await token.fold((l) async {
-        log("token failed");
-        userAccountSetupState.value = Failed(e: l.message);
-        return false; // Return false if token retrieval fails
-      }, (r) async {
-        log("access_token: ${r["access_token"]}");
-        log("refresh_token: ${r["refresh_token"]}");
+              await appCtr.saveToken(
+                accessToken: r['access_token'],
+                refreshToken: r['refresh_token'],
+              );
 
-        await appCtr.saveToken(
-          accessToken: r['access_token'],
-          refreshToken: r['refresh_token'],
-        );
-
-        return await completeAccountSetup(); // Return the result of `saveSkills`
-      });
-    });
+              return await completeAccountSetup(
+                studentId: studentId,
+              ); // Return the result of `saveSkills`
+            },
+          );
+        }
+      },
+    );
   }
 
-  Rx<Ds<bool>> userAccountSetupState = Rx(Initial());
-  Rx<Student> currentStudent = Rx(Student());
+  // Future<bool> saveUserInfo() async {
+  //   AppUserInfo? appUserInfo = await getUserInfo();
+
+  //   final result = await userRepo.saveStudent(
+  //     student: Student(
+  //       studentId: appUserInfo?.id,
+  //       mailId: appUserInfo?.email,
+  //       name: appUserInfo?.name,
+  //       phoneNumber: appUserInfo?.phone,
+  //     ),
+  //   );
+
+  //   return await result.fold(
+  //     (f) async {
+  //       isFailed.value = f.message;
+  //       userAccountSetupState.value = Failed(e: f.message);
+  //       iscompleteUserSetup.value = false;
+  //       return false;
+  //     },
+  //     (student) async {
+  //       currentStudent.value = student;
+  //       organization.value = student.organization ?? -1;
+  //       return await saveSkills();
+  //     },
+  //   );
+  // }
+
+  // Rx<Ds<bool>> userAccountSetupState = Rx(Initial());
+  // Rx<Student> currentStudent = Rx(Student());
+  RxBool studentverificationpending = RxBool(false);
 
   Future<bool> saveUserInfo() async {
     AppUserInfo? appUserInfo = await getUserInfo();
+    String? fcmToken = await FirebaseMessaging.instance.getToken();
 
     final result = await userRepo.saveStudent(
       student: Student(
@@ -515,17 +697,44 @@ class SetupAccountController extends GetxController {
         name: appUserInfo?.name,
         phoneNumber: appUserInfo?.phone,
       ),
+      fcmToken: fcmToken ?? '',
     );
 
-    return await result.fold((f) async {
-      isFailed.value = f.message;
-      userAccountSetupState.value = Failed(e: f.message);
-      return false;
-    }, (student) async {
-      currentStudent.value = student;
-      organization.value = student.organization ?? -1;
-      return await saveSkills();
-    });
+    return await result.fold(
+      (f) async {
+        isFailed.value = f.message;
+        iscompleteUserSetup.value = false;
+        userAccountSetupState.value = Failed(e: f.message);
+        return false;
+      },
+      (student) async {
+        try {
+          log("studentId:${student['student_id']}");
+          log("status_code:${student['status_code']}");
+          log("org:${student['organization']}");
+          await firestoreService.updateStudentId(
+            userName: '${appUserInfo?.phone}@neuflo.io',
+            iD: student['student_id'],
+          );
+
+          if (student['status_code'] == 420) {
+            studentverificationpending.value = true;
+            organization.value = student['organization'];
+            iscompleteUserSetup.value = true;
+            return await saveSkills(studentId: student['student_id']);
+          } else {
+            log("verification approved scenario");
+            studentverificationpending.value = false;
+            iscompleteUserSetup.value = true;
+            organization.value = student['organization'];
+            return await saveSkills(studentId: student['student_id']);
+          }
+        } catch (e) {
+          log('error:$e');
+          return false;
+        }
+      },
+    );
   }
 
   /// completes profile setup
@@ -538,24 +747,26 @@ class SetupAccountController extends GetxController {
 
     String docUsername = "$curretntUserPhoneNumber@neuflo.io";
 
-    AppUserInfo? appUserInfo =
-        await firestoreService.getCurrentUserDocument(userName: docUsername);
+    AppUserInfo? appUserInfo = await firestoreService.getCurrentUserDocument(
+      userName: docUsername,
+    );
 
     int currentdayindex = getCurrentDayIndex();
     List<int> streaklist = generateDaysList(currentdayindex);
 
     if (appUserInfo != null) {
       firestoreService.addBasicDetails(
-          userName: docUsername,
-          phonenum: appUserInfo.phone ?? '',
-          email: appUserInfo.email,
-          name: appUserInfo.name,
-          id: appUserInfo.id ?? 0,
-          imageUrl: appUserInfo.imageUrl,
-          isProfileSetupComplete: true,
-          streaklist: streaklist,
-          currentstreakIndex: currentdayindex,
-          organization: organization.value);
+        userName: docUsername,
+        phonenum: appUserInfo.phone ?? '',
+        email: appUserInfo.email,
+        name: appUserInfo.name,
+        id: appUserInfo.id ?? 0,
+        imageUrl: appUserInfo.imageUrl,
+        isProfileSetupComplete: true,
+        streaklist: streaklist,
+        currentstreakIndex: currentdayindex,
+        organization: organization.value,
+      );
     }
   }
 }

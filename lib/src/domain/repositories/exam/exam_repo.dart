@@ -3,8 +3,10 @@ import 'package:neuflo_learn/src/core/network/failure.dart';
 import 'package:neuflo_learn/src/data/models/exam_report.dart';
 
 abstract class ExamRepo {
-  Future<Either<Failure, bool>> checkTestCompletion(
-      {required String studentId, required String instanceId});
+  Future<Either<Failure, bool>> checkTestCompletion({
+    required String studentId,
+    required String instanceId,
+  });
 
   // Future<Either<Failure, TestCompletionData>> getPracticeTestDetails(
   //     {required String studentId, required String instanceId});
@@ -13,8 +15,10 @@ abstract class ExamRepo {
     required String studentId,
   });
 
-  Future<Either<Failure, int>> getQuestionIds(
-      {required int studentId, required int instanceId});
+  Future<Either<Failure, int>> getQuestionIds({
+    required int studentId,
+    required int instanceId,
+  });
 
   Future<Either<Failure, Map<String, dynamic>>> getPracticeTestQuestions({
     required int studentId,
@@ -23,8 +27,10 @@ abstract class ExamRepo {
     required String accessToken,
   }); //v2
 
-  Future<Either<Failure, Map<String, dynamic>>> getmockTestQuestions(
-      {required int studentId, required String accesstoken}); //v2
+  Future<Either<Failure, Map<String, dynamic>>> getmockTestQuestions({
+    required int studentId,
+    required String accesstoken,
+  }); //v2
 
   Future<Either<Failure, Map<String, dynamic>>> getCustomTestQuestions({
     required String accesstoken,

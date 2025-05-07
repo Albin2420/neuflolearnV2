@@ -44,10 +44,9 @@ class _AddTopicCardState extends State<AddTopicCard> {
           },
           child: Container(
             padding: EdgeInsets.all(
-                Constant.figmaScreenWidth * (16 / Constant.figmaScreenWidth)),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
+              Constant.figmaScreenWidth * (16 / Constant.figmaScreenWidth),
             ),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

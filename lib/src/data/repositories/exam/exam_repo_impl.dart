@@ -34,13 +34,13 @@ class ExamRepoImpl extends ExamRepo {
         return Left(result);
       }
       log('result => $result');
-      log('checkTestCompletion of instanceId $instanceId  : ${result["completion_status"]["is_completed"]}');
+      log(
+        'checkTestCompletion of instanceId $instanceId  : ${result["completion_status"]["is_completed"]}',
+      );
       return Right(result["completion_status"]["is_completed"]);
     } on FormatException catch (e) {
       debugPrint('exception : $e');
-      return const Left(
-        Failure(message: 'Format Exception'),
-      );
+      return const Left(Failure(message: 'Format Exception'));
     } on SocketException catch (e) {
       debugPrint('exception : $e');
       return const Left(
@@ -51,9 +51,7 @@ class ExamRepoImpl extends ExamRepo {
       );
     } on Exception catch (e) {
       debugPrint('exception : $e');
-      return const Left(
-        Failure(message: 'Unknown error, Try again later'),
-      );
+      return const Left(Failure(message: 'Unknown error, Try again later'));
     }
   }
 
@@ -183,23 +181,20 @@ class ExamRepoImpl extends ExamRepo {
   // }
 
   @override
-  Future<Either<Failure, int>> generatePracticeTestId(
-      {required String studentId}) async {
+  Future<Either<Failure, int>> generatePracticeTestId({
+    required String studentId,
+  }) async {
     if (kDebugMode) {
       log('${Url.baseUrl1}/${Url.generatePracticeTest}');
-      log({
-        'student_id': studentId,
-      }.toString());
+      log({'student_id': studentId}.toString());
     }
     try {
       final response = await apiService.post(
         url: '${Url.baseUrl1}/${Url.generatePracticeTest}',
-        data: jsonEncode({
-          'student_id': studentId,
-        }),
+        data: jsonEncode({'student_id': studentId}),
         headers: {
           "Access-Control-Allow-Headers": "Access-Control-Allow-Origin, Accept",
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
       );
       dynamic result = handleResponse(response);
@@ -213,9 +208,7 @@ class ExamRepoImpl extends ExamRepo {
       return Right(result["testInstanceID"]);
     } on FormatException catch (e) {
       debugPrint('exception : $e');
-      return const Left(
-        Failure(message: 'Format Exception'),
-      );
+      return const Left(Failure(message: 'Format Exception'));
     } on SocketException catch (e) {
       debugPrint('exception : $e');
       return const Left(
@@ -226,17 +219,19 @@ class ExamRepoImpl extends ExamRepo {
       );
     } on Exception catch (e) {
       debugPrint('exception : $e');
-      return const Left(
-        Failure(message: 'Unknown error, Try again later'),
-      );
+      return const Left(Failure(message: 'Unknown error, Try again later'));
     }
   }
 
   @override
-  Future<Either<Failure, int>> getQuestionIds(
-      {required int studentId, required int instanceId}) async {
+  Future<Either<Failure, int>> getQuestionIds({
+    required int studentId,
+    required int instanceId,
+  }) async {
     if (kDebugMode) {
-      log('${Url.baseUrl1}/${Url.getQuestionIds}?instanceId=$instanceId&studentId=$studentId');
+      log(
+        '${Url.baseUrl1}/${Url.getQuestionIds}?instanceId=$instanceId&studentId=$studentId',
+      );
     }
     try {
       final response = await apiService.get(
@@ -251,9 +246,7 @@ class ExamRepoImpl extends ExamRepo {
       return Right(0);
     } on FormatException catch (e) {
       debugPrint('exception : $e');
-      return const Left(
-        Failure(message: 'Format Exception'),
-      );
+      return const Left(Failure(message: 'Format Exception'));
     } on SocketException catch (e) {
       debugPrint('exception : $e');
       return const Left(
@@ -264,9 +257,7 @@ class ExamRepoImpl extends ExamRepo {
       );
     } on Exception catch (e) {
       debugPrint('exception : $e');
-      return const Left(
-        Failure(message: 'Unknown error, Try again later'),
-      );
+      return const Left(Failure(message: 'Unknown error, Try again later'));
     }
   }
 
@@ -279,18 +270,18 @@ class ExamRepoImpl extends ExamRepo {
   }) async {
     if (kDebugMode) {
       log('${Url.baseUrl1}/${Url.getPracticeTestQuestions}');
-      log({
-        "student_id:$studentId",
-        "subject_name :$subjectName",
-        "test_level :$testlevel"
-      }.toString());
+      log(
+        {
+          "student_id:$studentId",
+          "subject_name :$subjectName",
+          "test_level :$testlevel",
+        }.toString(),
+      );
     }
 
     try {
       final https.Response response = await apiService.get(
-        headers: {
-          'Authorization': 'Bearer $accessToken',
-        },
+        headers: {'Authorization': 'Bearer $accessToken'},
         url:
             '${Url.baseUrl1}/${Url.getPracticeTestQuestions}/?subject_name=$subjectName&test_level=$testlevel',
       );
@@ -321,9 +312,7 @@ class ExamRepoImpl extends ExamRepo {
       });
     } on FormatException catch (e) {
       debugPrint('exception : $e');
-      return const Left(
-        Failure(message: 'Format Exception'),
-      );
+      return const Left(Failure(message: 'Format Exception'));
     } on SocketException catch (e) {
       debugPrint('exception : $e');
       return const Left(
@@ -334,9 +323,7 @@ class ExamRepoImpl extends ExamRepo {
       );
     } on Exception catch (e) {
       debugPrint('exception : $e');
-      return const Left(
-        Failure(message: 'Unknown error, Try again later'),
-      );
+      return const Left(Failure(message: 'Unknown error, Try again later'));
     }
   }
 
@@ -352,31 +339,37 @@ class ExamRepoImpl extends ExamRepo {
   }) async {
     if (kDebugMode) {
       log("sumbitPracticeTestAnswers()");
-      log("url:${Uri.parse('${Url.baseUrl1}/${Url.submitPracticeTestAnswers}/')}");
-      log({
-        "practice_test_id": practiceTestId,
-        "student_id": studentId,
-        "subject_id": subjectId,
-        "test_level": testLevel.toLowerCase(),
-        "total_time_taken": totalTimeTaken,
-        "questions": questions
-      }.toString());
+      log(
+        "url:${Uri.parse('${Url.baseUrl1}/${Url.submitPracticeTestAnswers}/')}",
+      );
+      log(
+        {
+          "practice_test_id": practiceTestId,
+          "student_id": studentId,
+          "subject_id": subjectId,
+          "test_level": testLevel.toLowerCase(),
+          "total_time_taken": totalTimeTaken,
+          "questions": questions,
+        }.toString(),
+      );
     }
     final url = Uri.parse('${Url.baseUrl1}/${Url.submitPracticeTestAnswers}/');
     try {
-      final response = await https.post(url,
-          headers: {
-            "Content-Type": "application/json",
-            'Authorization': 'Bearer $accessToken',
-          },
-          body: jsonEncode({
-            "practice_test_id": practiceTestId,
-            // "student_id": studentId,
-            "subject_id": subjectId,
-            "test_level": testLevel.toLowerCase(),
-            "total_time_taken": totalTimeTaken,
-            "questions": questions
-          }));
+      final response = await https.post(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode({
+          "practice_test_id": practiceTestId,
+          // "student_id": studentId,
+          "subject_id": subjectId,
+          "test_level": testLevel.toLowerCase(),
+          "total_time_taken": totalTimeTaken,
+          "questions": questions,
+        }),
+      );
 
       dynamic result = handleResponse(response);
 
@@ -391,7 +384,7 @@ class ExamRepoImpl extends ExamRepo {
         "score_percentage": result["score_percentage"],
         "total_time_taken": time,
         "score": result["score"],
-        "rank": result["rank"]
+        "rank": result["rank"],
       }));
     } catch (e) {
       log('error in sumbitPracticeTestAnswers():$e');
@@ -400,8 +393,10 @@ class ExamRepoImpl extends ExamRepo {
   }
 
   @override
-  Future<Either<Failure, Map<String, dynamic>>> getmockTestQuestions(
-      {required int studentId, required String accesstoken}) async {
+  Future<Either<Failure, Map<String, dynamic>>> getmockTestQuestions({
+    required int studentId,
+    required String accesstoken,
+  }) async {
     try {
       final url = Uri.parse('${Url.baseUrl1}/${Url.generateMockTest}/');
       if (kDebugMode) {
@@ -530,7 +525,7 @@ class ExamRepoImpl extends ExamRepo {
           "physicsIds": result["question_ids"]["Physics"],
           "chemistryIds": result["question_ids"]["Chemistry"],
           "BotanyIds": result["question_ids"]["Botany"],
-          "ZoologyIds": result["question_ids"]["Zoology"]
+          "ZoologyIds": result["question_ids"]["Zoology"],
         });
       }
 
@@ -550,11 +545,13 @@ class ExamRepoImpl extends ExamRepo {
     if (kDebugMode) {
       log('${Url.baseUrl1}/${Url.calculatePracticeTestResultsSubjectwise}');
 
-      log({
-        "student_id": studentId,
-        "test_instance_id": instanceId,
-        "subject_test_id": subjectTestId,
-      }.toString());
+      log(
+        {
+          "student_id": studentId,
+          "test_instance_id": instanceId,
+          "subject_test_id": subjectTestId,
+        }.toString(),
+      );
     }
     try {
       final https.Response response = await apiService.post(
@@ -574,9 +571,7 @@ class ExamRepoImpl extends ExamRepo {
       return Right(report);
     } on FormatException catch (e) {
       debugPrint('exception : $e');
-      return const Left(
-        Failure(message: 'Format Exception'),
-      );
+      return const Left(Failure(message: 'Format Exception'));
     } on SocketException catch (e) {
       debugPrint('exception : $e');
       return const Left(
@@ -587,9 +582,7 @@ class ExamRepoImpl extends ExamRepo {
       );
     } on Exception catch (e) {
       debugPrint('exception : $e');
-      return const Left(
-        Failure(message: 'Unknown error, Try again later'),
-      );
+      return const Left(Failure(message: 'Unknown error, Try again later'));
     }
   }
 
@@ -621,7 +614,7 @@ class ExamRepoImpl extends ExamRepo {
           "subjectwise_chapter": {
             "1": physicsChapters,
             "2": chemistryChapters,
-            "3": biologyChapters
+            "3": biologyChapters,
           },
           "total_questions": noOfQuestions,
           "total_time": noOfQuestions,
@@ -653,9 +646,7 @@ class ExamRepoImpl extends ExamRepo {
       });
     } on FormatException catch (e) {
       debugPrint('exception : $e');
-      return const Left(
-        Failure(message: 'Format Exception'),
-      );
+      return const Left(Failure(message: 'Format Exception'));
     } on SocketException catch (e) {
       debugPrint('exception : $e');
       return const Left(
@@ -666,9 +657,7 @@ class ExamRepoImpl extends ExamRepo {
       );
     } on Exception catch (e) {
       debugPrint('exception : $e');
-      return const Left(
-        Failure(message: 'Unknown error, Try again later'),
-      );
+      return const Left(Failure(message: 'Unknown error, Try again later'));
     } catch (e) {
       log("Error in getCustomTestQuestions():$e");
       return Left(Failure(message: e.toString()));
@@ -708,7 +697,7 @@ class ExamRepoImpl extends ExamRepo {
           "answers": {
             "Physics": physicsAnswers,
             "Chemistry": chemistryAnswers,
-            "Biology": biologyAnswers
+            "Biology": biologyAnswers,
           },
           "test_average_time": totalTimeTaken,
         })),
@@ -723,14 +712,15 @@ class ExamRepoImpl extends ExamRepo {
 
       log("result of mocktest:$result");
 
-      String? time =
-          await convertSectoHourMinute(result["total_time_taken"]); //got it;
+      String? time = await convertSectoHourMinute(
+        result["total_time_taken"],
+      ); //got it;
 
       return Right(({
         "score_percentage": result["score_percentage"],
         "total_time_taken": time,
         "score": result["score"],
-        "rank": result["rank"]
+        "rank": result["rank"],
       }));
     } catch (e) {
       log("Error in submitMockTest():$e");
@@ -754,16 +744,18 @@ class ExamRepoImpl extends ExamRepo {
       final url = "${Url.baseUrl1}/${Url.submitCustomTest1}";
       if (kDebugMode) {
         log('url:${Url.baseUrl1}/${Url.submitCustomTest1}');
-        log(({
-          "custom_id": customTestId,
-          "student_id": studentId,
-          "total_attended": totalAttended,
-          "correct_number": correctNumber,
-          "incorrect_number": incorrectNumber,
-          "test_average_time": testAverageTime,
-          "question_average_time": questionAvgTime,
-          "answers": answer
-        }).toString());
+        log(
+          ({
+            "custom_id": customTestId,
+            "student_id": studentId,
+            "total_attended": totalAttended,
+            "correct_number": correctNumber,
+            "incorrect_number": incorrectNumber,
+            "test_average_time": testAverageTime,
+            "question_average_time": questionAvgTime,
+            "answers": answer,
+          }).toString(),
+        );
       }
       final response = await https.post(
         Uri.parse(url),
@@ -779,7 +771,7 @@ class ExamRepoImpl extends ExamRepo {
           "incorrect_number": incorrectNumber,
           "test_average_time": testAverageTime,
           "question_average_time": questionAvgTime,
-          "answers": answer
+          "answers": answer,
         })),
       );
       dynamic result = handleResponse(response);
@@ -793,7 +785,7 @@ class ExamRepoImpl extends ExamRepo {
         "score_percentage": result["score_percentage"],
         "total_time_taken": time,
         "score": result["score"],
-        "rank": result["rank"]
+        "rank": result["rank"],
       });
     } catch (e) {
       log("Error in submitCustomTestAnswersImpl():$e");

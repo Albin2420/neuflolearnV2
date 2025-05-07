@@ -10,13 +10,14 @@ class AnsweRTile extends StatelessWidget {
   final String explanation;
   final String submittedAns;
 
-  const AnsweRTile(
-      {super.key,
-      required this.answer,
-      required this.qstn,
-      required this.opt,
-      required this.explanation,
-      required this.submittedAns});
+  const AnsweRTile({
+    super.key,
+    required this.answer,
+    required this.qstn,
+    required this.opt,
+    required this.explanation,
+    required this.submittedAns,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +33,7 @@ class AnsweRTile extends StatelessWidget {
         ],
         color: Color(0xffFFFFFF),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: Color(0xff0000001a).withValues(alpha: 0.1),
-        ),
+        border: Border.all(color: Color(0xff0000001a).withValues(alpha: 0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,9 +43,7 @@ class AnsweRTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(
-                  height: 10,
-                ),
+                SizedBox(height: 10),
                 GptMarkdown(
                   qstn,
                   style: GoogleFonts.urbanist(
@@ -55,9 +52,7 @@ class AnsweRTile extends StatelessWidget {
                     fontSize: 16,
                   ),
                 ),
-                SizedBox(
-                  height: 15,
-                ),
+                SizedBox(height: 15),
                 GptMarkdown(
                   "Ans: $answer) $opt",
                   style: GoogleFonts.urbanist(
@@ -66,9 +61,7 @@ class AnsweRTile extends StatelessWidget {
                     fontSize: 16,
                   ),
                 ),
-                SizedBox(
-                  height: 16,
-                ),
+                SizedBox(height: 16),
                 Text(
                   "Explanation :",
                   style: GoogleFonts.urbanist(
@@ -77,9 +70,7 @@ class AnsweRTile extends StatelessWidget {
                     fontSize: 16,
                   ),
                 ),
-                SizedBox(
-                  height: 12,
-                ),
+                SizedBox(height: 12),
                 GptMarkdown(
                   explanation,
                   style: GoogleFonts.urbanist(
@@ -88,9 +79,7 @@ class AnsweRTile extends StatelessWidget {
                     fontSize: 16,
                   ),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
+                SizedBox(height: 10),
                 // Text("submitted:$submittedAns : answer:$answer"),
                 submittedAns != "unattempted"
                     ? Column(
@@ -98,9 +87,7 @@ class AnsweRTile extends StatelessWidget {
                           Divider(
                             color: Color(0xff01002933).withValues(alpha: 0.2),
                           ),
-                          SizedBox(
-                            height: 16,
-                          ),
+                          SizedBox(height: 16),
                           submittedAns == answer
                               ? Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -113,9 +100,7 @@ class AnsweRTile extends StatelessWidget {
                                         fontSize: 16,
                                       ),
                                     ),
-                                    SizedBox(
-                                      width: 4,
-                                    ),
+                                    SizedBox(width: 4),
                                     SizedBox(
                                       height: 24,
                                       width: 24,
@@ -138,14 +123,13 @@ class AnsweRTile extends StatelessWidget {
                                             fontSize: 16,
                                           ),
                                         ),
-                                        SizedBox(
-                                          width: 4,
-                                        ),
+                                        SizedBox(width: 4),
                                         SizedBox(
                                           height: 24,
                                           width: 24,
                                           child: Image.asset(
-                                              "assets/icons/wrong.png"),
+                                            "assets/icons/wrong.png",
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -159,24 +143,21 @@ class AnsweRTile extends StatelessWidget {
                                             fontSize: 16,
                                           ),
                                         ),
-                                        SizedBox(
-                                          width: 4,
-                                        ),
+                                        SizedBox(width: 4),
                                         SizedBox(
                                           height: 24,
                                           width: 24,
                                           child: Image.asset(
-                                              "assets/icons/done.png"),
+                                            "assets/icons/done.png",
+                                          ),
                                         ),
                                       ],
-                                    )
+                                    ),
                                   ],
-                                )
+                                ),
                         ],
                       )
-                    : SizedBox(
-                        height: 10,
-                      ),
+                    : SizedBox(height: 10),
               ],
             ),
           ),
@@ -204,8 +185,9 @@ class AnsweRTile extends StatelessWidget {
               : Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(24),
-                        bottomRight: Radius.circular(24)),
+                      bottomLeft: Radius.circular(24),
+                      bottomRight: Radius.circular(24),
+                    ),
                     color: submittedAns == answer ? Colors.green : Colors.red,
                   ),
                   height: 38,
@@ -221,7 +203,7 @@ class AnsweRTile extends StatelessWidget {
                       ),
                     ),
                   ),
-                )
+                ),
         ],
       ),
     );

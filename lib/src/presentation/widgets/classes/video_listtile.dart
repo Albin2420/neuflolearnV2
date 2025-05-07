@@ -101,7 +101,7 @@ class VideoListtile extends StatelessWidget {
                     size: 18,
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),

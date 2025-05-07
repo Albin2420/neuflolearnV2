@@ -96,8 +96,9 @@ class HomeController extends GetxController {
   /// set user basic details
   Future setUserInfo() async {
     String docUsername = await getDocumentName();
-    AppUserInfo? appUserInfo =
-        await firestoreService.getCurrentUserDocument(userName: docUsername);
+    AppUserInfo? appUserInfo = await firestoreService.getCurrentUserDocument(
+      userName: docUsername,
+    );
     Get.find<AppStartupController>().appUser.value = appUserInfo;
     appUser.value = appUserInfo;
 
@@ -120,21 +121,27 @@ class HomeController extends GetxController {
           await firestoreService.getTotalTestsDoneperDay(docName: docUsername);
 
       physics.value = await firestoreService.getdailyTestReportTest(
-          docName: docUsername, sub: "Physics");
+        docName: docUsername,
+        sub: "Physics",
+      );
       for (int i = 0; i < physics.length; i++) {
         if (physics[i] == true) {
           physicsattendedCount++;
         }
       }
       chemistry.value = await firestoreService.getdailyTestReportTest(
-          docName: docUsername, sub: "Chemistry");
+        docName: docUsername,
+        sub: "Chemistry",
+      );
       for (int i = 0; i < chemistry.length; i++) {
         if (chemistry[i] == true) {
           chemattendedCount++;
         }
       }
       biology.value = await firestoreService.getdailyTestReportTest(
-          docName: docUsername, sub: 'Biology');
+        docName: docUsername,
+        sub: 'Biology',
+      );
       for (int i = 0; i < biology.length; i++) {
         if (biology[i] == true) {
           bioattendedCount++;
@@ -172,8 +179,10 @@ class HomeController extends GetxController {
 
   /// fetch chapters
   Future<List<Chapter>> fetchChapters({required int subId}) async {
-    final List<dynamic>? data =
-        await hiveService.get('${subId}_chapters', "chapters");
+    final List<dynamic>? data = await hiveService.get(
+      '${subId}_chapters',
+      "chapters",
+    );
 
     List<Chapter>? savedChapters = [];
     for (var i = 0; i < (data ?? []).length; i++) {
@@ -182,11 +191,14 @@ class HomeController extends GetxController {
 
     if (savedChapters.isEmpty) {
       final result = await chapterRepo.fetchChapters(subjectId: subId);
-      result.fold((failure) {
-        return [];
-      }, (data) async {
-        return data;
-      });
+      result.fold(
+        (failure) {
+          return [];
+        },
+        (data) async {
+          return data;
+        },
+      );
     } else {
       return savedChapters;
     }
@@ -260,8 +272,9 @@ class HomeController extends GetxController {
 
   Future<AppUserInfo?> getUserInfo() async {
     docName = await getDocumentName();
-    AppUserInfo? userInfo =
-        await firestoreService.getCurrentUserDocument(userName: docName);
+    AppUserInfo? userInfo = await firestoreService.getCurrentUserDocument(
+      userName: docName,
+    );
     return userInfo;
   }
 
@@ -273,13 +286,16 @@ class HomeController extends GetxController {
         instanceId: testInstanceIDList[i].toString(),
       );
 
-      result.fold((failure) {
-        noOfTestCompletedToday.value = 0;
-      }, (data) {
-        if (data == true) {
-          noOfTestCompletedToday.value++;
-        }
-      });
+      result.fold(
+        (failure) {
+          noOfTestCompletedToday.value = 0;
+        },
+        (data) {
+          if (data == true) {
+            noOfTestCompletedToday.value++;
+          }
+        },
+      );
     }
     // log('NO OF TEST COMPLETED TODAY ==> $noOfTestCompletedToday');
   }
@@ -381,8 +397,9 @@ class HomeController extends GetxController {
           await firestoreService.getStreakValueFromFirebase(userName: docName);
       // log("streakFromFirebase : $streakFromFirebase");
 
-      currentStreakValues.value =
-          List<int>.from(findStreak(streakFromFirebase));
+      currentStreakValues.value = List<int>.from(
+        findStreak(streakFromFirebase),
+      );
 
       await firestoreService.setStreakData(
         streakvalue: currentStreakValues,

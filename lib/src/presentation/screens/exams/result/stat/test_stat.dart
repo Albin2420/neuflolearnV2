@@ -83,9 +83,7 @@ class TestStat extends StatelessWidget {
                         child: Center(
                           child: Column(
                             children: [
-                              SizedBox(
-                                height: 8,
-                              ),
+                              SizedBox(height: 8),
                               Text(
                                 "Test stats",
                                 style: GoogleFonts.urbanist(
@@ -97,10 +95,12 @@ class TestStat extends StatelessWidget {
                               Text(
                                 "statistics and analytics",
                                 style: GoogleFonts.urbanist(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 12,
-                                    color: Color(0xff010029)
-                                        .withValues(alpha: 0.5)),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
+                                  color: Color(
+                                    0xff010029,
+                                  ).withValues(alpha: 0.5),
+                                ),
                               ),
                             ],
                           ),
@@ -135,8 +135,9 @@ class TestStat extends StatelessWidget {
                                           fontSize: 14,
                                           color: ctr.currentPageIndex.value == 0
                                               ? Color(0xff02012A)
-                                              : Color(0xff010029)
-                                                  .withValues(alpha: 0.5),
+                                              : Color(
+                                                  0xff010029,
+                                                ).withValues(alpha: 0.5),
                                         ),
                                       ),
                                     ),
@@ -169,8 +170,9 @@ class TestStat extends StatelessWidget {
                                           fontSize: 14,
                                           color: ctr.currentPageIndex.value == 1
                                               ? Color(0xff02012A)
-                                              : Color(0xff010029)
-                                                  .withValues(alpha: 0.5),
+                                              : Color(
+                                                  0xff010029,
+                                                ).withValues(alpha: 0.5),
                                         ),
                                       ),
                                     ),
@@ -203,8 +205,9 @@ class TestStat extends StatelessWidget {
                                           fontSize: 14,
                                           color: ctr.currentPageIndex.value == 2
                                               ? Color(0xff02012A)
-                                              : Color(0xff010029)
-                                                  .withValues(alpha: 0.5),
+                                              : Color(
+                                                  0xff010029,
+                                                ).withValues(alpha: 0.5),
                                         ),
                                       ),
                                     ),

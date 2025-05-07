@@ -24,9 +24,13 @@ class ComingUpVideos extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 20, bottom: 20, top: 19),
-              child: Text("Coming Up Next",
-                  style: GoogleFonts.urbanist(
-                      fontSize: 20, fontWeight: FontWeight.bold)),
+              child: Text(
+                "Coming Up Next",
+                style: GoogleFonts.urbanist(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
             Expanded(
               child: ListView.builder(

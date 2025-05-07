@@ -255,13 +255,19 @@ class CustomTestIntro extends StatelessWidget {
             const Spacer(), // This pushes the container to the bottom
             Container(
               height: 1,
-              decoration: BoxDecoration(boxShadow: [
-                BoxShadow(
-                  color: Colors.black
-                      .withOpacity(0.2), // Shadow color with opacity
-                  offset: const Offset(0, 1), // Horizontal and Vertical offset
-                ),
-              ]),
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(
+                      0.2,
+                    ), // Shadow color with opacity
+                    offset: const Offset(
+                      0,
+                      1,
+                    ), // Horizontal and Vertical offset
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -285,15 +291,15 @@ class CustomTestIntro extends StatelessWidget {
                             width: 56,
                             child: Image.asset("assets/icons/customtest.png"),
                           ),
-                          SizedBox(
-                            height: 8,
-                          ),
+                          SizedBox(height: 8),
                           Column(
                             children: [
                               Text(
                                 "Custom Test",
                                 style: GoogleFonts.urbanist(
-                                    fontWeight: FontWeight.w700, fontSize: 32),
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 32,
+                                ),
                               ),
                               Text(
                                 "Customisable practice test ",
@@ -302,7 +308,7 @@ class CustomTestIntro extends StatelessWidget {
                                   fontSize: 16,
                                   color: Color(0xff02013B),
                                 ),
-                              )
+                              ),
                             ],
                           ),
                         ],
@@ -311,14 +317,13 @@ class CustomTestIntro extends StatelessWidget {
                   ],
                 ),
               ),
-              Obx(
-                () {
-                  return CustomtestExamcriteria(
-                      shadow: false,
-                      timeLimit: '${customctr.questionCount.value}',
-                      noOfQuestion: '${customctr.questionCount.value}');
-                },
-              ),
+              Obx(() {
+                return CustomtestExamcriteria(
+                  shadow: false,
+                  timeLimit: '${customctr.questionCount.value}',
+                  noOfQuestion: '${customctr.questionCount.value}',
+                );
+              }),
               Container(
                 padding: EdgeInsets.only(left: 24, right: 24),
                 height: 24,
@@ -345,22 +350,17 @@ class CustomTestIntro extends StatelessWidget {
                     ],
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),
       ),
       bottomNavigationBar: Container(
-        padding: EdgeInsets.only(
-          left: 16,
-          right: 16,
-        ),
+        padding: EdgeInsets.only(left: 16, right: 16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(
-              height: 8,
-            ),
+            SizedBox(height: 8),
             GestureDetector(
               onTap: () {
                 customctr.setCurrentSubjectName(sub: "Physics");
@@ -388,30 +388,29 @@ class CustomTestIntro extends StatelessWidget {
                     Text(
                       "Edit test settings",
                       style: GoogleFonts.urbanist(
-                          fontWeight: FontWeight.w600, fontSize: 16),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
                     ),
-                    SizedBox(
-                      width: 4,
-                    ),
+                    SizedBox(width: 4),
                     SizedBox(
                       height: 16,
                       width: 16,
                       child: Image.asset("assets/icons/edit.png"),
-                    )
+                    ),
                   ],
                 ),
               ),
             ),
-            SizedBox(
-              height: 24,
-            ),
+            SizedBox(height: 24),
             AppBtn(
               btnName: 'Start Test',
               onTapFunction: () async {
                 if (customctr.selectedChapters.isEmpty) {
                   Fluttertoast.showToast(
-                      msg: 'Select chapters from test settings to continue',
-                      textColor: Colors.white);
+                    msg: 'Select chapters from test settings to continue',
+                    textColor: Colors.white,
+                  );
                   return;
                 }
 
@@ -424,7 +423,7 @@ class CustomTestIntro extends StatelessWidget {
               },
               iconImg: Icons.arrow_forward,
             ),
-            SizedBox(height: 8)
+            SizedBox(height: 8),
           ],
         ),
       ),

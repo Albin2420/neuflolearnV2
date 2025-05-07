@@ -22,9 +22,7 @@ class SkillsRepoImpl extends SkillsRepo {
     try {
       final response = await apiService.post(
         url: '${Url.baseUrl1}/${Url.saveSkill}',
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: {"Content-Type": "application/json"},
         data: json.encode(data),
       );
 
@@ -40,9 +38,7 @@ class SkillsRepoImpl extends SkillsRepo {
       return Right('success');
     } on FormatException catch (e) {
       debugPrint('exception : $e');
-      return const Left(
-        Failure(message: 'Format Exception'),
-      );
+      return const Left(Failure(message: 'Format Exception'));
     } on SocketException catch (e) {
       debugPrint('exception : $e');
       return const Left(
@@ -53,9 +49,7 @@ class SkillsRepoImpl extends SkillsRepo {
       );
     } on Exception catch (e) {
       debugPrint('exception : $e');
-      return const Left(
-        Failure(message: 'Unknown error, Try again later'),
-      );
+      return const Left(Failure(message: 'Unknown error, Try again later'));
     }
   }
 }

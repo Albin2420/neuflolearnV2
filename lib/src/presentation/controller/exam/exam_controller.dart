@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -114,8 +113,9 @@ class ExamController extends GetxController {
 
   Future<AppUserInfo?> getUserInfo() async {
     String docName = await getDocumentName();
-    appUserInfo =
-        await firestoreService.getCurrentUserDocument(userName: docName);
+    appUserInfo = await firestoreService.getCurrentUserDocument(
+      userName: docName,
+    );
     studentId.value = int.parse(appUserInfo?.id.toString() ?? '0');
     log("studentId:${studentId.value} in getUserInfo()");
     return appUserInfo;
@@ -203,7 +203,9 @@ class ExamController extends GetxController {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       secondsLeft.value++; // Increment seconds left every second
 
-      log("TOTAL TIME ELAPSED : ${secondsLeft.value}, target :${targetSecond.value}, timeLimit : ${timeLimit.value}");
+      // log(
+      //   "TOTAL TIME ELAPSED : ${secondsLeft.value}, target :${targetSecond.value}, timeLimit : ${timeLimit.value}",
+      // );
       if (secondsLeft.value > targetSecond.value && timeLimit.value) {
         timerExpired.value = true;
         stopTimer();
@@ -270,7 +272,7 @@ class ExamController extends GetxController {
     isAvgTimerRunning.value = false; // Ensure the timer is marked as stopped
   }
 
-////
+  ////
 
   void setSubjectName({required String subj}) {
     currentSubjectName = subj;
@@ -282,50 +284,66 @@ class ExamController extends GetxController {
   }
 
   /// get practice test exam questions
-  Future getPracticeTestQuestions(
-      {required String subjectName, required String testlevel}) async {
+  Future getPracticeTestQuestions({
+    required String subjectName,
+    required String testlevel,
+  }) async {
     final result = await examRepo.getPracticeTestQuestions(
-        studentId: studentId.value,
-        subjectName: currentSubjectName,
-        testlevel: testlevel,
-        accessToken: accessToken.value);
+      studentId: studentId.value,
+      subjectName: currentSubjectName,
+      testlevel: testlevel,
+      accessToken: accessToken.value,
+    );
 
-    result.fold((failure) async {
-      log("failure:${failure.message}");
-      if (failure.message == "user is not authorised" ||
-          failure.message == 'api rejected our request') {
-        log("attempt the refresh token");
-        //call the refreshtoken then update the access token then call this method
+    result.fold(
+      (failure) async {
+        log("failure:${failure.message}");
+        if (failure.message == "user is not authorised" ||
+            failure.message == 'api rejected our request') {
+          log("attempt the refresh token");
+          //call the refreshtoken then update the access token then call this method
 
-        final resp =
-            await tokenRepo.getNewTokens(refreshToken: refreshToken.value);
-        resp.fold((l) {
-          log("failed to get new token:${l.message}");
+          final resp = await tokenRepo.getNewTokens(
+            refreshToken: refreshToken.value,
+          );
+          resp.fold(
+            (l) {
+              log("failed to get new token:${l.message}");
+              examState.value = Failed();
+            },
+            (r) async {
+              accessToken.value = r['access_token'];
+              refreshToken.value = r['refresh_token'];
+              await appctrl.saveToken(
+                accessToken: r['access_token'],
+                refreshToken: r['refresh_token'],
+              );
+              getPracticeTestQuestions(
+                subjectName: subjectName,
+                testlevel: testlevel,
+              );
+            },
+          );
+        } else {
+          questionList.value = [];
           examState.value = Failed();
-        }, (r) async {
-          accessToken.value = r['access_token'];
-          refreshToken.value = r['refresh_token'];
-          await appctrl.saveToken(
-              accessToken: r['access_token'], refreshToken: r['refresh_token']);
-          getPracticeTestQuestions(
-              subjectName: subjectName, testlevel: testlevel);
-        });
-      } else {
-        questionList.value = [];
-        examState.value = Failed();
-      }
-    }, (data) {
-      questionList.value = data["questions"];
-      tempQuestionList.value = data["questions"];
-      testId.value = data["practiceTestID"];
+        }
+      },
+      (data) {
+        questionList.value = data["questions"];
+        tempQuestionList.value = data["questions"];
+        testId.value = data["practiceTestID"];
 
-      examState.value = Success(data: questionList);
-      startTimer();
+        examState.value = Success(data: questionList);
+        startTimer();
 
-      if (kDebugMode) {
-        log("${questionList.length} QUESTIONS LOADED FOR $currentSubjectName");
-      }
-    });
+        if (kDebugMode) {
+          log(
+            "${questionList.length} QUESTIONS LOADED FOR $currentSubjectName",
+          );
+        }
+      },
+    );
   }
 
   initiatemockTest() async {
@@ -341,39 +359,50 @@ class ExamController extends GetxController {
 
   Future getMockTestQuestions({required int studentId}) async {
     final result = await examRepo.getmockTestQuestions(
-        studentId: studentId, accesstoken: accessToken.value);
+      studentId: studentId,
+      accesstoken: accessToken.value,
+    );
 
-    result.fold((failure) async {
-      log("Failure:${failure.message}");
+    result.fold(
+      (failure) async {
+        log("Failure:${failure.message}");
 
-      if (failure.message == 'user is not authorised') {
-        final resp =
-            await tokenRepo.getNewTokens(refreshToken: refreshToken.value);
-        resp.fold((l) {
-          log("failed to get new token:${l.message}");
-          examState.value = Failed();
-        }, (r) async {
-          accessToken.value = r['access_token'];
-          refreshToken.value = r['refresh_token'];
-          await appctrl.saveToken(
-              accessToken: r['access_token'], refreshToken: r['refresh_token']);
-          await getMockTestQuestions(studentId: studentId);
-        });
-      }
+        if (failure.message == 'user is not authorised') {
+          final resp = await tokenRepo.getNewTokens(
+            refreshToken: refreshToken.value,
+          );
+          resp.fold(
+            (l) {
+              log("failed to get new token:${l.message}");
+              examState.value = Failed();
+            },
+            (r) async {
+              accessToken.value = r['access_token'];
+              refreshToken.value = r['refresh_token'];
+              await appctrl.saveToken(
+                accessToken: r['access_token'],
+                refreshToken: r['refresh_token'],
+              );
+              await getMockTestQuestions(studentId: studentId);
+            },
+          );
+        }
 
-      questionList.value = [];
-      examState.value = Failed();
-    }, (data) {
-      testId.value = data["mock_test_id"];
-      physicsIds = data["physicsIds"];
-      chemistryIds = data["chemistryIds"];
-      botonyIds = data["BotanyIds"];
-      zoologyIds = data["ZoologyIds"];
-      questionList.value = data["questions"];
-      tempQuestionList.value = data["questions"];
-      examState.value = Success(data: questionList);
-      startTimer();
-    });
+        questionList.value = [];
+        examState.value = Failed();
+      },
+      (data) {
+        testId.value = data["mock_test_id"];
+        physicsIds = data["physicsIds"];
+        chemistryIds = data["chemistryIds"];
+        botonyIds = data["BotanyIds"];
+        zoologyIds = data["ZoologyIds"];
+        questionList.value = data["questions"];
+        tempQuestionList.value = data["questions"];
+        examState.value = Success(data: questionList);
+        startTimer();
+      },
+    );
   }
 
   RxInt totalAttenDed = RxInt(0);
@@ -467,67 +496,77 @@ class ExamController extends GetxController {
       biologyAnswers: biologyAnswers,
     );
 
-    await resp.fold((f) async {
-      log("Error IN FOLD(): ${f.message}");
+    await resp.fold(
+      (f) async {
+        log("Error IN FOLD(): ${f.message}");
 
-      if (f.message == 'user is not authorised') {
-        log("Attempting to refresh token...");
+        if (f.message == 'user is not authorised') {
+          log("Attempting to refresh token...");
 
-        final tokenResp =
-            await tokenRepo.getNewTokens(refreshToken: refreshToken.value);
-        await tokenResp.fold((tokenError) {
-          log("Failed to refresh token: ${tokenError.message}");
-          examReportState.value = Failed(e: 'Authentication Failed');
+          final tokenResp = await tokenRepo.getNewTokens(
+            refreshToken: refreshToken.value,
+          );
+          await tokenResp.fold(
+            (tokenError) {
+              log("Failed to refresh token: ${tokenError.message}");
+              examReportState.value = Failed(e: 'Authentication Failed');
+              isSuccess = false;
+            },
+            (tokenSuccess) async {
+              log("New token obtained: ${tokenSuccess['access_token']}");
+
+              // Update the tokens
+              accessToken.value = tokenSuccess['access_token'];
+              refreshToken.value = tokenSuccess['refresh_token'];
+
+              // Save new tokens
+              await appctrl.saveToken(
+                accessToken: tokenSuccess['access_token'],
+                refreshToken: tokenSuccess['refresh_token'],
+              );
+
+              log("Retrying API call after token refresh...");
+              isSuccess =
+                  await subMitMockTest(); // Retry API call with new token
+            },
+          );
+        } else {
+          examReportState.value = Failed(e: 'something went wrong');
           isSuccess = false;
-        }, (tokenSuccess) async {
-          log("New token obtained: ${tokenSuccess['access_token']}");
+        }
+      },
+      (r) async {
+        try {
+          log("API Response: ${r["rank"]}");
+          log("Before update: ${examReportState.value}");
 
-          // Update the tokens
-          accessToken.value = tokenSuccess['access_token'];
-          refreshToken.value = tokenSuccess['refresh_token'];
-
-          // Save new tokens
-          await appctrl.saveToken(
-            accessToken: tokenSuccess['access_token'],
-            refreshToken: tokenSuccess['refresh_token'],
+          examReportState.value = Success(
+            data: ExamReport(
+              rank: r['rank'] ?? 0,
+              score: r['score'] ?? 0,
+              timeTaken: r["total_time_taken"] ?? 0,
+              percentage: (r['score_percentage'] as num?)?.toDouble() ?? 0.0,
+            ),
           );
 
-          log("Retrying API call after token refresh...");
-          isSuccess = await subMitMockTest(); // Retry API call with new token
-        });
-      } else {
-        examReportState.value = Failed(e: 'something went wrong');
-        isSuccess = false;
-      }
-    }, (r) async {
-      try {
-        log("API Response: ${r["rank"]}");
-        log("Before update: ${examReportState.value}");
-
-        examReportState.value = Success(
-          data: ExamReport(
-            rank: r['rank'] ?? 0,
-            score: r['score'] ?? 0,
-            timeTaken: r["total_time_taken"] ?? 0,
-            percentage: (r['score_percentage'] as num?)?.toDouble() ?? 0.0,
-          ),
-        );
-
-        log("After update: ${examReportState.value}");
-        isSuccess = true;
-      } catch (e) {
-        log("Error in processing response: $e");
-        examReportState.value = Failed(e: e.toString());
-        isSuccess = false;
-      }
-    });
+          log("After update: ${examReportState.value}");
+          isSuccess = true;
+        } catch (e) {
+          log("Error in processing response: $e");
+          examReportState.value = Failed(e: e.toString());
+          isSuccess = false;
+        }
+      },
+    );
 
     return isSuccess;
   }
 
   /// practice test exam start entry point
-  Future initiatePracticeTestExam(
-      {required String subjectName, required String testlevel}) async {
+  Future initiatePracticeTestExam({
+    required String subjectName,
+    required String testlevel,
+  }) async {
     examState.value = Loading();
 
     try {
@@ -545,11 +584,12 @@ class ExamController extends GetxController {
   }
 
   /// custom test exam start entry point
-  Future initiateCustomTestExam(
-      {required List physicsChapters,
-      required List chemistryChapters,
-      required List biologyChapters,
-      required int noOfQuestions}) async {
+  Future initiateCustomTestExam({
+    required List physicsChapters,
+    required List chemistryChapters,
+    required List biologyChapters,
+    required int noOfQuestions,
+  }) async {
     examState.value = Loading();
     try {
       await getCustomTestQuestionList(
@@ -586,56 +626,67 @@ class ExamController extends GetxController {
       noOfQuestions: noOfQuestions,
     );
 
-    await result.fold((failure) async {
-      log("Failure in fold: ${failure.message}");
+    await result.fold(
+      (failure) async {
+        log("Failure in fold: ${failure.message}");
 
-      if (failure.message == "user is not authorised" ||
-          failure.message == "api rejected our request") {
-        log("Attempting refresh token... (Retry: $retryCount)");
+        if (failure.message == "user is not authorised" ||
+            failure.message == "api rejected our request") {
+          log("Attempting refresh token... (Retry: $retryCount)");
 
-        final resp =
-            await tokenRepo.getNewTokens(refreshToken: refreshToken.value);
-
-        await resp.fold((l) {
-          log("Failed to get new token: ${l.message}");
-          examState.value = Failed();
-          questionList.value = [];
-        }, (r) async {
-          // Save new tokens
-          String newAccessToken = r['access_token'];
-          String newRefreshToken = r['refresh_token'];
-
-          if (newAccessToken == accessToken.value) {
-            log("New token is the same as old token. Avoiding infinite loop.");
-            examState.value = Failed();
-            return;
-          }
-
-          accessToken.value = newAccessToken;
-          refreshToken.value = newRefreshToken;
-          await appctrl.saveToken(
-              accessToken: newAccessToken, refreshToken: newRefreshToken);
-
-          await getCustomTestQuestionList(
-            physicsChapters: physicsChapters,
-            chemistryChapters: chemistryChapters,
-            biologyChapters: biologyChapters,
-            noOfQuestions: noOfQuestions,
-            retryCount: retryCount + 1,
+          final resp = await tokenRepo.getNewTokens(
+            refreshToken: refreshToken.value,
           );
-        });
-      } else {
-        questionList.value = [];
-        examState.value = Failed();
-      }
-    }, (data) async {
-      testId.value = data["custom_test_id"];
-      questionList.value = data["questions"];
-      tempQuestionList.value = data["questions"];
-      examState.value = Success(data: questionList);
-      setSubjectName(subj: 'Custom Test');
-      startTimer();
-    });
+
+          await resp.fold(
+            (l) {
+              log("Failed to get new token: ${l.message}");
+              examState.value = Failed();
+              questionList.value = [];
+            },
+            (r) async {
+              // Save new tokens
+              String newAccessToken = r['access_token'];
+              String newRefreshToken = r['refresh_token'];
+
+              if (newAccessToken == accessToken.value) {
+                log(
+                  "New token is the same as old token. Avoiding infinite loop.",
+                );
+                examState.value = Failed();
+                return;
+              }
+
+              accessToken.value = newAccessToken;
+              refreshToken.value = newRefreshToken;
+              await appctrl.saveToken(
+                accessToken: newAccessToken,
+                refreshToken: newRefreshToken,
+              );
+
+              await getCustomTestQuestionList(
+                physicsChapters: physicsChapters,
+                chemistryChapters: chemistryChapters,
+                biologyChapters: biologyChapters,
+                noOfQuestions: noOfQuestions,
+                retryCount: retryCount + 1,
+              );
+            },
+          );
+        } else {
+          questionList.value = [];
+          examState.value = Failed();
+        }
+      },
+      (data) async {
+        testId.value = data["custom_test_id"];
+        questionList.value = data["questions"];
+        tempQuestionList.value = data["questions"];
+        examState.value = Success(data: questionList);
+        setSubjectName(subj: 'Custom Test');
+        startTimer();
+      },
+    );
   }
 
   // Future getCustomTestQuestionList({
@@ -816,6 +867,7 @@ class ExamController extends GetxController {
   generateIncorrectIdList({required int index}) {
     inCorrectIdList.add(index);
     log("INCORRECT ID LIST : $inCorrectIdList");
+    log("skipped list:$skippedList");
   }
 
   generateSkippedList({required int index}) {
@@ -844,7 +896,8 @@ class ExamController extends GetxController {
   /// update value of isSkipped in the object
   void updateIsSkipped() {
     Question? que = questionList.firstWhereOrNull(
-        (q) => q.questionId == currentQuestion.value.questionId);
+      (q) => q.questionId == currentQuestion.value.questionId,
+    );
 
     if (que != null) {
       int index = questionList.indexOf(que);
@@ -857,12 +910,14 @@ class ExamController extends GetxController {
   /// update value of selected option in the object
   void updateSelectedOption() {
     Question? que = questionList.firstWhereOrNull(
-        (q) => q.questionId == currentQuestion.value.questionId);
+      (q) => q.questionId == currentQuestion.value.questionId,
+    );
 
     if (que != null) {
       int index = questionList.indexOf(que);
-      Question updated =
-          que.copyWith(selectedOption: currentUserSelectedOption.value);
+      Question updated = que.copyWith(
+        selectedOption: currentUserSelectedOption.value,
+      );
       questionList[index] = updated;
     }
 
@@ -872,7 +927,8 @@ class ExamController extends GetxController {
   /// update value of isSkipped in the object
   void updateIsFlagged() {
     Question? que = questionList.firstWhereOrNull(
-        (q) => q.questionId == currentQuestion.value.questionId);
+      (q) => q.questionId == currentQuestion.value.questionId,
+    );
 
     if (que != null) {
       int index = questionList.indexOf(que);
@@ -901,7 +957,8 @@ class ExamController extends GetxController {
   /// update value of isSkipped in the object
   void updateIsMarkedCorrect() {
     Question? que = questionList.firstWhereOrNull(
-        (q) => q.questionId == currentQuestion.value.questionId);
+      (q) => q.questionId == currentQuestion.value.questionId,
+    );
 
     if (que != null) {
       int index = questionList.indexOf(que);
@@ -944,8 +1001,11 @@ class ExamController extends GetxController {
     // log("------ currentUserSelectedOption ===> $currentUserSelectedOption");
   }
 
-  void addData(
-      {required int id, required String selectedOpt, required int timeTaken}) {
+  void addData({
+    required int id,
+    required String selectedOpt,
+    required int timeTaken,
+  }) {
     resuLT.add({
       "question_id": id,
       "selected_option": selectedOpt,
@@ -961,7 +1021,7 @@ class ExamController extends GetxController {
   void saveResult() {
     answerMap['${currentQuestion.value.questionId}'] = {
       "answer": currentUserSelectedOption.value,
-      "time": elapsedTime.toString()
+      "time": elapsedTime.toString(),
     };
 
     log("ANSWER MAP ==> $answerMap");
@@ -974,8 +1034,10 @@ class ExamController extends GetxController {
 
   RxBool goforNext = RxBool(false);
 
-  Future<bool> generateExamReport(
-      {required String level, required String type}) async {
+  Future<bool> generateExamReport({
+    required String level,
+    required String type,
+  }) async {
     isReportLoading.value = true;
     examReportState.value = Loading();
     goforNext.value = false;
@@ -997,9 +1059,10 @@ class ExamController extends GetxController {
         isSuccess = await submitPractiseTest(level: level, type: type);
         if (isSuccess) {
           dailyExamReport(
-              subject: currentSubjectName,
-              level: level,
-              docname: nctr.docName.value);
+            subject: currentSubjectName,
+            level: level,
+            docname: nctr.docName.value,
+          );
         } else {
           isReportLoading.value = false;
         }
@@ -1034,7 +1097,10 @@ class ExamController extends GetxController {
   }) async {
     log("dailyExamReport() :-> docname:$docname,subject:$subject,level:$level");
     await firestoreService.updateDailyExamReport(
-        subject: subject, level: level, docname: docname);
+      subject: subject,
+      level: level,
+      docname: docname,
+    );
   }
 
   // Future generateExamReport(
@@ -1128,56 +1194,67 @@ class ExamController extends GetxController {
         questionAvgTime: qstnAvGTime,
       );
 
-      return resp.fold((failure) async {
-        log("Submission failed: ${failure.message}");
+      return resp.fold(
+        (failure) async {
+          log("Submission failed: ${failure.message}");
 
-        // If the token has expired and it's not a retry, refresh and retry
-        if ((failure.message == "user is not authorised" ||
-                failure.message == "api rejected our request") &&
-            !isRetrying) {
-          log("Access token expired. Attempting to refresh...");
+          // If the token has expired and it's not a retry, refresh and retry
+          if ((failure.message == "user is not authorised" ||
+                  failure.message == "api rejected our request") &&
+              !isRetrying) {
+            log("Access token expired. Attempting to refresh...");
 
-          final tokenResp =
-              await tokenRepo.getNewTokens(refreshToken: refreshToken.value);
-
-          return tokenResp.fold((tokenFailure) {
-            log("Failed to refresh token: ${tokenFailure.message}");
-            return false; // Token refresh failed, return failure
-          }, (newTokens) async {
-            // Save new tokens
-            accessToken.value = newTokens['access_token'];
-            refreshToken.value = newTokens['refresh_token'];
-
-            await appctrl.saveToken(
-              accessToken: newTokens['access_token'],
-              refreshToken: newTokens['refresh_token'],
+            final tokenResp = await tokenRepo.getNewTokens(
+              refreshToken: refreshToken.value,
             );
 
-            log("Token refreshed. Retrying submission...");
-            return await submitCustomTestAnswers(isRetrying: true); // Retry API
-          });
-        }
+            return tokenResp.fold(
+              (tokenFailure) {
+                log("Failed to refresh token: ${tokenFailure.message}");
+                return false; // Token refresh failed, return failure
+              },
+              (newTokens) async {
+                // Save new tokens
+                accessToken.value = newTokens['access_token'];
+                refreshToken.value = newTokens['refresh_token'];
 
-        return false; // Return failure if not token-related
-      }, (data) {
-        examReportState.value = Success(
-          data: ExamReport(
-            rank: data['rank'],
-            score: data['score'],
-            timeTaken: data["total_time_taken"],
-            percentage: (data['score_percentage'] as num).toDouble(),
-          ),
-        );
-        return true;
-      });
+                await appctrl.saveToken(
+                  accessToken: newTokens['access_token'],
+                  refreshToken: newTokens['refresh_token'],
+                );
+
+                log("Token refreshed. Retrying submission...");
+                return await submitCustomTestAnswers(
+                  isRetrying: true,
+                ); // Retry API
+              },
+            );
+          }
+
+          return false; // Return failure if not token-related
+        },
+        (data) {
+          examReportState.value = Success(
+            data: ExamReport(
+              rank: data['rank'],
+              score: data['score'],
+              timeTaken: data["total_time_taken"],
+              percentage: (data['score_percentage'] as num).toDouble(),
+            ),
+          );
+          return true;
+        },
+      );
     } catch (e) {
       log("Error: $e");
       return false;
     }
   }
 
-  Future submitPractiseTest(
-      {required String level, required String type}) async {
+  Future submitPractiseTest({
+    required String level,
+    required String type,
+  }) async {
     log("CURRENT SUBJECT ID : $currentSubjectId");
     log("keys:${answerMap.keys},runtimetype:${answerMap.keys.runtimeType}");
     log("resuLT 1:$resuLT");
@@ -1284,74 +1361,85 @@ class ExamController extends GetxController {
     log("Submitting practice test answers...");
 
     final resp = await examRepo.sumbitPracticeTestAnswers(
-        accessToken: accessToken.value,
-        practiceTestId: testId.value,
-        studentId: studentId.value,
-        subjectId: currentSubjectId.value,
-        testLevel: leVEl.value,
-        totalTimeTaken: secondsLeft.value,
-        questions: resuLT);
+      accessToken: accessToken.value,
+      practiceTestId: testId.value,
+      studentId: studentId.value,
+      subjectId: currentSubjectId.value,
+      testLevel: leVEl.value,
+      totalTimeTaken: secondsLeft.value,
+      questions: resuLT,
+    );
 
     bool isSuccess = false;
 
-    await resp.fold((l) async {
-      log("Error: ${l.message}");
+    await resp.fold(
+      (l) async {
+        log("Error: ${l.message}");
 
-      if (l.message == 'user is not authorised') {
-        log("Attempting to refresh token...");
+        if (l.message == 'user is not authorised') {
+          log("Attempting to refresh token...");
 
-        final tokenResp =
-            await tokenRepo.getNewTokens(refreshToken: refreshToken.value);
-        await tokenResp.fold((tokenError) {
-          log("Failed to refresh token: ${tokenError.message}");
-          examReportState.value = Failed(e: 'Authentication Failed');
-          update(); // Ensure UI updates
+          final tokenResp = await tokenRepo.getNewTokens(
+            refreshToken: refreshToken.value,
+          );
+          await tokenResp.fold(
+            (tokenError) {
+              log("Failed to refresh token: ${tokenError.message}");
+              examReportState.value = Failed(e: 'Authentication Failed');
+              update(); // Ensure UI updates
+              isSuccess = false;
+            },
+            (tokenSuccess) async {
+              log("New token obtained: ${tokenSuccess['access_token']}");
+
+              accessToken.value = tokenSuccess['access_token'];
+              refreshToken.value = tokenSuccess['refresh_token'];
+
+              await appctrl.saveToken(
+                accessToken: tokenSuccess['access_token'],
+                refreshToken: tokenSuccess['refresh_token'],
+              );
+
+              log("Retrying API call after token refresh...");
+              isSuccess =
+                  await submitPracticetestAnswers(); // ✅ Returns a boolean
+            },
+          );
+        } else {
+          examReportState.value = Failed(
+            e: 'Exam Report Creation Failed, Try again',
+          );
+          update();
           isSuccess = false;
-        }, (tokenSuccess) async {
-          log("New token obtained: ${tokenSuccess['access_token']}");
+        }
+      },
+      (result) async {
+        try {
+          log("API Response: ${result["rank"]}");
+          log("Before update: ${examReportState.value}");
 
-          accessToken.value = tokenSuccess['access_token'];
-          refreshToken.value = tokenSuccess['refresh_token'];
+          examReportState.value = Success(
+            data: ExamReport(
+              rank: result["rank"] ?? 0,
+              score: result["score"] ?? 0,
+              timeTaken: result["total_time_taken"] ?? 0,
+              percentage: result["score_percentage"] ?? 0.0,
+            ),
+          );
 
-          await appctrl.saveToken(
-              accessToken: tokenSuccess['access_token'],
-              refreshToken: tokenSuccess['refresh_token']);
+          goforNext.value = true;
+          update(); // Ensure GetX updates UI
 
-          log("Retrying API call after token refresh...");
-          isSuccess = await submitPracticetestAnswers(); // ✅ Returns a boolean
-        });
-      } else {
-        examReportState.value =
-            Failed(e: 'Exam Report Creation Failed, Try again');
-        update();
-        isSuccess = false;
-      }
-    }, (result) async {
-      try {
-        log("API Response: ${result["rank"]}");
-        log("Before update: ${examReportState.value}");
-
-        examReportState.value = Success(
-          data: ExamReport(
-            rank: result["rank"] ?? 0,
-            score: result["score"] ?? 0,
-            timeTaken: result["total_time_taken"] ?? 0,
-            percentage: result["score_percentage"] ?? 0.0,
-          ),
-        );
-
-        goforNext.value = true;
-        update(); // Ensure GetX updates UI
-
-        log("After update: ${examReportState.value}");
-        isSuccess = true;
-      } catch (e) {
-        log("Error in processing response: $e");
-        examReportState.value = Failed(e: e.toString());
-        update();
-        isSuccess = false;
-      }
-    });
+          log("After update: ${examReportState.value}");
+          isSuccess = true;
+        } catch (e) {
+          log("Error in processing response: $e");
+          examReportState.value = Failed(e: e.toString());
+          update();
+          isSuccess = false;
+        }
+      },
+    );
 
     return isSuccess;
   }
@@ -1531,7 +1619,8 @@ class ExamController extends GetxController {
     questionList.value = tempQuestionList;
     questionList.value = questionList
         .where(
-            (q) => (q.answer != q.selectedOption && q.selectedOption != null))
+          (q) => (q.answer != q.selectedOption && q.selectedOption != null),
+        )
         .toList();
 
     if (kDebugMode) {

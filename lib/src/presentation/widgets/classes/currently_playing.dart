@@ -195,9 +195,7 @@ class LiveSection extends StatelessWidget {
                           color: Colors.black,
                         ),
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const SizedBox(height: 10),
                       Row(
                         children: [
                           SizedBox(
@@ -208,13 +206,13 @@ class LiveSection extends StatelessWidget {
                               filterQuality: FilterQuality.high,
                             ),
                           ),
-                          const SizedBox(
-                            width: 5,
-                          ),
+                          const SizedBox(width: 5),
                           Text(
                             formattedTime, // Display the formatted time
                             style: GoogleFonts.urbanist(
-                                fontSize: 16, color: AppColors.timeTextColor),
+                              fontSize: 16,
+                              color: AppColors.timeTextColor,
+                            ),
                           ),
                         ],
                       ),
@@ -230,8 +228,9 @@ class LiveSection extends StatelessWidget {
                 height: 50,
                 width: 50,
                 decoration: BoxDecoration(
-                    color: AppColors.orange,
-                    borderRadius: BorderRadius.circular(30)),
+                  color: AppColors.orange,
+                  borderRadius: BorderRadius.circular(30),
+                ),
                 child: Image.asset(
                   'assets/images/arrow_right.png',
                   height: 20,

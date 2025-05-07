@@ -22,11 +22,7 @@ class AppBtn extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: colors ??
-              [
-                Color(0xFF010029),
-                Color(0xFF010048),
-              ],
+          colors: colors ?? [Color(0xFF010029), Color(0xFF010048)],
         ),
         borderRadius: BorderRadius.circular(76),
       ),
@@ -40,9 +36,7 @@ class AppBtn extends StatelessWidget {
           },
           child: Container(
             width: Constant.screenWidth,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(76),
-            ),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(76)),
             child: Padding(
               padding: EdgeInsets.symmetric(
                 vertical:
@@ -74,7 +68,7 @@ class AppBtn extends StatelessWidget {
                     Icon(
                       iconImg,
                       color: Colors.white,
-                    ) // Use a default value if iconImg is null
+                    ), // Use a default value if iconImg is null
                 ],
               ),
             ),

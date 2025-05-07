@@ -188,8 +188,10 @@ class CustomTestController extends GetxController {
   }
 
   // Helper method to save chapters to the local box
-  Future<void> saveChaptersToLocal(
-      {required int subId, required List<dynamic> list}) async {
+  Future<void> saveChaptersToLocal({
+    required int subId,
+    required List<dynamic> list,
+  }) async {
     await hiveService.put('${subId}_chapters', "chapters", list);
   }
 

@@ -28,8 +28,9 @@ class PhysicsFiltered extends StatelessWidget {
               child: TestCard(
                 onTap: () {
                   ctr.fetchDetailedHistory(
-                      testId: ctr.physics[index].testId,
-                      testName: ctr.physics[index].testName);
+                    testId: ctr.physics[index].testId,
+                    testName: ctr.physics[index].testName,
+                  );
                 },
                 currentScore: ctr.physics[index].score,
                 totalScore: ctr.physics[index].totalScore,

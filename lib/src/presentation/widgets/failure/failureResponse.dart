@@ -43,7 +43,9 @@ class FailureUi extends StatelessWidget {
               ),
               SizedBox(height: 20),
               RefreshButton(
-                  btnName: "Refresh", onTapFunction: () => onTapFunction()),
+                btnName: "Refresh",
+                onTapFunction: () => onTapFunction(),
+              ),
             ],
           ),
         ),

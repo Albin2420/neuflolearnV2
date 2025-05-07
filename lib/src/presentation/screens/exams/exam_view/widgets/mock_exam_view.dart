@@ -17,25 +17,26 @@ class MockTestExamView extends StatelessWidget {
         onInitial: () => MockTestIntro(),
         success: (data) {
           if (data.isEmpty) {
-            return FailureUi(onTapFunction: () {
+            return FailureUi(
+              onTapFunction: () {
+                ctr.instantEvaluvation.value = false;
+                ctr.timeLimit.value = true;
+                ctr.targetSecond.value = 10800;
+                ctr.initiatemockTest();
+              },
+            );
+          }
+          return Exam(level: '', type: 'mocktest');
+        },
+        onFailed: (error) {
+          return FailureUi(
+            onTapFunction: () {
               ctr.instantEvaluvation.value = false;
               ctr.timeLimit.value = true;
               ctr.targetSecond.value = 10800;
               ctr.initiatemockTest();
-            });
-          }
-          return Exam(
-            level: '',
-            type: 'mocktest',
+            },
           );
-        },
-        onFailed: (error) {
-          return FailureUi(onTapFunction: () {
-            ctr.instantEvaluvation.value = false;
-            ctr.timeLimit.value = true;
-            ctr.targetSecond.value = 10800;
-            ctr.initiatemockTest();
-          });
         },
         onLoading: () => Scaffold(body: ExamLoading()),
       );

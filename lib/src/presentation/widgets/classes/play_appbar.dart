@@ -9,11 +9,12 @@ class PlayAppbar extends StatelessWidget implements PreferredSizeWidget {
   int chapterNo;
   String chapterName;
   String subjectName;
-  PlayAppbar(
-      {super.key,
-      required this.chapterNo,
-      required this.chapterName,
-      required this.subjectName});
+  PlayAppbar({
+    super.key,
+    required this.chapterNo,
+    required this.chapterName,
+    required this.subjectName,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +53,7 @@ class PlayAppbar extends StatelessWidget implements PreferredSizeWidget {
               Text(
                 "$subjectName - Chapter $chapterNo",
                 style: GoogleFonts.urbanist(color: Colors.black, fontSize: 12),
-              )
+              ),
             ],
           ),
         ),

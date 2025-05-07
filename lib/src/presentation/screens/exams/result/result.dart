@@ -81,12 +81,14 @@ class _ResultPageState extends State<ResultPage> {
               const Spacer(),
               Container(
                 height: 1,
-                decoration: BoxDecoration(boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    offset: const Offset(0, 1),
-                  ),
-                ]),
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -103,9 +105,7 @@ class _ResultPageState extends State<ResultPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        SizedBox(
-                          height: 40,
-                        ),
+                        SizedBox(height: 40),
                         Text(
                           'Getting Better!',
                           style: GoogleFonts.urbanist(
@@ -119,16 +119,15 @@ class _ResultPageState extends State<ResultPage> {
                           style: GoogleFonts.urbanist(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
-                            color:
-                                const Color(0xFF010029).withValues(alpha: 0.5),
+                            color: const Color(
+                              0xFF010029,
+                            ).withValues(alpha: 0.5),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 24,
-                  ),
+                  SizedBox(height: 24),
                   Obx(
                     () => ResultInfo(
                       timeTaken:
@@ -142,15 +141,17 @@ class _ResultPageState extends State<ResultPage> {
                           '${(ctr.examReportState.value.value?.percentage)?.toInt()}',
                     ),
                   ),
-                  SizedBox(
-                    height: 24,
-                  ),
+                  SizedBox(height: 24),
                   Nextstep(
                     onFinishDailyTests: () async {
                       if (Get.isRegistered<TestStatusController>()) {
                         Get.delete<TestStatusController>();
+
                         ctr.resetAvgTimer();
                         ctr.resetTimer();
+                      }
+                      if (Get.isRegistered<HomeController>()) {
+                        Get.delete<HomeController>();
                       }
                       Get.offAll(() => NavigationScreen());
                     },
@@ -158,9 +159,7 @@ class _ResultPageState extends State<ResultPage> {
                       log("onSetTestRemindersTap");
                     },
                   ),
-                  SizedBox(
-                    height: 24,
-                  ),
+                  SizedBox(height: 24),
                   SizedBox(
                     child: Column(
                       children: [
@@ -172,23 +171,27 @@ class _ResultPageState extends State<ResultPage> {
                               style: GoogleFonts.urbanist(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
-                                color: const Color(0xff01002980)
-                                    .withValues(alpha: 0.5),
+                                color: const Color(
+                                  0xff01002980,
+                                ).withValues(alpha: 0.5),
                               ),
                             ),
-                            SizedBox(
-                              height: 16,
-                            ),
+                            SizedBox(height: 16),
                             Container(
-                              padding: EdgeInsets.all(Constant.screenWidth *
-                                  (4 / Constant.figmaScreenWidth)),
+                              padding: EdgeInsets.all(
+                                Constant.screenWidth *
+                                    (4 / Constant.figmaScreenWidth),
+                              ),
                               decoration: BoxDecoration(
                                 color: Color(0xFFFFFFFF),
                                 border: Border.all(
-                                    color: Color(0xff02012a1a)
-                                        .withValues(alpha: 0.1)),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(40)),
+                                  color: Color(
+                                    0xff02012a1a,
+                                  ).withValues(alpha: 0.1),
+                                ),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(40),
+                                ),
                               ),
                               child: Row(
                                 children: [
@@ -199,12 +202,14 @@ class _ResultPageState extends State<ResultPage> {
                                           color: ctr.filterStatus.value == "All"
                                               ? const Color(0xFF010029)
                                               : const Color(0xFFFFFFFF),
-                                          borderRadius:
-                                              BorderRadius.circular(128),
+                                          borderRadius: BorderRadius.circular(
+                                            128,
+                                          ),
                                         ),
                                         child: InkWell(
-                                          borderRadius:
-                                              BorderRadius.circular(128),
+                                          borderRadius: BorderRadius.circular(
+                                            128,
+                                          ),
                                           onTap: () async {
                                             ctr.filterAll();
                                           },
@@ -214,8 +219,9 @@ class _ResultPageState extends State<ResultPage> {
                                                   BorderRadius.circular(128),
                                             ),
                                             child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
+                                              padding: const EdgeInsets.all(
+                                                8.0,
+                                              ),
                                               child: Center(
                                                 child: Text(
                                                   "All",
@@ -230,9 +236,11 @@ class _ResultPageState extends State<ResultPage> {
                                                                 .value ==
                                                             "All"
                                                         ? const Color(
-                                                            0xFFFFFFFF)
+                                                            0xFFFFFFFF,
+                                                          )
                                                         : const Color(
-                                                            0xFF010029),
+                                                            0xFF010029,
+                                                          ),
                                                   ),
                                                 ),
                                               ),
@@ -243,59 +251,64 @@ class _ResultPageState extends State<ResultPage> {
                                     ),
                                   ),
                                   Expanded(
-                                    child: Obx(() => Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(128),
-                                            color: ctr.filterStatus.value ==
-                                                    "Correct"
-                                                ? const Color(0xFF010029)
-                                                : const Color(0xFFFFFFFF),
+                                    child: Obx(
+                                      () => Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            128,
                                           ),
-                                          child: Material(
-                                            color: Colors.transparent,
-                                            child: InkWell(
-                                              borderRadius:
-                                                  BorderRadius.circular(128),
-                                              onTap: () {
-                                                ctr.filterCorrect();
-                                              },
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          128),
+                                          color: ctr.filterStatus.value ==
+                                                  "Correct"
+                                              ? const Color(0xFF010029)
+                                              : const Color(0xFFFFFFFF),
+                                        ),
+                                        child: Material(
+                                          color: Colors.transparent,
+                                          child: InkWell(
+                                            borderRadius: BorderRadius.circular(
+                                              128,
+                                            ),
+                                            onTap: () {
+                                              ctr.filterCorrect();
+                                            },
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(128),
+                                              ),
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(
+                                                  8.0,
                                                 ),
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Center(
-                                                    child: Text(
-                                                      "Correct",
-                                                      style:
-                                                          GoogleFonts.urbanist(
-                                                        fontSize: Constant
-                                                                .screenHeight *
-                                                            (14 /
-                                                                Constant
-                                                                    .figmaScreenHeight),
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        color: ctr.filterStatus
-                                                                    .value ==
-                                                                "Correct"
-                                                            ? const Color(
-                                                                0xFFFFFFFF)
-                                                            : const Color(
-                                                                0xFF010029),
-                                                      ),
+                                                child: Center(
+                                                  child: Text(
+                                                    "Correct",
+                                                    style: GoogleFonts.urbanist(
+                                                      fontSize: Constant
+                                                              .screenHeight *
+                                                          (14 /
+                                                              Constant
+                                                                  .figmaScreenHeight),
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      color: ctr.filterStatus
+                                                                  .value ==
+                                                              "Correct"
+                                                          ? const Color(
+                                                              0xFFFFFFFF,
+                                                            )
+                                                          : const Color(
+                                                              0xFF010029,
+                                                            ),
                                                     ),
                                                   ),
                                                 ),
                                               ),
                                             ),
                                           ),
-                                        )),
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                   Expanded(
                                     child: Obx(
@@ -305,14 +318,16 @@ class _ResultPageState extends State<ResultPage> {
                                                   "Incorrect"
                                               ? const Color(0xFF010029)
                                               : const Color(0xFFFFFFFF),
-                                          borderRadius:
-                                              BorderRadius.circular(128),
+                                          borderRadius: BorderRadius.circular(
+                                            128,
+                                          ),
                                         ),
                                         child: Material(
                                           color: Colors.transparent,
                                           child: InkWell(
-                                            borderRadius:
-                                                BorderRadius.circular(128),
+                                            borderRadius: BorderRadius.circular(
+                                              128,
+                                            ),
                                             onTap: () {
                                               ctr.filterInCorrect();
                                             },
@@ -322,8 +337,9 @@ class _ResultPageState extends State<ResultPage> {
                                                     BorderRadius.circular(128),
                                               ),
                                               child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
+                                                padding: const EdgeInsets.all(
+                                                  8.0,
+                                                ),
                                                 child: Center(
                                                   child: Text(
                                                     "Incorrect",
@@ -339,9 +355,11 @@ class _ResultPageState extends State<ResultPage> {
                                                                   .value ==
                                                               "Incorrect"
                                                           ? const Color(
-                                                              0xFFFFFFFF)
+                                                              0xFFFFFFFF,
+                                                            )
                                                           : const Color(
-                                                              0xFF010029),
+                                                              0xFF010029,
+                                                            ),
                                                     ),
                                                   ),
                                                 ),
@@ -353,71 +371,74 @@ class _ResultPageState extends State<ResultPage> {
                                     ),
                                   ),
                                   Expanded(
-                                    child: Obx(() => Container(
-                                          decoration: BoxDecoration(
-                                            color: ctr.filterStatus.value ==
-                                                    "Skipped"
-                                                ? const Color(0xFF010029)
-                                                : const Color(0xFFFFFFFF),
-                                            borderRadius:
-                                                BorderRadius.circular(128),
+                                    child: Obx(
+                                      () => Container(
+                                        decoration: BoxDecoration(
+                                          color: ctr.filterStatus.value ==
+                                                  "Skipped"
+                                              ? const Color(0xFF010029)
+                                              : const Color(0xFFFFFFFF),
+                                          borderRadius: BorderRadius.circular(
+                                            128,
                                           ),
-                                          child: Material(
-                                            color: Colors.transparent,
-                                            child: InkWell(
-                                              borderRadius:
-                                                  BorderRadius.circular(128),
-                                              onTap: () {
-                                                ctr.filterSkipped();
-                                              },
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          128),
+                                        ),
+                                        child: Material(
+                                          color: Colors.transparent,
+                                          child: InkWell(
+                                            borderRadius: BorderRadius.circular(
+                                              128,
+                                            ),
+                                            onTap: () {
+                                              ctr.filterSkipped();
+                                            },
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(128),
+                                              ),
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(
+                                                  8.0,
                                                 ),
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Center(
-                                                    child: Text(
-                                                      "Skipped",
-                                                      style:
-                                                          GoogleFonts.urbanist(
-                                                        fontSize: Constant
-                                                                .screenHeight *
-                                                            (14 /
-                                                                Constant
-                                                                    .figmaScreenHeight),
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        color: ctr.filterStatus
-                                                                    .value ==
-                                                                "Skipped"
-                                                            ? const Color(
-                                                                0xFFFFFFFF)
-                                                            : const Color(
-                                                                0xFF010029),
-                                                      ),
+                                                child: Center(
+                                                  child: Text(
+                                                    "Skipped",
+                                                    style: GoogleFonts.urbanist(
+                                                      fontSize: Constant
+                                                              .screenHeight *
+                                                          (14 /
+                                                              Constant
+                                                                  .figmaScreenHeight),
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      color: ctr.filterStatus
+                                                                  .value ==
+                                                              "Skipped"
+                                                          ? const Color(
+                                                              0xFFFFFFFF,
+                                                            )
+                                                          : const Color(
+                                                              0xFF010029,
+                                                            ),
                                                     ),
                                                   ),
                                                 ),
                                               ),
                                             ),
                                           ),
-                                        )),
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
                           ],
-                        )
+                        ),
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 16,
-                  ),
+                  SizedBox(height: 16),
                   Obx(() {
                     if (ctr.questionList.isEmpty) {
                       return SizedBox(
@@ -458,7 +479,7 @@ class _ResultPageState extends State<ResultPage> {
                         },
                       );
                     }
-                  })
+                  }),
                 ],
               ),
             ),

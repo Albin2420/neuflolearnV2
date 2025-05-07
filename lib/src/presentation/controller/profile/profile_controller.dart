@@ -24,20 +24,26 @@ class ProfileController extends GetxController {
     try {
       profileState.value = Loading();
       final prData = await prf.fetchweekGrowth(
-          accestoken: await appctr.getAccessToken() ?? '');
+        accestoken: await appctr.getAccessToken() ?? '',
+      );
 
-      prData.fold((l) async {
-        profileState.value = Failed();
-      }, (R) async {
-        sec.value = (R["time"] ?? 0 as num).toDouble();
-        phySics.value = (R["physics"] ?? 0 as num).toDouble();
-        chemIstry.value = (R["chemistry"] ?? 0 as num).toDouble();
-        bioLogy.value = (R["Biology"] ?? 0 as num).toDouble();
-        totalPerc.value = (R['totalPercentage'] ?? 0 as num).toDouble();
+      prData.fold(
+        (l) async {
+          profileState.value = Failed();
+        },
+        (R) async {
+          sec.value = (R["time"] ?? 0 as num).toDouble();
+          phySics.value = (R["physics"] ?? 0 as num).toDouble();
+          chemIstry.value = (R["chemistry"] ?? 0 as num).toDouble();
+          bioLogy.value = (R["Biology"] ?? 0 as num).toDouble();
+          totalPerc.value = (R['totalPercentage'] ?? 0 as num).toDouble();
 
-        log("Physics:${phySics.value},chemistry:${chemIstry.value},biology:${bioLogy.value}, percent:${totalPerc.value}");
-        profileState.value = Success(data: R);
-      });
+          log(
+            "Physics:${phySics.value},chemistry:${chemIstry.value},biology:${bioLogy.value}, percent:${totalPerc.value}",
+          );
+          profileState.value = Success(data: R);
+        },
+      );
     } catch (e) {
       log("Error:$e");
       profileState.value = Failed();

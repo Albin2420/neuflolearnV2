@@ -113,11 +113,11 @@ class _CourseCardState extends State<CourseCard> {
                                   Text(
                                     widget.title,
                                     style: GoogleFonts.urbanist(
-                                        fontSize: Constant.screenWidth *
-                                            (16 / Constant.figmaScreenWidth),
-                                        fontWeight: FontWeight.w600,
-                                        color:
-                                            const Color.fromRGBO(1, 0, 41, 1)),
+                                      fontSize: Constant.screenWidth *
+                                          (16 / Constant.figmaScreenWidth),
+                                      fontWeight: FontWeight.w600,
+                                      color: const Color.fromRGBO(1, 0, 41, 1),
+                                    ),
                                   ),
                                   Text(
                                     "Tap to select strengths",
@@ -144,8 +144,10 @@ class _CourseCardState extends State<CourseCard> {
                         ),
                         Column(
                           children: [
-                            Gap(Constant.screenHeight *
-                                (28 / Constant.figmaScreenHeight)),
+                            Gap(
+                              Constant.screenHeight *
+                                  (28 / Constant.figmaScreenHeight),
+                            ),
                             // ListView.builder(
                             //   scrollDirection: Axis.vertical,
                             //   physics: const ScrollPhysics(),
@@ -167,8 +169,9 @@ class _CourseCardState extends State<CourseCard> {
                         ),
                         const Spacer(),
                         AppBtn(
-                            btnName: "Done",
-                            onTapFunction: () => Navigator.pop(context)),
+                          btnName: "Done",
+                          onTapFunction: () => Navigator.pop(context),
+                        ),
                         Gap(
                           Constant.screenHeight *
                               (16 / Constant.figmaScreenHeight),
@@ -191,7 +194,8 @@ class _CourseCardState extends State<CourseCard> {
               },
               child: Container(
                 padding: EdgeInsets.all(
-                    Constant.screenWidth * (16 / Constant.figmaScreenWidth)),
+                  Constant.screenWidth * (16 / Constant.figmaScreenWidth),
+                ),
                 // height: Constant.screenHeight * (85 / Constant.figmaScreenHeight),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
@@ -219,14 +223,18 @@ class _CourseCardState extends State<CourseCard> {
                           children: [
                             Row(
                               children: [
-                                Text(widget.title,
-                                    style: GoogleFonts.urbanist(
-                                      fontSize: Constant.screenHeight *
-                                          (20 / Constant.figmaScreenHeight),
-                                      fontWeight: FontWeight.w600,
-                                    )),
-                                Gap(Constant.screenWidth *
-                                    (8 / Constant.figmaScreenWidth)),
+                                Text(
+                                  widget.title,
+                                  style: GoogleFonts.urbanist(
+                                    fontSize: Constant.screenHeight *
+                                        (20 / Constant.figmaScreenHeight),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                Gap(
+                                  Constant.screenWidth *
+                                      (8 / Constant.figmaScreenWidth),
+                                ),
                                 Container(
                                   padding: EdgeInsets.symmetric(
                                     horizontal: Constant.screenWidth *
@@ -254,7 +262,7 @@ class _CourseCardState extends State<CourseCard> {
                                       ),
                                     ),
                                   ),
-                                )
+                                ),
                               ],
                             ),
                             SizedBox(
@@ -278,16 +286,19 @@ class _CourseCardState extends State<CourseCard> {
                     SizedBox(
                       height: 24,
                       width: 24,
-                      child:
-                          Image.asset(scale: 3, "assets/icons/right_arrow.png"),
-                    )
+                      child: Image.asset(
+                        scale: 3,
+                        "assets/icons/right_arrow.png",
+                      ),
+                    ),
                   ],
                 ),
               ),
             )
           : Container(
               padding: EdgeInsets.all(
-                  Constant.screenWidth * (16 / Constant.figmaScreenWidth)),
+                Constant.screenWidth * (16 / Constant.figmaScreenWidth),
+              ),
               // height: Constant.screenHeight * (85 / Constant.figmaScreenHeight),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
@@ -314,14 +325,18 @@ class _CourseCardState extends State<CourseCard> {
                         children: [
                           Row(
                             children: [
-                              Text(widget.title,
-                                  style: GoogleFonts.urbanist(
-                                    fontSize: Constant.screenHeight *
-                                        (20 / Constant.figmaScreenHeight),
-                                    fontWeight: FontWeight.w600,
-                                  )),
-                              Gap(Constant.screenWidth *
-                                  (8 / Constant.figmaScreenWidth)),
+                              Text(
+                                widget.title,
+                                style: GoogleFonts.urbanist(
+                                  fontSize: Constant.screenHeight *
+                                      (20 / Constant.figmaScreenHeight),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Gap(
+                                Constant.screenWidth *
+                                    (8 / Constant.figmaScreenWidth),
+                              ),
                               Container(
                                 padding: EdgeInsets.symmetric(
                                   horizontal: Constant.screenWidth *
@@ -349,7 +364,7 @@ class _CourseCardState extends State<CourseCard> {
                                     ),
                                   ),
                                 ),
-                              )
+                              ),
                             ],
                           ),
                           SizedBox(

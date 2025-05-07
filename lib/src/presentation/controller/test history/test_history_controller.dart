@@ -24,7 +24,7 @@ class TestHistoryController extends GetxController {
     "Custom Test",
     "Biology",
     "Chemistry",
-    "Physics"
+    "Physics",
   ].obs;
   RxInt selectedFilter = RxInt(0);
   RxList<ExamRecord> testHistorys = RxList();
@@ -65,111 +65,138 @@ class TestHistoryController extends GetxController {
   Future<void> fetch() async {
     testHistoryState.value = Loading();
     final result = await tstRepo.fetchTestHistorys(
-        accessToken: await appctr.getAccessToken() ?? '');
-    result.fold((l) async {
-      log("failed in fetchHistory()");
+      accessToken: await appctr.getAccessToken() ?? '',
+    );
+    result.fold(
+      (l) async {
+        log("failed in fetchHistory()");
 
-      if (l.message == "user is not authorised") {
-        log("user is not authorised");
-        final tokens = await trp.getNewTokens(
-            refreshToken: await appctr.getRefreshToken() ?? "");
-        tokens.fold((l) {
-          log("token failed in fetchHistory()");
-        }, (R) {
-          appctr.saveToken(
-              accessToken: R["access_token"], refreshToken: R["refresh_token"]);
-          fetch();
-        });
-      } else {
-        testHistoryState.value = Failed();
-      }
-    }, (r) {
-      testHistorys.value = r['mockTests'] +
-          r['customTests'] +
-          r['physics'] +
-          r['chemistry'] +
-          r['biology']; // add physics,chemistry,biology
+        if (l.message == "user is not authorised") {
+          log("user is not authorised");
+          final tokens = await trp.getNewTokens(
+            refreshToken: await appctr.getRefreshToken() ?? "",
+          );
+          tokens.fold(
+            (l) {
+              log("token failed in fetchHistory()");
+            },
+            (R) {
+              appctr.saveToken(
+                accessToken: R["access_token"],
+                refreshToken: R["refresh_token"],
+              );
+              fetch();
+            },
+          );
+        } else {
+          testHistoryState.value = Failed();
+        }
+      },
+      (r) {
+        testHistorys.value = r['mockTests'] +
+            r['customTests'] +
+            r['physics'] +
+            r['chemistry'] +
+            r['biology']; // add physics,chemistry,biology
 
-      physics.value = r['physics'];
-      chemistry.value = r['chemistry'];
-      biology.value = r['biology'];
-      mockTest.value = r['mockTests'];
-      customTest.value = r['customTests'];
+        physics.value = r['physics'];
+        chemistry.value = r['chemistry'];
+        biology.value = r['biology'];
+        mockTest.value = r['mockTests'];
+        customTest.value = r['customTests'];
 
-      testHistoryState.value = Success(data: testHistorys);
-    });
+        testHistoryState.value = Success(data: testHistorys);
+      },
+    );
   }
 
-  Future<void> fetchDetailedHistory(
-      {required int testId, required String testName}) async {
+  Future<void> fetchDetailedHistory({
+    required int testId,
+    required String testName,
+  }) async {
     log("test Id:$testId");
     EasyLoading.show();
     final result = await tstRepo.fetchTestDetails(
-        testId: testId,
-        accestoken: await appctr.getAccessToken() ?? '',
-        testName: testName);
+      testId: testId,
+      accestoken: await appctr.getAccessToken() ?? '',
+      testName: testName,
+    );
 
-    result.fold((l) async {
-      if (l.message == "user is not authorised") {
-        final tokens = await trp.getNewTokens(
-            refreshToken: await appctr.getRefreshToken() ?? "");
-        tokens.fold((l) {
-          log("token failed in fetchDetailedHistory()");
-        }, (r) {
-          appctr.saveToken(
-              accessToken: r["access_token"], refreshToken: r["refresh_token"]);
-          fetchDetailedHistory(testId: testId, testName: testName);
-        });
-      } else {
-        EasyLoading.dismiss();
-        testDetailedHistoryState.value = Failed();
-        Fluttertoast.showToast(msg: 'something went wrong');
-      }
-    }, (r) async {
-      try {
-        log("detailed test history()");
+    result.fold(
+      (l) async {
+        if (l.message == "user is not authorised") {
+          final tokens = await trp.getNewTokens(
+            refreshToken: await appctr.getRefreshToken() ?? "",
+          );
+          tokens.fold(
+            (l) {
+              log("token failed in fetchDetailedHistory()");
+            },
+            (r) {
+              appctr.saveToken(
+                accessToken: r["access_token"],
+                refreshToken: r["refresh_token"],
+              );
+              fetchDetailedHistory(testId: testId, testName: testName);
+            },
+          );
+        } else {
+          EasyLoading.dismiss();
+          testDetailedHistoryState.value = Failed();
+          Fluttertoast.showToast(msg: 'something went wrong');
+        }
+      },
+      (r) async {
+        try {
+          log("detailed test history()");
 
-        totalAttended.value = r['totalAttended'] ?? 0;
-        correct.value = r['correct'] ?? 0;
-        incorrect.value = r['incorrect'] ?? 0;
-        unAttempted.value = r['unAttempted'] ?? 0;
-        qstnsAll.value = r['qstns'];
-        sub.value = r['test_name'];
-        percentage.value = r["percentage"] ?? 0;
+          totalAttended.value = r['totalAttended'] ?? 0;
+          correct.value = r['correct'] ?? 0;
+          incorrect.value = r['incorrect'] ?? 0;
+          unAttempted.value = r['unAttempted'] ?? 0;
+          qstnsAll.value = r['qstns'];
+          sub.value = r['test_name'];
+          percentage.value = r["percentage"] ?? 0;
 
-        score.value = r['score']; //done
+          score.value = r['score']; //done
 
-        filter();
+          filter();
 
-        testDetailedHistoryState.value = Success(data: r);
-        EasyLoading.dismiss();
-        Get.to(() => TestDetailedHistory());
-      } catch (e) {
-        log("error:$e");
-        testDetailedHistoryState.value = Failed();
-        EasyLoading.dismiss();
-      }
-    });
+          testDetailedHistoryState.value = Success(data: r);
+          EasyLoading.dismiss();
+          Get.to(() => TestDetailedHistory());
+        } catch (e) {
+          log("error:$e");
+          testDetailedHistoryState.value = Failed();
+          EasyLoading.dismiss();
+        }
+      },
+    );
   }
 
   void filter() {
     try {
       correctfiltered.value = qstnsAll
-          .where((q) =>
-              q.submittedAnswer?.trim().toLowerCase() ==
-              q.answer?.trim().toLowerCase())
+          .where(
+            (q) =>
+                q.submittedAnswer?.trim().toLowerCase() ==
+                q.answer?.trim().toLowerCase(),
+          )
           .toList();
 
       incorrectfiltered.value = qstnsAll
-          .where((q) =>
-              q.submittedAnswer?.trim().toLowerCase() !=
-                  q.answer?.trim().toLowerCase() &&
-              q.submittedAnswer?.trim().toLowerCase() != "unattempted")
+          .where(
+            (q) =>
+                q.submittedAnswer?.trim().toLowerCase() !=
+                    q.answer?.trim().toLowerCase() &&
+                q.submittedAnswer?.trim().toLowerCase() != "unattempted",
+          )
           .toList();
 
       skipped.value = qstnsAll
           .where(
-              (q) => q.submittedAnswer?.trim().toLowerCase() == "unattempted")
+            (q) => q.submittedAnswer?.trim().toLowerCase() == "unattempted",
+          )
           .toList();
     } catch (e) {
       log("Error:$e");

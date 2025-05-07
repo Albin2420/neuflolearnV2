@@ -33,5 +33,3 @@ class ComingUpVideos extends StatelessWidget {
     );
   }
 }
-
-

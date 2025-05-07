@@ -112,6 +112,7 @@ class Videos extends StatelessWidget {
                                   videos: clsctrl.currentSelectedList[
                                       clsctrl.classIndex.value]['videos'],
                                   isLive: false,
+                                  isFakeLive: false,
                                 ),
                               );
                             },

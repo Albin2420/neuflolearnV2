@@ -54,6 +54,73 @@ class AuthController extends GetxController {
   final connectivityctrl = Get.find<ConnectivityController>();
 
   /// sign in with googel
+  // Future singInWithGoogle() async {
+  //   try {
+  //     if (_auth.getCurrentUser() == null) {
+  //       await _auth.signOut();
+  //     }
+
+  //     if (_auth.getCurrentUser() != null) {
+  //       await _auth.signOut();
+  //     }
+
+  //     AuthStatus? authStatus = await _auth.signInWithGoogle();
+
+  //     log('authStatus : $authStatus');
+
+  //     if (authStatus == AuthStatus.successful) {
+  //       currentAppUser.value = _auth.getCurrentUser();
+
+  //       currentFirestoreAppUser.value = await firestoreService
+  //           .getUserDocumentByEmail(email: currentAppUser.value?.email ?? '');
+
+  //       Get.find<AppStartupController>().appUser.value =
+  //           currentFirestoreAppUser.value;
+
+  //       final userInfoBox = await hiveService.getBox("basic_user_info");
+  //       await userInfoBox.put(
+  //         "phno",
+  //         currentFirestoreAppUser.value?.phone ?? '',
+  //       );
+
+  //       log("currentFirestoreUser => $currentFirestoreAppUser");
+
+  //       final String fcmToken =
+  //           await FirebaseMessaging.instance.getToken() ?? '';
+
+  //       if (fcmToken != '' &&
+  //           currentFirestoreAppUser.value?.phone != null &&
+  //           currentFirestoreAppUser.value?.id != null) {
+  //         appctr.getToken(
+  //           fcmToken: fcmToken,
+  //           studentId: currentFirestoreAppUser.value?.id ?? 0,
+  //           phoneNumber: currentFirestoreAppUser.value?.phone ?? '',
+  //         );
+  //       }
+
+  //       setAuthStatus(status: AuthStatus.successful);
+  //     } else {
+  //       await _auth.signOut();
+  //       isgLoginTriggered.value = false;
+  //       setAuthStatus(status: AuthStatus.failed);
+  //     }
+
+  //     log(_auth.getCurrentUser().toString());
+  //   } catch (e) {
+  //     log("triggered here:$e");
+  //     if (connectivityctrl.isnetConnected.value == false) {
+  //       Fluttertoast.showToast(
+  //         msg: "please check your Internet connection",
+  //         textColor: Colors.white,
+  //         fontSize: 16.0,
+  //       );
+  //     }
+  //     isgLoginTriggered.value = false;
+  //   }
+  // }
+
+  RxBool isverified = RxBool(false);
+
   Future singInWithGoogle() async {
     try {
       if (_auth.getCurrentUser() == null) {
@@ -71,19 +138,19 @@ class AuthController extends GetxController {
       if (authStatus == AuthStatus.successful) {
         currentAppUser.value = _auth.getCurrentUser();
 
-        currentFirestoreAppUser.value =
-            await firestoreService.getUserDocumentByEmail(
-          email: currentAppUser.value?.email ?? '',
-        );
+        currentFirestoreAppUser.value = await firestoreService
+            .getUserDocumentByEmail(email: currentAppUser.value?.email ?? '');
 
         Get.find<AppStartupController>().appUser.value =
             currentFirestoreAppUser.value;
 
         final userInfoBox = await hiveService.getBox("basic_user_info");
         await userInfoBox.put(
-            "phno", currentFirestoreAppUser.value?.phone ?? '');
+          "phno",
+          currentFirestoreAppUser.value?.phone ?? '',
+        );
 
-        log("currentFirestoreUser => $currentFirestoreAppUser");
+        log("beforecurrentFirestoreUser => $currentFirestoreAppUser");
 
         final String fcmToken =
             await FirebaseMessaging.instance.getToken() ?? '';
@@ -91,10 +158,26 @@ class AuthController extends GetxController {
         if (fcmToken != '' &&
             currentFirestoreAppUser.value?.phone != null &&
             currentFirestoreAppUser.value?.id != null) {
-          appctr.getToken(
-              fcmToken: fcmToken,
-              studentId: currentFirestoreAppUser.value?.id ?? 0,
-              phoneNumber: currentFirestoreAppUser.value?.phone ?? '');
+          bool x = await appctr.getToken(
+            fcmToken: fcmToken,
+            studentId: currentFirestoreAppUser.value?.id ?? 0,
+            phoneNumber: currentFirestoreAppUser.value?.phone ?? '',
+          );
+          if (x == true &&
+              currentFirestoreAppUser.value?.isProfileSetupComplete == false) {
+            log("verified scenarios");
+            isverified.value = true;
+            await firestoreService.updateProfilestatus(
+              userName: '${currentFirestoreAppUser.value?.phone}@neuflo.io',
+            );
+
+            // currentFirestoreAppUser.value = await firestoreService
+            //     .getUserDocumentByEmail(
+            //       email: currentAppUser.value?.email ?? '',
+            //     );
+
+            // log("currentfirestore 1:$currentFirestoreAppUser");
+          }
         }
 
         setAuthStatus(status: AuthStatus.successful);
@@ -163,15 +246,21 @@ class AuthController extends GetxController {
     }
   }
 
-  Future<bool> getNewToken(
-      {required int studentId, required String phoneNumber}) async {
+  RxBool notverified = RxBool(false);
+
+  Future<bool> getNewToken({
+    required int studentId,
+    required String phoneNumber,
+  }) async {
     try {
       final fcmToken = await FirebaseMessaging.instance.getToken();
 
       if (studentId == 0 ||
           phoneNumber.isEmpty ||
           (fcmToken?.isEmpty ?? true)) {
-        log("Invalid input: studentId should not be 0, phoneNumber should not be empty, and FCM token should not be empty.");
+        log(
+          "Invalid input: studentId should not be 0, phoneNumber should not be empty, and FCM token should not be empty.",
+        );
         return false;
       }
 
@@ -183,7 +272,11 @@ class AuthController extends GetxController {
 
       return tokens.fold(
         (l) {
-          log("Error in getNewToken(): $l");
+          log("failed in getNewToken(): $l");
+          if (l.message == '403') {
+            log('not approved');
+            notverified.value = true;
+          }
           return false;
         },
         (R) {

@@ -46,7 +46,7 @@ class GoogleLoginButton extends StatelessWidget {
                   height: 24,
                   width: 24,
                   child: Image.asset("assets/icons/google.png"),
-                )
+                ),
               ],
             ),
           ),

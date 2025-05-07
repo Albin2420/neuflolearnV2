@@ -11,10 +11,7 @@ class PhoneLoginButton extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [
-            Color(0xFF010029),
-            Color(0xFF010048),
-          ],
+          colors: [Color(0xFF010029), Color(0xFF010048)],
         ),
         borderRadius: BorderRadius.circular(76),
       ),
@@ -29,9 +26,7 @@ class PhoneLoginButton extends StatelessWidget {
           //   ),
           // ),
           child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(76),
-            ),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(76)),
             child: Container(
               padding: EdgeInsets.symmetric(
                 vertical:
@@ -45,15 +40,13 @@ class PhoneLoginButton extends StatelessWidget {
                   Text(
                     'Continue with phone',
                     style: GoogleFonts.urbanist(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500,
-                        fontSize: Constant.screenHeight *
-                            (16 / Constant.figmaScreenHeight)),
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontSize: Constant.screenHeight *
+                          (16 / Constant.figmaScreenHeight),
+                    ),
                   ),
-                  Icon(
-                    PhosphorIcons.phone(),
-                    color: Colors.white,
-                  ),
+                  Icon(PhosphorIcons.phone(), color: Colors.white),
                 ],
               ),
             ),

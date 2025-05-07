@@ -32,7 +32,10 @@ class _TestSettingsSheetState extends State<TestSettingsSheet> {
 
   // Function to show question count overlay
   void _showQuestionCountOverlay(
-      BuildContext context, RxInt selectedCount, List<int> counts) {
+    BuildContext context,
+    RxInt selectedCount,
+    List<int> counts,
+  ) {
     // Remove any existing overlay
     _removeOverlay();
 
@@ -62,14 +65,18 @@ class _TestSettingsSheetState extends State<TestSettingsSheet> {
                   onTap: () {
                     ctr.questionCount.value = counts[index];
                     if (examctr.timeLimit.value) {
-                      examctr.targetSecond.value =
-                          minutesToSeconds(ctr.questionCount.value);
+                      examctr.targetSecond.value = minutesToSeconds(
+                        ctr.questionCount.value,
+                      );
                     }
                     // log("qns count : ${ctr.questionCount.value},secondlimit : ${examctr.targetSecond.value}");
                     _removeOverlay();
                   },
                   child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    padding: EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 16,
+                    ),
                     decoration: BoxDecoration(
                       color: selectedCount.value == counts[index]
                           ? Color(0xff010029).withOpacity(0.1)
@@ -150,9 +157,7 @@ class _TestSettingsSheetState extends State<TestSettingsSheet> {
             height: MediaQuery.of(context).size.height,
             child: Column(
               children: [
-                SizedBox(
-                  height: 4,
-                ),
+                SizedBox(height: 4),
                 Container(
                   height: 4,
                   width: 40,
@@ -161,25 +166,26 @@ class _TestSettingsSheetState extends State<TestSettingsSheet> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                SizedBox(
-                  height: 4,
-                ),
+                SizedBox(height: 4),
                 Container(
-                  padding:
-                      EdgeInsets.only(left: 24, top: 10, bottom: 12, right: 8),
+                  padding: EdgeInsets.only(
+                    left: 24,
+                    top: 10,
+                    bottom: 12,
+                    right: 8,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      SizedBox(
-                        height: 24,
-                        width: 24,
-                      ),
+                      SizedBox(height: 24, width: 24),
                       Column(
                         children: [
                           Text(
                             'Create a custom test',
                             style: GoogleFonts.urbanist(
-                                fontWeight: FontWeight.w700, fontSize: 20),
+                              fontWeight: FontWeight.w700,
+                              fontSize: 20,
+                            ),
                           ),
                           Text(
                             "Setup your test",
@@ -187,7 +193,7 @@ class _TestSettingsSheetState extends State<TestSettingsSheet> {
                               fontWeight: FontWeight.w500,
                               fontSize: 14,
                             ),
-                          )
+                          ),
                         ],
                       ),
                       IconButton(
@@ -196,7 +202,7 @@ class _TestSettingsSheetState extends State<TestSettingsSheet> {
                           // ctr.clearHiveBox();
                         },
                         icon: Icon(Icons.close),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -208,23 +214,32 @@ class _TestSettingsSheetState extends State<TestSettingsSheet> {
                       children: [
                         Container(
                           padding: EdgeInsets.only(
-                              top: 8, bottom: 8, left: 24, right: 24),
+                            top: 8,
+                            bottom: 8,
+                            left: 24,
+                            right: 24,
+                          ),
                           height: 38,
                           child: Row(
                             children: [
                               Text(
                                 "General",
                                 style: GoogleFonts.urbanist(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 16,
-                                    color: Color(0xff010029).withOpacity(0.5)),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                  color: Color(0xff010029).withOpacity(0.5),
+                                ),
                               ),
                             ],
                           ),
                         ),
                         Container(
                           padding: EdgeInsets.only(
-                              left: 24, right: 24, top: 16, bottom: 40),
+                            left: 24,
+                            right: 24,
+                            top: 16,
+                            bottom: 40,
+                          ),
                           child: Column(
                             children: [
                               Row(
@@ -241,19 +256,24 @@ class _TestSettingsSheetState extends State<TestSettingsSheet> {
                                   GestureDetector(
                                     onTap: () {
                                       // Show the question count overlay
-                                      _showQuestionCountOverlay(context,
-                                          ctr.questionCount, _questionCounts);
+                                      _showQuestionCountOverlay(
+                                        context,
+                                        ctr.questionCount,
+                                        _questionCounts,
+                                      );
                                     },
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
-                                        Obx(() => Text(
-                                              ctr.questionCount.value
-                                                  .toString(),
-                                              style: GoogleFonts.urbanist(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 16),
-                                            )),
+                                        Obx(
+                                          () => Text(
+                                            ctr.questionCount.value.toString(),
+                                            style: GoogleFonts.urbanist(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ),
                                         SizedBox(
                                           height: 24,
                                           width: 24,
@@ -261,15 +281,13 @@ class _TestSettingsSheetState extends State<TestSettingsSheet> {
                                             scale: 4,
                                             "assets/icons/right_arrow.png",
                                           ),
-                                        )
+                                        ),
                                       ],
                                     ),
-                                  )
+                                  ),
                                 ],
                               ),
-                              SizedBox(
-                                height: 16,
-                              ),
+                              SizedBox(height: 16),
                               SizedBox(
                                 height: 32,
                                 child: Row(
@@ -279,8 +297,9 @@ class _TestSettingsSheetState extends State<TestSettingsSheet> {
                                     Text(
                                       "Instant evaluation",
                                       style: GoogleFonts.urbanist(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 16),
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16,
+                                      ),
                                     ),
                                     Obx(
                                       () => Transform.scale(
@@ -301,13 +320,11 @@ class _TestSettingsSheetState extends State<TestSettingsSheet> {
                                           },
                                         ),
                                       ),
-                                    )
+                                    ),
                                   ],
                                 ),
                               ),
-                              SizedBox(
-                                height: 16,
-                              ),
+                              SizedBox(height: 16),
                               SizedBox(
                                 height: 32,
                                 child: Row(
@@ -323,47 +340,54 @@ class _TestSettingsSheetState extends State<TestSettingsSheet> {
                                     ),
                                     Transform.scale(
                                       scale: 0.8,
-                                      child: Obx(() => Switch(
-                                            trackOutlineColor:
-                                                WidgetStateColor.resolveWith(
-                                              (states) =>
-                                                  const Color(0x00FFFFFF),
-                                            ),
-                                            inactiveThumbColor: Colors.white,
-                                            inactiveTrackColor:
-                                                Color(0xffD2D2E1),
-                                            activeTrackColor: Colors.black,
-                                            value: examctr.timeLimit.value,
-                                            onChanged: (x) {
-                                              examctr.timeLimit.value = x;
-                                              if (examctr.timeLimit.value) {
-                                                examctr.targetSecond.value =
-                                                    minutesToSeconds(ctr
-                                                        .questionCount.value);
-                                              } else {
-                                                examctr.targetSecond.value = 0;
-                                              }
-                                              log("qns count : ${ctr.questionCount.value},secondlimit : ${examctr.targetSecond.value}");
-                                            },
-                                          )),
-                                    )
+                                      child: Obx(
+                                        () => Switch(
+                                          trackOutlineColor:
+                                              WidgetStateColor.resolveWith(
+                                            (states) => const Color(0x00FFFFFF),
+                                          ),
+                                          inactiveThumbColor: Colors.white,
+                                          inactiveTrackColor: Color(0xffD2D2E1),
+                                          activeTrackColor: Colors.black,
+                                          value: examctr.timeLimit.value,
+                                          onChanged: (x) {
+                                            examctr.timeLimit.value = x;
+                                            if (examctr.timeLimit.value) {
+                                              examctr.targetSecond.value =
+                                                  minutesToSeconds(
+                                                ctr.questionCount.value,
+                                              );
+                                            } else {
+                                              examctr.targetSecond.value = 0;
+                                            }
+                                            log(
+                                              "qns count : ${ctr.questionCount.value},secondlimit : ${examctr.targetSecond.value}",
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                 ),
-                              )
+                              ),
                             ],
                           ),
                         ),
                         // Rest of your code remains unchanged
                         Padding(
                           padding: const EdgeInsets.only(
-                              left: 16, right: 16, top: 0),
-                          child: Divider(
-                            color: Colors.grey,
+                            left: 16,
+                            right: 16,
+                            top: 0,
                           ),
+                          child: Divider(color: Colors.grey),
                         ),
                         Container(
-                          padding:
-                              EdgeInsets.only(left: 24, top: 22, bottom: 24),
+                          padding: EdgeInsets.only(
+                            left: 24,
+                            top: 22,
+                            bottom: 24,
+                          ),
                           height: 70,
                           child: Row(
                             children: [
@@ -374,7 +398,7 @@ class _TestSettingsSheetState extends State<TestSettingsSheet> {
                                   fontSize: 16,
                                   color: Color(0xff010029).withOpacity(0.5),
                                 ),
-                              )
+                              ),
                             ],
                           ),
                         ),
@@ -382,282 +406,309 @@ class _TestSettingsSheetState extends State<TestSettingsSheet> {
                           padding: const EdgeInsets.only(left: 16, right: 16),
                           child: Card(
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(40)),
+                              borderRadius: BorderRadius.circular(40),
+                            ),
                             child: Container(
-                              padding: EdgeInsets.all(Constant.screenWidth *
-                                  (4 / Constant.figmaScreenWidth)),
+                              padding: EdgeInsets.all(
+                                Constant.screenWidth *
+                                    (4 / Constant.figmaScreenWidth),
+                              ),
                               decoration: const BoxDecoration(
                                 color: Color(0xFFFFFFFF),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(40)),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(40),
+                                ),
                               ),
                               child: Row(
                                 children: [
                                   Expanded(
-                                    child: Obx(() => Container(
-                                          decoration: BoxDecoration(
-                                            color:
-                                                ctr.selectedSubjectName.value ==
-                                                        "Physics"
-                                                    ? const Color(0xFF010029)
-                                                    : const Color(0xFFFFFFFF),
-                                            borderRadius:
-                                                BorderRadius.circular(128),
+                                    child: Obx(
+                                      () => Container(
+                                        decoration: BoxDecoration(
+                                          color:
+                                              ctr.selectedSubjectName.value ==
+                                                      "Physics"
+                                                  ? const Color(0xFF010029)
+                                                  : const Color(0xFFFFFFFF),
+                                          borderRadius: BorderRadius.circular(
+                                            128,
                                           ),
-                                          child: Material(
-                                            color: Colors.transparent,
-                                            child: InkWell(
-                                              borderRadius:
-                                                  BorderRadius.circular(128),
-                                              onTap: () async {
-                                                ctr.setCurrentSubjectName(
-                                                  sub: 'Physics',
-                                                );
-                                                await ctr.fetchChapters(
-                                                    subId: 1);
-                                              },
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          128),
+                                        ),
+                                        child: Material(
+                                          color: Colors.transparent,
+                                          child: InkWell(
+                                            borderRadius: BorderRadius.circular(
+                                              128,
+                                            ),
+                                            onTap: () async {
+                                              ctr.setCurrentSubjectName(
+                                                sub: 'Physics',
+                                              );
+                                              await ctr.fetchChapters(subId: 1);
+                                            },
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(128),
+                                              ),
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(
+                                                  8.0,
                                                 ),
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Center(
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Icon(
-                                                          PhosphorIcons.atom(ctr
-                                                                      .selectedSubjectName
+                                                child: Center(
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Icon(
+                                                        PhosphorIcons.atom(
+                                                          ctr.selectedSubjectName
                                                                       .value ==
                                                                   "Physics"
                                                               ? PhosphorIconsStyle
                                                                   .fill
                                                               : PhosphorIconsStyle
-                                                                  .regular),
-                                                          color: ctr.selectedSubjectName
-                                                                      .value ==
-                                                                  "Physics"
-                                                              ? Colors.white
-                                                              : Colors.black,
-                                                          size: 15,
+                                                                  .regular,
                                                         ),
-                                                        Gap(
-                                                          Constant.screenWidth *
-                                                              (4 /
-                                                                  Constant
-                                                                      .figmaScreenWidth),
-                                                        ),
-                                                        Text(
-                                                          "Physics",
-                                                          style: GoogleFonts
-                                                              .urbanist(
-                                                            fontSize: Constant
-                                                                    .screenHeight *
-                                                                (14 /
-                                                                    Constant
-                                                                        .figmaScreenHeight),
-                                                            fontWeight:
-                                                                FontWeight.w400,
-                                                            color: ctr.selectedSubjectName
+                                                        color:
+                                                            ctr.selectedSubjectName
                                                                         .value ==
                                                                     "Physics"
-                                                                ? const Color(
-                                                                    0xFFFFFFFF)
-                                                                : const Color(
-                                                                    0xFF010029),
-                                                          ),
+                                                                ? Colors.white
+                                                                : Colors.black,
+                                                        size: 15,
+                                                      ),
+                                                      Gap(
+                                                        Constant.screenWidth *
+                                                            (4 /
+                                                                Constant
+                                                                    .figmaScreenWidth),
+                                                      ),
+                                                      Text(
+                                                        "Physics",
+                                                        style: GoogleFonts
+                                                            .urbanist(
+                                                          fontSize: Constant
+                                                                  .screenHeight *
+                                                              (14 /
+                                                                  Constant
+                                                                      .figmaScreenHeight),
+                                                          fontWeight:
+                                                              FontWeight.w400,
+                                                          color: ctr.selectedSubjectName
+                                                                      .value ==
+                                                                  "Physics"
+                                                              ? const Color(
+                                                                  0xFFFFFFFF,
+                                                                )
+                                                              : const Color(
+                                                                  0xFF010029,
+                                                                ),
                                                         ),
-                                                      ],
-                                                    ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
                                               ),
                                             ),
                                           ),
-                                        )),
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                   Expanded(
-                                    child: Obx(() => Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(128),
-                                            color:
-                                                ctr.selectedSubjectName.value ==
-                                                        "Chemistry"
-                                                    ? const Color(0xFF010029)
-                                                    : const Color(0xFFFFFFFF),
+                                    child: Obx(
+                                      () => Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            128,
                                           ),
-                                          child: Material(
-                                            color: Colors.transparent,
-                                            child: InkWell(
-                                              borderRadius:
-                                                  BorderRadius.circular(128),
-                                              onTap: () async {
-                                                ctr.setCurrentSubjectName(
-                                                  sub: 'Chemistry',
-                                                );
-                                                await ctr.fetchChapters(
-                                                    subId: 2);
-                                              },
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          128),
+                                          color:
+                                              ctr.selectedSubjectName.value ==
+                                                      "Chemistry"
+                                                  ? const Color(0xFF010029)
+                                                  : const Color(0xFFFFFFFF),
+                                        ),
+                                        child: Material(
+                                          color: Colors.transparent,
+                                          child: InkWell(
+                                            borderRadius: BorderRadius.circular(
+                                              128,
+                                            ),
+                                            onTap: () async {
+                                              ctr.setCurrentSubjectName(
+                                                sub: 'Chemistry',
+                                              );
+                                              await ctr.fetchChapters(subId: 2);
+                                            },
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(128),
+                                              ),
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(
+                                                  8.0,
                                                 ),
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Center(
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Icon(
-                                                          PhosphorIcons.flask(ctr
-                                                                      .selectedSubjectName
+                                                child: Center(
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Icon(
+                                                        PhosphorIcons.flask(
+                                                          ctr.selectedSubjectName
                                                                       .value ==
                                                                   "Chemistry"
                                                               ? PhosphorIconsStyle
                                                                   .fill
                                                               : PhosphorIconsStyle
-                                                                  .regular),
-                                                          color: ctr.selectedSubjectName
-                                                                      .value ==
-                                                                  "Chemistry"
-                                                              ? Colors.white
-                                                              : Colors.black,
-                                                          size: 15,
+                                                                  .regular,
                                                         ),
-                                                        Gap(
-                                                          Constant.screenWidth *
-                                                              (4 /
-                                                                  Constant
-                                                                      .figmaScreenWidth),
-                                                        ),
-                                                        Text(
-                                                          "Chemistry",
-                                                          style: GoogleFonts
-                                                              .urbanist(
-                                                            fontSize: Constant
-                                                                    .screenHeight *
-                                                                (14 /
-                                                                    Constant
-                                                                        .figmaScreenHeight),
-                                                            fontWeight:
-                                                                FontWeight.w400,
-                                                            color: ctr.selectedSubjectName
+                                                        color:
+                                                            ctr.selectedSubjectName
                                                                         .value ==
                                                                     "Chemistry"
-                                                                ? const Color(
-                                                                    0xFFFFFFFF)
-                                                                : const Color(
-                                                                    0xFF010029),
-                                                          ),
+                                                                ? Colors.white
+                                                                : Colors.black,
+                                                        size: 15,
+                                                      ),
+                                                      Gap(
+                                                        Constant.screenWidth *
+                                                            (4 /
+                                                                Constant
+                                                                    .figmaScreenWidth),
+                                                      ),
+                                                      Text(
+                                                        "Chemistry",
+                                                        style: GoogleFonts
+                                                            .urbanist(
+                                                          fontSize: Constant
+                                                                  .screenHeight *
+                                                              (14 /
+                                                                  Constant
+                                                                      .figmaScreenHeight),
+                                                          fontWeight:
+                                                              FontWeight.w400,
+                                                          color: ctr.selectedSubjectName
+                                                                      .value ==
+                                                                  "Chemistry"
+                                                              ? const Color(
+                                                                  0xFFFFFFFF,
+                                                                )
+                                                              : const Color(
+                                                                  0xFF010029,
+                                                                ),
                                                         ),
-                                                      ],
-                                                    ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
                                               ),
                                             ),
                                           ),
-                                        )),
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                   Expanded(
-                                    child: Obx(() => Container(
-                                          decoration: BoxDecoration(
-                                            color:
-                                                ctr.selectedSubjectName.value ==
-                                                        "Biology"
-                                                    ? const Color(0xFF010029)
-                                                    : const Color(0xFFFFFFFF),
-                                            borderRadius:
-                                                BorderRadius.circular(128),
+                                    child: Obx(
+                                      () => Container(
+                                        decoration: BoxDecoration(
+                                          color:
+                                              ctr.selectedSubjectName.value ==
+                                                      "Biology"
+                                                  ? const Color(0xFF010029)
+                                                  : const Color(0xFFFFFFFF),
+                                          borderRadius: BorderRadius.circular(
+                                            128,
                                           ),
-                                          child: Material(
-                                            color: Colors.transparent,
-                                            child: InkWell(
-                                              borderRadius:
-                                                  BorderRadius.circular(128),
-                                              onTap: () async {
-                                                ctr.setCurrentSubjectName(
-                                                    sub: 'Biology');
-                                                await ctr.fetchChapters(
-                                                    subId: 3);
-                                              },
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          128),
+                                        ),
+                                        child: Material(
+                                          color: Colors.transparent,
+                                          child: InkWell(
+                                            borderRadius: BorderRadius.circular(
+                                              128,
+                                            ),
+                                            onTap: () async {
+                                              ctr.setCurrentSubjectName(
+                                                sub: 'Biology',
+                                              );
+                                              await ctr.fetchChapters(subId: 3);
+                                            },
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(128),
+                                              ),
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(
+                                                  8.0,
                                                 ),
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Center(
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Icon(
-                                                          PhosphorIcons.stethoscope(ctr
-                                                                      .selectedSubjectName
+                                                child: Center(
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Icon(
+                                                        PhosphorIcons
+                                                            .stethoscope(
+                                                          ctr.selectedSubjectName
                                                                       .value ==
                                                                   "Biology"
                                                               ? PhosphorIconsStyle
                                                                   .fill
                                                               : PhosphorIconsStyle
-                                                                  .regular),
+                                                                  .regular,
+                                                        ),
+                                                        color:
+                                                            ctr.selectedSubjectName
+                                                                        .value ==
+                                                                    "Biology"
+                                                                ? Colors.white
+                                                                : Colors.black,
+                                                        size: 15,
+                                                      ),
+                                                      Gap(
+                                                        Constant.screenWidth *
+                                                            (4 /
+                                                                Constant
+                                                                    .figmaScreenWidth),
+                                                      ),
+                                                      Text(
+                                                        "Biology",
+                                                        style: GoogleFonts
+                                                            .urbanist(
+                                                          fontSize: Constant
+                                                                  .screenHeight *
+                                                              (14 /
+                                                                  Constant
+                                                                      .figmaScreenHeight),
+                                                          fontWeight:
+                                                              FontWeight.w400,
                                                           color: ctr.selectedSubjectName
                                                                       .value ==
                                                                   "Biology"
-                                                              ? Colors.white
-                                                              : Colors.black,
-                                                          size: 15,
+                                                              ? const Color(
+                                                                  0xFFFFFFFF,
+                                                                )
+                                                              : const Color(
+                                                                  0xFF010029,
+                                                                ),
                                                         ),
-                                                        Gap(
-                                                          Constant.screenWidth *
-                                                              (4 /
-                                                                  Constant
-                                                                      .figmaScreenWidth),
-                                                        ),
-                                                        Text(
-                                                          "Biology",
-                                                          style: GoogleFonts
-                                                              .urbanist(
-                                                            fontSize: Constant
-                                                                    .screenHeight *
-                                                                (14 /
-                                                                    Constant
-                                                                        .figmaScreenHeight),
-                                                            fontWeight:
-                                                                FontWeight.w400,
-                                                            color: ctr.selectedSubjectName
-                                                                        .value ==
-                                                                    "Biology"
-                                                                ? const Color(
-                                                                    0xFFFFFFFF)
-                                                                : const Color(
-                                                                    0xFF010029),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
                                               ),
                                             ),
                                           ),
-                                        )),
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -678,12 +729,12 @@ class _TestSettingsSheetState extends State<TestSettingsSheet> {
                           //     prefixIcon: PhosphorIcons.magnifyingGlass(),
                           //   ),
                           // ),
-                          ChapterList()
-                        ]
+                          ChapterList(),
+                        ],
                       ],
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),

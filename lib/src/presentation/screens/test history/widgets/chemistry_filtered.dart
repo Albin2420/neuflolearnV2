@@ -28,8 +28,9 @@ class ChemistryFiltered extends StatelessWidget {
               child: TestCard(
                 onTap: () {
                   ctr.fetchDetailedHistory(
-                      testId: ctr.chemistry[index].testId,
-                      testName: ctr.chemistry[index].testName);
+                    testId: ctr.chemistry[index].testId,
+                    testName: ctr.chemistry[index].testName,
+                  );
                 },
                 currentScore: ctr.chemistry[index].score,
                 totalScore: ctr.chemistry[index].totalScore,

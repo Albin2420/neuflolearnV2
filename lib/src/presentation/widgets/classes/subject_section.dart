@@ -20,17 +20,15 @@ class SubjectSection extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              height: 12,
-            ),
+            SizedBox(height: 12),
             Text(
               "Subjects",
               style: GoogleFonts.urbanist(
-                  fontWeight: FontWeight.bold, fontSize: 24),
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
             ),
-            SizedBox(
-              height: 12,
-            ),
+            SizedBox(height: 12),
             SubjectCard(
               subName: "Physics",
               currentcount: 2,
@@ -39,9 +37,7 @@ class SubjectSection extends StatelessWidget {
                 classesController.onSubjectSelected(subject: 1);
               },
             ),
-            SizedBox(
-              height: 13,
-            ),
+            SizedBox(height: 13),
             SubjectCard(
               subName: "Chemistry",
               currentcount: 2,
@@ -50,9 +46,7 @@ class SubjectSection extends StatelessWidget {
                 classesController.onSubjectSelected(subject: 2);
               },
             ),
-            SizedBox(
-              height: 13,
-            ),
+            SizedBox(height: 13),
             SubjectCard(
               subName: "Biology",
               currentcount: 2,
@@ -60,7 +54,7 @@ class SubjectSection extends StatelessWidget {
               onTap: () {
                 classesController.onSubjectSelected(subject: 3);
               },
-            )
+            ),
           ],
         ),
       ),

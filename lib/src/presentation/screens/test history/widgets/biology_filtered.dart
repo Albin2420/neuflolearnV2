@@ -28,8 +28,9 @@ class BiologyFiltered extends StatelessWidget {
               child: TestCard(
                 onTap: () {
                   ctr.fetchDetailedHistory(
-                      testId: ctr.biology[index].testId,
-                      testName: ctr.biology[index].testName);
+                    testId: ctr.biology[index].testId,
+                    testName: ctr.biology[index].testName,
+                  );
                 },
                 currentScore: ctr.biology[index].score,
                 totalScore: ctr.biology[index].totalScore,

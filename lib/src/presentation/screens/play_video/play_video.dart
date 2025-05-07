@@ -16,15 +16,18 @@ class PlayVideo extends StatelessWidget {
   String subjectName;
   List videos;
   bool isLive;
+  bool isFakeLive;
 
-  PlayVideo(
-      {super.key,
-      required this.currentVideoUrl,
-      required this.chapterNo,
-      required this.topic,
-      required this.subjectName,
-      required this.videos,
-      required this.isLive});
+  PlayVideo({
+    super.key,
+    required this.currentVideoUrl,
+    required this.chapterNo,
+    required this.topic,
+    required this.subjectName,
+    required this.videos,
+    required this.isLive,
+    required this.isFakeLive,
+  });
 
   final String currentVideoUrl;
 
@@ -69,8 +72,10 @@ class PlayVideo extends StatelessWidget {
                         Text(
                           "$subjectName - Chapter $chapterNo",
                           style: GoogleFonts.urbanist(
-                              color: Colors.black, fontSize: 12),
-                        )
+                            color: Colors.black,
+                            fontSize: 12,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -96,9 +101,7 @@ class PlayVideo extends StatelessWidget {
             ),
             isLive
                 ? Expanded(child: LiveChat())
-                : ComingUpVideos(
-                    videos: videos,
-                  )
+                : ComingUpVideos(videos: videos),
           ],
         ),
       );

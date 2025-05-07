@@ -13,8 +13,9 @@ import 'package:neuflo_learn/src/domain/repositories/chapter/chapter_repo.dart';
 class ChapterRepoImpl extends ChapterRepo {
   ApiService apiService = ApiService();
   @override
-  Future<Either<Failure, List<Chapter>>> fetchChapters(
-      {required int subjectId}) async {
+  Future<Either<Failure, List<Chapter>>> fetchChapters({
+    required int subjectId,
+  }) async {
     // chapter_names
     log("fetchChapters Impl");
 
@@ -23,7 +24,8 @@ class ChapterRepoImpl extends ChapterRepo {
     }
     try {
       final response = await apiService.get(
-          url: '${Url.baseUrl1}/${Url.getChapterNames}/$subjectId/');
+        url: '${Url.baseUrl1}/${Url.getChapterNames}/$subjectId/',
+      );
       dynamic result = handleResponse(response);
 
       if (result is Failure) {
@@ -44,9 +46,7 @@ class ChapterRepoImpl extends ChapterRepo {
       return Right(chapters);
     } on FormatException catch (e) {
       debugPrint('exception : $e');
-      return const Left(
-        Failure(message: 'Format Exception'),
-      );
+      return const Left(Failure(message: 'Format Exception'));
     } on SocketException catch (e) {
       debugPrint('exception : $e');
       return const Left(
@@ -57,9 +57,7 @@ class ChapterRepoImpl extends ChapterRepo {
       );
     } on Exception catch (e) {
       debugPrint('exception : $e');
-      return const Left(
-        Failure(message: 'Unknown error, Try again later'),
-      );
+      return const Left(Failure(message: 'Unknown error, Try again later'));
     }
   }
 }

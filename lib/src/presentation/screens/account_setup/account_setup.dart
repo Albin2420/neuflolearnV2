@@ -116,7 +116,7 @@ class AccountSetup extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                   color: const Color(0xFF010029),
                 ),
-              )
+              ),
             ],
           ),
           flexibleSpace: Column(
@@ -124,14 +124,19 @@ class AccountSetup extends StatelessWidget {
               const Spacer(), // This pushes the container to the bottom
               Container(
                 height: 1,
-                decoration: BoxDecoration(boxShadow: [
-                  BoxShadow(
-                    color: Colors.black
-                        .withOpacity(0.2), // Shadow color with opacity
-                    offset:
-                        const Offset(0, 1), // Horizontal and Vertical offset
-                  ),
-                ]),
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(
+                        0.2,
+                      ), // Shadow color with opacity
+                      offset: const Offset(
+                        0,
+                        1,
+                      ), // Horizontal and Vertical offset
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -148,10 +153,7 @@ class AccountSetup extends StatelessWidget {
                 child: PageView(
                   controller: ctr.pageController,
                   physics: const NeverScrollableScrollPhysics(),
-                  children: const [
-                    TargetCourse(),
-                    TargetArea(),
-                  ],
+                  children: const [TargetCourse(), TargetArea()],
                 ),
               ),
               Obx(
@@ -171,11 +173,12 @@ class AccountSetup extends StatelessWidget {
                       return;
                     }
                     ctr.setPageIndex(ctr.currentPageIndex.value + 1);
-                    ctr.pageController
-                        .jumpToPage(ctr.currentPageIndex.value + 1);
+                    ctr.pageController.jumpToPage(
+                      ctr.currentPageIndex.value + 1,
+                    );
                   },
                 ),
-              )
+              ),
             ],
           ),
         ),

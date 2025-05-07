@@ -44,13 +44,19 @@ class AddPhoneNumber extends StatelessWidget {
             const Spacer(), // This pushes the container to the bottom
             Container(
               height: 1,
-              decoration: BoxDecoration(boxShadow: [
-                BoxShadow(
-                  color: Colors.black
-                      .withOpacity(0.2), // Shadow color with opacity
-                  offset: const Offset(0, 1), // Horizontal and Vertical offset
-                ),
-              ]),
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(
+                      0.2,
+                    ), // Shadow color with opacity
+                    offset: const Offset(
+                      0,
+                      1,
+                    ), // Horizontal and Vertical offset
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -63,7 +69,11 @@ class AddPhoneNumber extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.only(
-                  left: 24, right: 24, top: 32, bottom: 32),
+                left: 24,
+                right: 24,
+                top: 32,
+                bottom: 32,
+              ),
               child: Column(
                 children: [
                   TextField(
@@ -73,12 +83,13 @@ class AddPhoneNumber extends StatelessWidget {
                     decoration: InputDecoration(
                       prefixIcon: Container(
                         margin: const EdgeInsets.only(
-                            bottom: 22, top: 10, right: 15),
+                          bottom: 22,
+                          top: 10,
+                          right: 15,
+                        ),
                         height: 16,
                         width: 16,
-                        child: Image.asset(
-                          "assets/icons/phone.png",
-                        ),
+                        child: Image.asset("assets/icons/phone.png"),
                       ),
                       hintText: "Your phone number",
                       hintStyle: GoogleFonts.urbanist(
@@ -87,9 +98,7 @@ class AddPhoneNumber extends StatelessWidget {
                         color: const Color(0xFF010029),
                       ),
                       focusedBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Color(0xFF000000),
-                        ),
+                        borderSide: BorderSide(color: Color(0xFF000000)),
                       ),
                     ),
                   ),
@@ -116,7 +125,7 @@ class AddPhoneNumber extends StatelessWidget {
                   }),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -191,7 +200,7 @@ class AddPhoneNumber extends StatelessWidget {
                       return;
                     } else {
                       ctr.startTimer();
-                      // ctr.generateOtp();
+                      ctr.generateOtp();
                       Get.to(() => VerifyOtp());
                     }
                   }

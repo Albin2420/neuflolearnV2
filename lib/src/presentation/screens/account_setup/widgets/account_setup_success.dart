@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+import 'package:neuflo_learn/src/presentation/controller/add_user_info/add_user_info_controller.dart';
+import 'package:neuflo_learn/src/presentation/screens/pending/accountsetuppending.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -30,13 +32,12 @@ class AccountSetupSuccess extends StatelessWidget {
 }
 
 class SetupSuccessBtn extends StatelessWidget {
-  const SetupSuccessBtn({
-    super.key,
-  });
+  const SetupSuccessBtn({super.key});
 
   @override
   Widget build(BuildContext context) {
     final ctr = Get.find<SetupAccountController>();
+    final ctrl = Get.find<AddUserInfoController>();
     return Container(
       padding: EdgeInsets.all(16),
       height: 100,
@@ -46,8 +47,10 @@ class SetupSuccessBtn extends StatelessWidget {
           AppBtn(
             btnName: 'Continue',
             onTapFunction: () async {
-              EasyLoading.show();
-              await ctr.completeUserSetup();
+              if (!ctr.iscompleteUserSetup.value) {
+                EasyLoading.show();
+                await ctr.completeUserSetup();
+              }
 
               if (ctr.userAccountSetupState.value.state == DataState.success) {
                 log('----------  if data state is SUCCESS');
@@ -56,21 +59,23 @@ class SetupSuccessBtn extends StatelessWidget {
               }
 
               if (ctr.userAccountSetupState.value.state == DataState.error) {
-                if (ctr.isFailed.value != '') {
+                if (ctr.isFailed.value != 'pending cases') {
                   EasyLoading.dismiss();
-                  Fluttertoast.showToast(
-                    msg: ctr.isFailed.value,
+                  Fluttertoast.showToast(msg: ctr.isFailed.value);
+                } else if (ctr.isFailed.value == 'pending cases') {
+                  EasyLoading.dismiss();
+                  Get.offAll(
+                    () =>
+                        AccountSetupFailed(userName: ctrl.nameController.text),
                   );
                 } else {
                   EasyLoading.dismiss();
-                  Fluttertoast.showToast(
-                    msg: "something went wrong",
-                  );
+                  Fluttertoast.showToast(msg: "something went wrong");
                 }
                 return;
               }
             },
-          )
+          ),
         ],
       ),
     );
@@ -78,9 +83,7 @@ class SetupSuccessBtn extends StatelessWidget {
 }
 
 class AccountSetupSuccessWidget extends StatelessWidget {
-  const AccountSetupSuccessWidget({
-    super.key,
-  });
+  const AccountSetupSuccessWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -99,17 +102,25 @@ class AccountSetupSuccessWidget extends StatelessWidget {
                     width: 160,
                     decoration: BoxDecoration(
                       color: const Color(0xffFFEBDC),
-                      border:
-                          Border.all(color: const Color(0xffFFEBDC), width: .2),
+                      border: Border.all(
+                        color: const Color(0xffFFEBDC),
+                        width: .2,
+                      ),
                       borderRadius: BorderRadius.circular(85),
                       boxShadow: const [
                         BoxShadow(
                           color: Color.fromARGB(
-                              255, 230, 216, 206), // Shadow color
+                            255,
+                            230,
+                            216,
+                            206,
+                          ), // Shadow color
                           spreadRadius: 1, // Spread radius
                           blurRadius: 5, // Blur radius
                           offset: Offset(
-                              2, 3), // Offset (controls the shadow's position)
+                            2,
+                            3,
+                          ), // Offset (controls the shadow's position)
                         ),
                       ],
                     ),
@@ -121,16 +132,12 @@ class AccountSetupSuccessWidget extends StatelessWidget {
                     left: 0,
                     child: Padding(
                       padding: const EdgeInsets.all(30.0),
-                      child: Image.asset(
-                        "assets/images/check.png",
-                      ),
+                      child: Image.asset("assets/images/check.png"),
                     ),
                   ),
                 ],
               ),
-              SizedBox(
-                height: 64,
-              ),
+              SizedBox(height: 64),
               Text(
                 "Account created successfully",
                 style: GoogleFonts.urbanist(

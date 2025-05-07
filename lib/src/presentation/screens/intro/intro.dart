@@ -1,11 +1,5 @@
 import 'dart:developer';
 
-import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:gap/gap.dart';
-import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:neuflo_learn/src/core/util/constants/app_constants.dart';
 import 'package:neuflo_learn/src/data/services/firebase/firebase_auth_impl.dart';
 import 'package:neuflo_learn/src/data/services/firestore/firestore_service.dart';
@@ -16,6 +10,14 @@ import 'package:neuflo_learn/src/presentation/screens/basic_info/add_basic_info.
 import 'package:neuflo_learn/src/presentation/screens/intro/widgets/google_login_btn.dart';
 import 'package:neuflo_learn/src/presentation/screens/intro/widgets/intro_items.dart';
 import 'package:neuflo_learn/src/presentation/screens/navigationscreen/navigationscreen.dart';
+import 'package:neuflo_learn/src/presentation/screens/pending/accountsetuppending.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:gap/gap.dart';
+import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class IntroScreen extends StatelessWidget {
@@ -39,17 +41,20 @@ class IntroScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'neuflo',
+              'Neuflo',
               style: GoogleFonts.urbanist(
-                  fontWeight: FontWeight.w400, fontSize: 32),
+                fontWeight: FontWeight.w400,
+                fontSize: 32,
+              ),
             ),
             Text(
-              "learn",
+              "Learn",
               style: GoogleFonts.urbanist(
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFFFF6C00),
-                  fontSize: 32),
-            )
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFFFF6C00),
+                fontSize: 32,
+              ),
+            ),
           ],
         ),
       ),
@@ -97,9 +102,7 @@ class IntroScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(
-                      height: 24,
-                    ),
+                    const SizedBox(height: 24),
                     Gap(
                       Constant.screenHeight * (32 / Constant.figmaScreenHeight),
                     ),
@@ -117,9 +120,7 @@ class IntroScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 48,
-              ),
+              const SizedBox(height: 48),
               BottomAppBar(
                 color: Colors.transparent,
                 child: GoogleLoginButton(
@@ -129,25 +130,26 @@ class IntroScreen extends StatelessWidget {
                       await ctr.singInWithGoogle();
 
                       log("auth status1:${ctr.authStatus}");
+                      log(
+                        "issetupComplete:${ctr.currentFirestoreAppUser.value?.isProfileSetupComplete}",
+                      );
 
                       // if (ctr.currentAppUser.value != null) {
                       if (ctr.currentFirestoreAppUser.value != null &&
                           ctr.authStatus.value == AuthStatus.successful) {
                         if (ctr.currentFirestoreAppUser.value
                                 ?.isProfileSetupComplete ==
-                            null) {
+                            false) {
                           if (ctr.currentFirestoreAppUser.value?.name == '' ||
                               ctr.currentFirestoreAppUser.value?.email == '') {
                             ctr.isgLoginTriggered.value = false;
                             Get.offAll(() => AddBasicInfo());
                             return;
-                          } else {
-                            ctr.isgLoginTriggered.value = false;
-                            Get.offAll(() => AccountSetup());
-                            return;
                           }
                         } else {
-                          log("navigate to home() :${ctr.currentFirestoreAppUser.value?.phone}");
+                          log(
+                            "navigate to home() :${ctr.currentFirestoreAppUser.value?.phone}",
+                          );
                           EasyLoading.show();
 
                           bool isTokenFetched = await ctr.getNewToken(
@@ -167,9 +169,24 @@ class IntroScreen extends StatelessWidget {
                             ctr.isgLoginTriggered.value = false;
                             Get.offAll(() => NavigationScreen());
                           } else {
-                            EasyLoading.dismiss();
-                            ctr.isgLoginTriggered.value = false;
-                            Fluttertoast.showToast(msg: 'something went wrong');
+                            if (ctr.notverified.value == true) {
+                              EasyLoading.dismiss();
+                              ctr.isgLoginTriggered.value = false;
+                              Get.offAll(
+                                () => AccountSetupFailed(userName: "Albin"),
+                              );
+                            } else {
+                              EasyLoading.dismiss();
+                              ctr.isgLoginTriggered.value = false;
+                              Fluttertoast.showToast(
+                                msg: 'something went wrong',
+                              );
+                            }
+                            // EasyLoading.dismiss();
+                            // ctr.isgLoginTriggered.value = false;
+                            // Fluttertoast.showToast(
+                            //   msg: 'something went wrong',
+                            // ); //403 check
                           }
                           return;
                         }
@@ -183,7 +200,7 @@ class IntroScreen extends StatelessWidget {
                     }
                   },
                 ),
-              )
+              ),
             ],
           ),
         ),

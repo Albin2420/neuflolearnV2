@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:neuflo_learn/src/presentation/controller/app_startup/app_startup.dart';
 import 'package:neuflo_learn/src/presentation/screens/intro/intro.dart';
 import 'package:neuflo_learn/src/presentation/screens/navigationscreen/navigationscreen.dart';
 import 'package:neuflo_learn/src/presentation/screens/splash/widgets/splash_body.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class Splash extends StatelessWidget {
   const Splash({super.key});
@@ -18,7 +18,7 @@ class Splash extends StatelessWidget {
           if (ctr.isDisabled.value == false) {
             return const SplashWidget();
           }
-          if (userInfo?.isProfileSetupComplete == true && ctr.isDone.value) {
+          if (ctr.isDone.value) {
             ctr.isSplashscreenPassed.value = true;
             return const NavigationScreen();
           } else {

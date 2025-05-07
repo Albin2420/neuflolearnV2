@@ -15,8 +15,9 @@ class SubjectRepoImpl implements SubjectRepo {
       if (kDebugMode) {
         log("fetchSubjects()");
       }
-      final response =
-          await http.get(Uri.parse("${Url.baseUrl2}/videos-by-chapter"));
+      final response = await http.get(
+        Uri.parse("${Url.baseUrl2}/videos-by-chapter"),
+      );
 
       dynamic result = handleResponse(response);
 
@@ -46,8 +47,9 @@ class SubjectRepoImpl implements SubjectRepo {
   @override
   Future<Either<Failure, Map<String, dynamic>>> fetchLive() async {
     try {
-      final response =
-          await http.get(Uri.parse("${Url.baseUrl2}/live-streaming"));
+      final response = await http.get(
+        Uri.parse("${Url.baseUrl2}/live-streaming"),
+      );
 
       dynamic result = handleResponse(response);
 
@@ -57,9 +59,7 @@ class SubjectRepoImpl implements SubjectRepo {
 
       log("result of fetchLive():$result");
 
-      return Right({
-        "livevideos": result,
-      });
+      return Right({"livevideos": result});
     } catch (e) {
       log("Error fetching live(): $e");
       throw Left(Failure(message: e.toString()));

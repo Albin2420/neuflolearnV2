@@ -52,7 +52,7 @@ class DailyTestIntro extends StatelessWidget {
                 fontSize: 12,
                 color: Color(0xFF010029).withOpacity(0.5),
               ),
-            )
+            ),
           ],
         ),
         flexibleSpace: Column(
@@ -60,13 +60,19 @@ class DailyTestIntro extends StatelessWidget {
             const Spacer(), // This pushes the container to the bottom
             Container(
               height: 1,
-              decoration: BoxDecoration(boxShadow: [
-                BoxShadow(
-                  color: Colors.black
-                      .withOpacity(0.2), // Shadow color with opacity
-                  offset: const Offset(0, 1), // Horizontal and Vertical offset
-                ),
-              ]),
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(
+                      0.2,
+                    ), // Shadow color with opacity
+                    offset: const Offset(
+                      0,
+                      1,
+                    ), // Horizontal and Vertical offset
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -82,21 +88,23 @@ class DailyTestIntro extends StatelessWidget {
                   SizedBox(
                     height: 56,
                     width: 56,
-                    child: Image.asset(subjectName == "Physics"
-                        ? "assets/icons/physics.png"
-                        : subjectName == "Chemistry"
-                            ? 'assets/icons/chemistry.png'
-                            : 'assets/icons/biology.png'),
+                    child: Image.asset(
+                      subjectName == "Physics"
+                          ? "assets/icons/physics.png"
+                          : subjectName == "Chemistry"
+                              ? 'assets/icons/chemistry.png'
+                              : 'assets/icons/biology.png',
+                    ),
                   ),
-                  SizedBox(
-                    height: 8,
-                  ),
+                  SizedBox(height: 8),
                   Column(
                     children: [
                       Text(
                         subjectName,
                         style: GoogleFonts.urbanist(
-                            fontWeight: FontWeight.w700, fontSize: 32),
+                          fontWeight: FontWeight.w700,
+                          fontSize: 32,
+                        ),
                       ),
                       Text(
                         "Daily practice test",
@@ -105,7 +113,7 @@ class DailyTestIntro extends StatelessWidget {
                           fontSize: 16,
                           color: Color(0xff02013B),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ],
@@ -131,13 +139,15 @@ class DailyTestIntro extends StatelessWidget {
                 try {
                   ctr.setSubjectName(subj: subjectName);
                   await ctr.initiatePracticeTestExam(
-                      subjectName: subjectName, testlevel: test_level);
+                    subjectName: subjectName,
+                    testlevel: test_level,
+                  );
                 } catch (e) {
                   log("error in Start Test:$e");
                 }
               },
               iconImg: Icons.arrow_forward,
-            )
+            ),
           ],
         ),
       ),

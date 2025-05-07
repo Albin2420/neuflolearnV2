@@ -10,14 +10,15 @@ class AnswerTile extends StatelessWidget {
   final String correctAnswer;
   final String incorrectAnswer;
   final String correctOpt;
-  const AnswerTile(
-      {super.key,
-      required this.qID,
-      required this.answer,
-      required this.correctAnswer,
-      required this.incorrectAnswer,
-      required this.qsTn,
-      required this.correctOpt});
+  const AnswerTile({
+    super.key,
+    required this.qID,
+    required this.answer,
+    required this.correctAnswer,
+    required this.incorrectAnswer,
+    required this.qsTn,
+    required this.correctOpt,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +34,7 @@ class AnswerTile extends StatelessWidget {
         ],
         color: Color(0xffFFFFFF),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: Color(0xff0000001a).withValues(alpha: 0.1),
-        ),
+        border: Border.all(color: Color(0xff0000001a).withValues(alpha: 0.1)),
       ),
       child: Column(
         children: [
@@ -62,9 +61,7 @@ class AnswerTile extends StatelessWidget {
                     fontSize: 16,
                   ),
                 ),
-                SizedBox(
-                  height: 22,
-                ),
+                SizedBox(height: 22),
                 GptMarkdown(
                   "Ans ($correctAnswer) : $correctOpt",
                   style: GoogleFonts.urbanist(
@@ -73,9 +70,7 @@ class AnswerTile extends StatelessWidget {
                     fontSize: 16,
                   ),
                 ),
-                SizedBox(
-                  height: 32,
-                ),
+                SizedBox(height: 32),
                 GptMarkdown(
                   answer,
                   style: GoogleFonts.urbanist(
@@ -84,9 +79,7 @@ class AnswerTile extends StatelessWidget {
                     fontSize: 16,
                   ),
                 ),
-                SizedBox(
-                  height: 16,
-                ),
+                SizedBox(height: 16),
                 incorrectAnswer == 'null'
                     ? SizedBox()
                     : Column(
@@ -94,9 +87,7 @@ class AnswerTile extends StatelessWidget {
                           Divider(
                             color: Color(0xff01002933).withValues(alpha: 0.2),
                           ),
-                          SizedBox(
-                            height: 16,
-                          ),
+                          SizedBox(height: 16),
                         ],
                       ),
                 Row(
@@ -139,11 +130,11 @@ class AnswerTile extends StatelessWidget {
                                     width: 24,
                                     child: correctAnswer == incorrectAnswer
                                         ? Image.asset("assets/icons/done.png")
-                                        : Image.asset("assets/icons/wrong.png"),
+                                        : Image.asset(
+                                            "assets/icons/wrong.png",
+                                          ),
                                   ),
-                            SizedBox(
-                              width: 8,
-                            ),
+                            SizedBox(width: 8),
                             incorrectAnswer == 'null'
                                 ? SizedBox()
                                 : GptMarkdown(
@@ -153,11 +144,11 @@ class AnswerTile extends StatelessWidget {
                                       fontWeight: FontWeight.w700,
                                       fontSize: 16,
                                     ),
-                                  )
+                                  ),
                           ],
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ],
@@ -187,8 +178,9 @@ class AnswerTile extends StatelessWidget {
               : Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(24),
-                        bottomRight: Radius.circular(24)),
+                      bottomLeft: Radius.circular(24),
+                      bottomRight: Radius.circular(24),
+                    ),
                     color: correctAnswer == incorrectAnswer
                         ? Colors.green
                         : Colors.red,
@@ -206,7 +198,7 @@ class AnswerTile extends StatelessWidget {
                       ),
                     ),
                   ),
-                )
+                ),
         ],
       ),
     );

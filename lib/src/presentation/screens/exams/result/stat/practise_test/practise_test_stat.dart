@@ -25,9 +25,7 @@ class PractiseTestStat extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                height: 40,
-              ),
+              SizedBox(height: 40),
               Container(
                 padding: EdgeInsets.only(left: 8),
                 child: Row(
@@ -42,20 +40,17 @@ class PractiseTestStat extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(
-                height: 16,
-              ),
+              SizedBox(height: 16),
               Obx(() {
                 return Testhourcard(
-                    testAttended:
-                        '${ctr.stdataPracticeTest["total_tests_attended"]}',
-                    seconds: ctr.stdataPracticeTest["total_time_spent"] == 0
-                        ? 0.0
-                        : ctr.stdataPracticeTest["total_time_spent"]);
+                  testAttended:
+                      '${ctr.stdataPracticeTest["total_tests_attended"]}',
+                  seconds: ctr.stdataPracticeTest["total_time_spent"] == 0
+                      ? 0.0
+                      : ctr.stdataPracticeTest["total_time_spent"],
+                );
               }),
-              SizedBox(
-                height: 16,
-              ),
+              SizedBox(height: 16),
               Obx(() {
                 return ProgressGraphtile(
                   maxLimit: (ctr.stdataPracticeTest['total_time_spent'] as num)
@@ -63,9 +58,7 @@ class PractiseTestStat extends StatelessWidget {
                   weekdata: ctr.stdataPracticeTest['total_time_per_dayMap'],
                 );
               }),
-              SizedBox(
-                height: 16,
-              ),
+              SizedBox(height: 16),
               Container(
                 padding: EdgeInsets.all(24),
                 decoration: BoxDecoration(
@@ -91,12 +84,11 @@ class PractiseTestStat extends StatelessWidget {
                               SizedBox(
                                 height: 18,
                                 width: 18,
-                                child:
-                                    Image.asset("assets/icons/done_square.png"),
+                                child: Image.asset(
+                                  "assets/icons/done_square.png",
+                                ),
                               ),
-                              SizedBox(
-                                width: 4,
-                              ),
+                              SizedBox(width: 4),
                               Text(
                                 "average correct answers",
                                 style: GoogleFonts.urbanist(
@@ -104,14 +96,17 @@ class PractiseTestStat extends StatelessWidget {
                                   fontSize: 16,
                                   color: AppColors.kgreen,
                                 ),
-                              )
+                              ),
                             ],
                           ),
                           Obx(() {
                             return Expanded(
                               child: Container(
                                 padding: EdgeInsets.only(
-                                    top: 10, left: 16, right: 16),
+                                  top: 10,
+                                  left: 16,
+                                  right: 16,
+                                ),
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -147,7 +142,7 @@ class PractiseTestStat extends StatelessWidget {
                                                     fontSize: 24,
                                                   ),
                                                 ),
-                                              )
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -158,7 +153,7 @@ class PractiseTestStat extends StatelessWidget {
                                             fontSize: 14,
                                             color: Color(0xff010029),
                                           ),
-                                        )
+                                        ),
                                       ],
                                     ),
                                     Column(
@@ -192,7 +187,7 @@ class PractiseTestStat extends StatelessWidget {
                                                     fontSize: 24,
                                                   ),
                                                 ),
-                                              )
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -203,7 +198,7 @@ class PractiseTestStat extends StatelessWidget {
                                             fontSize: 14,
                                             color: Color(0xff010029),
                                           ),
-                                        )
+                                        ),
                                       ],
                                     ),
                                     Column(
@@ -237,7 +232,7 @@ class PractiseTestStat extends StatelessWidget {
                                                     fontSize: 24,
                                                   ),
                                                 ),
-                                              )
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -248,7 +243,7 @@ class PractiseTestStat extends StatelessWidget {
                                             fontSize: 14,
                                             color: Color(0xff010029),
                                           ),
-                                        )
+                                        ),
                                       ],
                                     ),
                                   ],
@@ -259,9 +254,7 @@ class PractiseTestStat extends StatelessWidget {
                         ],
                       ),
                     ),
-                    SizedBox(
-                      height: 30,
-                    ),
+                    SizedBox(height: 30),
                     SizedBox(
                       height: 124,
                       child: Column(
@@ -272,11 +265,10 @@ class PractiseTestStat extends StatelessWidget {
                                 height: 18,
                                 width: 18,
                                 child: Image.asset(
-                                    "assets/icons/wrong_square.png"),
+                                  "assets/icons/wrong_square.png",
+                                ),
                               ),
-                              SizedBox(
-                                width: 4,
-                              ),
+                              SizedBox(width: 4),
                               Text(
                                 "average incorrect answers",
                                 style: GoogleFonts.urbanist(
@@ -284,14 +276,17 @@ class PractiseTestStat extends StatelessWidget {
                                   fontSize: 16,
                                   color: AppColors.kred,
                                 ),
-                              )
+                              ),
                             ],
                           ),
                           Obx(() {
                             return Expanded(
                               child: Container(
                                 padding: EdgeInsets.only(
-                                    top: 10, left: 16, right: 16),
+                                  top: 10,
+                                  left: 16,
+                                  right: 16,
+                                ),
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -327,7 +322,7 @@ class PractiseTestStat extends StatelessWidget {
                                                     fontSize: 24,
                                                   ),
                                                 ),
-                                              )
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -338,7 +333,7 @@ class PractiseTestStat extends StatelessWidget {
                                             fontSize: 14,
                                             color: Color(0xff010029),
                                           ),
-                                        )
+                                        ),
                                       ],
                                     ),
                                     Column(
@@ -372,7 +367,7 @@ class PractiseTestStat extends StatelessWidget {
                                                     fontSize: 24,
                                                   ),
                                                 ),
-                                              )
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -383,7 +378,7 @@ class PractiseTestStat extends StatelessWidget {
                                             fontSize: 14,
                                             color: Color(0xff010029),
                                           ),
-                                        )
+                                        ),
                                       ],
                                     ),
                                     Column(
@@ -417,7 +412,7 @@ class PractiseTestStat extends StatelessWidget {
                                                     fontSize: 24,
                                                   ),
                                                 ),
-                                              )
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -428,23 +423,21 @@ class PractiseTestStat extends StatelessWidget {
                                             fontSize: 14,
                                             color: Color(0xff010029),
                                           ),
-                                        )
+                                        ),
                                       ],
                                     ),
                                   ],
                                 ),
                               ),
                             );
-                          })
+                          }),
                         ],
                       ),
                     ),
                   ],
                 ),
               ),
-              SizedBox(
-                height: 16,
-              ),
+              SizedBox(height: 16),
               Obx(() {
                 return Scoregrowthgraph(
                   scorePercentage:
@@ -455,9 +448,7 @@ class PractiseTestStat extends StatelessWidget {
                   map: ctr.stdataPracticeTest['daily_average_scoreMap'],
                 );
               }),
-              SizedBox(
-                height: 16,
-              ),
+              SizedBox(height: 16),
               Obx(() {
                 return TimeGrowthGraph(
                   timegrowthPercentage:
@@ -467,9 +458,7 @@ class PractiseTestStat extends StatelessWidget {
                   map: ctr.stdataPracticeTest["daily_average_timeMap"],
                 );
               }),
-              SizedBox(
-                height: 40,
-              ),
+              SizedBox(height: 40),
               Center(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -483,9 +472,7 @@ class PractiseTestStat extends StatelessWidget {
                         color: Color(0xff010029),
                       ),
                     ),
-                    SizedBox(
-                      height: 16,
-                    ),
+                    SizedBox(height: 16),
                     GradientButton(
                       onTap: () {
                         Get.to(() => TestHistory(), arguments: 3);
@@ -496,9 +483,7 @@ class PractiseTestStat extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(
-                height: 70,
-              ),
+              SizedBox(height: 70),
             ],
           ),
         ),

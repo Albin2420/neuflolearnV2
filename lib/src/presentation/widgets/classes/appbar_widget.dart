@@ -31,11 +31,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 SizedBox(
                   height: 24,
                   width: 24,
-                  child: Image.asset(subject == 'Physics'
-                      ? "assets/icons/physics.png"
-                      : subject == 'Chemistry'
-                          ? 'assets/icons/chemistry.png'
-                          : 'assets/icons/biology.png'),
+                  child: Image.asset(
+                    subject == 'Physics'
+                        ? "assets/icons/physics.png"
+                        : subject == 'Chemistry'
+                            ? 'assets/icons/chemistry.png'
+                            : 'assets/icons/biology.png',
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Text(
@@ -45,9 +47,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(
-                  width: 20,
-                )
+                SizedBox(width: 20),
               ],
             ),
           ),

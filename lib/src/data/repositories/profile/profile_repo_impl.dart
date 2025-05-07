@@ -10,16 +10,19 @@ import 'package:neuflo_learn/src/domain/repositories/profile/profile_repo.dart';
 
 class ProfileRepoImpl extends ProfileRepo {
   @override
-  Future<Either<Failure, Map<String, dynamic>>> fetchweekGrowth(
-      {required String accestoken}) async {
+  Future<Either<Failure, Map<String, dynamic>>> fetchweekGrowth({
+    required String accestoken,
+  }) async {
     try {
       final url = Uri.parse('${Url.baseUrl1}/${Url.timepercentage}/');
       if (kDebugMode) {
         log("fetchweekGrowth()");
         log("${Url.baseUrl1}/${Url.timepercentage}/");
       }
-      final response =
-          await http.get(url, headers: {"Authorization": "Bearer $accestoken"});
+      final response = await http.get(
+        url,
+        headers: {"Authorization": "Bearer $accestoken"},
+      );
 
       log("status code in fetchweekGrowth():${response.body}");
 

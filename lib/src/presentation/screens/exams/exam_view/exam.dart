@@ -52,90 +52,93 @@ class Exam extends StatelessWidget {
                         InkWell(
                           onTap: () {
                             showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    backgroundColor: Colors.white,
-                                    content: SizedBox(
-                                      // height: Constant.screenHeight *
-                                      //     (242 / Constant.figmaScreenHeight),
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Are you sure about exiting?',
-                                            style: GoogleFonts.urbanist(
-                                              color: const Color(0xFF010029),
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 16,
-                                            ),
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  backgroundColor: Colors.white,
+                                  content: SizedBox(
+                                    // height: Constant.screenHeight *
+                                    //     (242 / Constant.figmaScreenHeight),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Are you sure about exiting?',
+                                          style: GoogleFonts.urbanist(
+                                            color: const Color(0xFF010029),
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 16,
                                           ),
-                                          SizedBox(height: 6),
-                                          Text(
-                                            'You wont be able to come back to this and will have to start over.',
-                                            style: GoogleFonts.urbanist(
-                                              color: const Color(0xFF010029)
-                                                  .withValues(alpha: 0.5),
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500,
-                                            ),
+                                        ),
+                                        SizedBox(height: 6),
+                                        Text(
+                                          'You wont be able to come back to this and will have to start over.',
+                                          style: GoogleFonts.urbanist(
+                                            color: const Color(
+                                              0xFF010029,
+                                            ).withValues(alpha: 0.5),
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
                                           ),
-                                          Gap(
-                                            Constant.screenHeight *
-                                                (24 /
-                                                    Constant.figmaScreenHeight),
-                                          ),
-                                          CustomBtn3(
-                                            btnName:
-                                                'Yes i want to submit & exit',
-                                            vpad: 12,
-                                            hpad: 12,
-                                            onTapFunction: () async {
-                                              Get.back();
-                                              // ctr.resetExamValues();
-                                              // Get.offAll(
-                                              //     () => NavigationScreen());
-                                              EasyLoading.show();
-                                              ctr.skippedCount();
-                                              bool x1;
-                                              x1 = await ctr.generateExamReport(
-                                                  level: level, type: type);
+                                        ),
+                                        Gap(
+                                          Constant.screenHeight *
+                                              (24 / Constant.figmaScreenHeight),
+                                        ),
+                                        CustomBtn3(
+                                          btnName:
+                                              'Yes i want to submit & exit',
+                                          vpad: 12,
+                                          hpad: 12,
+                                          onTapFunction: () async {
+                                            Get.back();
+                                            // ctr.resetExamValues();
+                                            // Get.offAll(
+                                            //     () => NavigationScreen());
+                                            EasyLoading.show();
+                                            ctr.skippedCount();
+                                            bool x1;
+                                            x1 = await ctr.generateExamReport(
+                                              level: level,
+                                              type: type,
+                                            );
 
-                                              if (x1) {
-                                                EasyLoading.dismiss();
-                                                Get.to(() => ResultPage());
-                                              } else {
-                                                EasyLoading.dismiss();
-                                                Fluttertoast.showToast(
-                                                  msg: ctr.examReportState.value
-                                                          .error ??
-                                                      'something went wrong',
-                                                  textColor: Colors.white,
-                                                  fontSize: 16.0,
-                                                );
-                                              }
-                                            },
-                                          ),
-                                          Gap(
-                                            Constant.screenHeight *
-                                                (8 /
-                                                    Constant.figmaScreenHeight),
-                                          ),
-                                          CustomBtn4(
-                                              btnName:
-                                                  'No, I want to finish the test',
-                                              vpad: 12,
-                                              hpad: 12,
-                                              onTapFunction: () {
-                                                Get.back();
-                                              })
-                                        ],
-                                      ),
+                                            if (x1) {
+                                              EasyLoading.dismiss();
+                                              Get.to(() => ResultPage());
+                                            } else {
+                                              EasyLoading.dismiss();
+                                              Fluttertoast.showToast(
+                                                msg: ctr.examReportState.value
+                                                        .error ??
+                                                    'something went wrong',
+                                                textColor: Colors.white,
+                                                fontSize: 16.0,
+                                              );
+                                            }
+                                          },
+                                        ),
+                                        Gap(
+                                          Constant.screenHeight *
+                                              (8 / Constant.figmaScreenHeight),
+                                        ),
+                                        CustomBtn4(
+                                          btnName:
+                                              'No, I want to finish the test',
+                                          vpad: 12,
+                                          hpad: 12,
+                                          onTapFunction: () {
+                                            Get.back();
+                                          },
+                                        ),
+                                      ],
                                     ),
-                                  );
-                                });
+                                  ),
+                                );
+                              },
+                            );
                           },
                           child: SizedBox(
                             height: 24,
@@ -168,7 +171,8 @@ class Exam extends StatelessWidget {
                                                 ? Color(0xff02012A)
                                                 : Colors.transparent,
                                             PhosphorIcons.flagPennant(
-                                                PhosphorIconsStyle.fill),
+                                              PhosphorIconsStyle.fill,
+                                            ),
                                             size: 17,
                                           ),
                                         ),
@@ -206,12 +210,21 @@ class Exam extends StatelessWidget {
                                                         : ctr.inCorrectList
                                                                 .contains(i)
                                                             ? Colors.red
-                                                            : Color(0xff010029)
-                                                    : Color(0xff010029),
+                                                            : ctr.flagList
+                                                                    .contains(i)
+                                                                ? Color(
+                                                                    0xffCCCCD4)
+                                                                : Color(
+                                                                    0xff010029)
+                                                    : ctr.flagList.contains(
+                                                        i,
+                                                      )
+                                                        ? Color(0xffCCCCD4)
+                                                        : Color(0xff010029),
                                               ),
                                             ),
                                           ),
-                                        )
+                                        ),
                                       ],
                                     ),
                                 ],
@@ -222,16 +235,21 @@ class Exam extends StatelessWidget {
                         SizedBox(width: 8),
                         Row(
                           children: [
-                            Obx(() => Text(
-                                  "${ctr.currentQuestionIndex}",
-                                  style: GoogleFonts.urbanist(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16),
-                                )),
+                            Obx(
+                              () => Text(
+                                "${ctr.currentQuestionIndex}",
+                                style: GoogleFonts.urbanist(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
                             Text(
                               "/${ctr.questionList.length}",
                               style: GoogleFonts.urbanist(
-                                  fontWeight: FontWeight.w600, fontSize: 10),
+                                fontWeight: FontWeight.w600,
+                                fontSize: 10,
+                              ),
                             ),
                           ],
                         ),
@@ -261,22 +279,24 @@ class Exam extends StatelessWidget {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Obx(() => Text(
-                                        "Question ${ctr.page.value + 1}",
-                                        style: GoogleFonts.urbanist(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 16,
-                                        ),
-                                      )),
-                                  SizedBox(
-                                    width: 3,
+                                  Obx(
+                                    () => Text(
+                                      "Question ${ctr.page.value + 1}",
+                                      style: GoogleFonts.urbanist(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16,
+                                      ),
+                                    ),
                                   ),
+                                  SizedBox(width: 3),
                                   SizedBox(
                                     height: 16,
                                     width: 16,
                                     child: Image.asset(
-                                        scale: 2, "assets/icons/down.png"),
-                                  )
+                                      scale: 2,
+                                      "assets/icons/down.png",
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -292,135 +312,161 @@ class Exam extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Obx(
-                    () {
-                      return ctr.isExpanded.value == true
-                          ? AnimatedContainer(
+                  Obx(() {
+                    return ctr.isExpanded.value == true
+                        ? AnimatedContainer(
+                            decoration: const BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Color(0x07000000),
+                                  blurRadius: 1,
+                                  offset: Offset(0, 1),
+                                  spreadRadius: 0,
+                                ),
+                              ],
+                              borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(24),
+                                bottomRight: Radius.circular(24),
+                              ),
+                            ),
+                            duration: const Duration(milliseconds: 400),
+                            curve: Curves.easeInOut,
+                            height: ctr.isExpanded.value
+                                ? Constant.screenHeight * 0.26
+                                : 0,
+                            child: Container(
                               decoration: const BoxDecoration(
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Color(0x07000000),
-                                      blurRadius: 1,
-                                      offset: Offset(0, 1),
-                                      spreadRadius: 0,
-                                    ),
-                                  ],
-                                  borderRadius: BorderRadius.only(
-                                    bottomLeft: Radius.circular(24),
-                                    bottomRight: Radius.circular(24),
-                                  )),
-                              duration: const Duration(milliseconds: 400),
-                              curve: Curves.easeInOut,
-                              height: ctr.isExpanded.value
-                                  ? Constant.screenHeight * 0.26
-                                  : 0,
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border(
-                                    left: BorderSide(
-                                        color: Color.fromARGB(137, 0, 0, 0),
-                                        width: 1),
-                                    right: BorderSide(
-                                      width: 1,
-                                      color: Color.fromARGB(137, 0, 0, 0),
-                                    ),
-                                    bottom: BorderSide(
-                                      width: 1,
-                                      color: Color.fromARGB(137, 0, 0, 0),
-                                    ),
+                                color: Colors.white,
+                                border: Border(
+                                  left: BorderSide(
+                                    color: Color.fromARGB(137, 0, 0, 0),
+                                    width: 1,
                                   ),
-                                  borderRadius: BorderRadius.only(
-                                    bottomLeft: Radius.circular(24),
-                                    bottomRight: Radius.circular(24),
+                                  right: BorderSide(
+                                    width: 1,
+                                    color: Color.fromARGB(137, 0, 0, 0),
+                                  ),
+                                  bottom: BorderSide(
+                                    width: 1,
+                                    color: Color.fromARGB(137, 0, 0, 0),
                                   ),
                                 ),
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: Constant.screenWidth *
-                                        (16 / Constant.figmaScreenWidth),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      SizedBox(
-                                        height: 8,
-                                      ),
-                                      Expanded(
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 0),
-                                          child: GridView.builder(
-                                              gridDelegate:
-                                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                                      mainAxisSpacing: 15,
-                                                      crossAxisSpacing: 15,
-                                                      crossAxisCount: 7),
-                                              itemCount:
-                                                  ctr.questionList.length,
-                                              itemBuilder: (context, index) {
-                                                return GestureDetector(
-                                                  onTap: () {
-                                                    ctr.toggleIsxapanded();
-                                                    ctr.gotoPage(
-                                                        pageIndex: index);
-                                                  },
-                                                  child: Container(
-                                                    height: 20,
-                                                    width: 20,
-                                                    decoration: BoxDecoration(
-                                                        color: ctr
-                                                                .instantEvaluvation
-                                                                .value
-                                                            ? ctr.correctList
-                                                                    .contains(
-                                                                        index)
-                                                                ? Colors.green
-                                                                : ctr.inCorrectList
-                                                                        .contains(
-                                                                            index)
-                                                                    ? Colors.red
-                                                                    : Color(
-                                                                        0xff010029)
-                                                            : Color(
-                                                                0xff010029), //
-                                                        shape: BoxShape.circle),
-                                                    child: Center(
-                                                      child: Text(
-                                                        '${index + 1}',
-                                                        style: GoogleFonts
-                                                            .urbanist(
-                                                                fontSize: 15,
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w700),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                );
-                                              }),
-                                        ),
-                                      ),
-                                      Gap(
-                                        Constant.screenWidth *
-                                            (32 / Constant.figmaScreenWidth),
-                                      ),
-                                    ],
-                                  ),
+                                borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(24),
+                                  bottomRight: Radius.circular(24),
                                 ),
                               ),
-                            )
-                          : SizedBox();
-                    },
-                  )
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: Constant.screenWidth *
+                                      (16 / Constant.figmaScreenWidth),
+                                ),
+                                child: Column(
+                                  children: [
+                                    SizedBox(height: 8),
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 0),
+                                        child: GridView.builder(
+                                          gridDelegate:
+                                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                            mainAxisSpacing: 4,
+                                            crossAxisSpacing: 4,
+                                            crossAxisCount: 7,
+                                          ),
+                                          itemCount: ctr.questionList.length,
+                                          itemBuilder: (context, index) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                ctr.toggleIsxapanded();
+                                                ctr.gotoPage(pageIndex: index);
+                                              },
+                                              child: Container(
+                                                height: 30,
+                                                width: 30,
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                    color:
+                                                        ctr.flagList.contains(
+                                                      index,
+                                                    )
+                                                            ? Color(0xff010029)
+                                                            : Colors.white,
+                                                  ),
+                                                  color: ctr.instantEvaluvation
+                                                          .value
+                                                      ? ctr.correctList
+                                                              .contains(index)
+                                                          ? Colors.green
+                                                          : ctr.inCorrectList
+                                                                  .contains(
+                                                                      index)
+                                                              ? Colors.red
+                                                              : ctr.flagList
+                                                                      .contains(
+                                                                          index)
+                                                                  ? Color(
+                                                                      0xffCCCCD4)
+                                                                  : Color(
+                                                                      0xff010029)
+                                                      : ctr.flagList.contains(
+                                                          index,
+                                                        )
+                                                          ? Color(0xffCCCCD4)
+                                                          : Color(0xff010029),
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    '${index + 1}',
+                                                    style: GoogleFonts.urbanist(
+                                                      fontSize: 15,
+                                                      color: ctr.correctList
+                                                              .contains(index)
+                                                          ? Colors.white
+                                                          : ctr.inCorrectList
+                                                                  .contains(
+                                                                      index)
+                                                              ? Colors.white
+                                                              : ctr.flagList
+                                                                      .contains(
+                                                                          index)
+                                                                  ? Colors.black
+                                                                  : Colors
+                                                                      .white,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                    Gap(
+                                      Constant.screenWidth *
+                                          (32 / Constant.figmaScreenWidth),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          )
+                        : SizedBox();
+                  }),
                 ],
               ),
             ),
             Container(
               color: Color(0xffEEFCFF).withValues(alpha: 0.5),
-              padding:
-                  EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
+              padding: EdgeInsets.only(
+                left: 16,
+                right: 16,
+                top: 16,
+                bottom: 16,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -431,14 +477,8 @@ class Exam extends StatelessWidget {
                         width: 16,
                         child: Image.asset("assets/icons/timer2.png"),
                       ),
-                      SizedBox(
-                        width: 2,
-                      ),
-                      Obx(
-                        () => Text(
-                          ctr.formattedTime,
-                        ),
-                      ),
+                      SizedBox(width: 2),
+                      Obx(() => Text(ctr.formattedTime)),
                     ],
                   ),
                   GestureDetector(
@@ -461,9 +501,7 @@ class Exam extends StatelessWidget {
                                   mainAxisSize: MainAxisSize.min,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    SizedBox(
-                                      height: 24,
-                                    ),
+                                    SizedBox(height: 24),
                                     Text(
                                       'Are you sure about skipping?',
                                       style: GoogleFonts.urbanist(
@@ -474,16 +512,14 @@ class Exam extends StatelessWidget {
                                     ),
                                     SizedBox(height: 4),
                                     Text(
-                                      'You wont be able to answer this question later.',
+                                      'You can be able to answer this question later.',
                                       style: GoogleFonts.urbanist(
                                         color: const Color(0xFF010029),
                                         fontSize: 14,
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
-                                    SizedBox(
-                                      height: 24,
-                                    ),
+                                    SizedBox(height: 24),
                                     CustomBtn3(
                                       btnName: 'Yes, I want to skip',
                                       vpad: 12,
@@ -504,7 +540,7 @@ class Exam extends StatelessWidget {
                                       onTapFunction: () {
                                         Get.back(result: false);
                                       },
-                                    )
+                                    ),
                                   ],
                                 ),
                               ),
@@ -537,7 +573,7 @@ class Exam extends StatelessWidget {
                         decorationColor: Color(0xffD84040),
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -546,651 +582,186 @@ class Exam extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Color(0xffEEFCFF).withValues(alpha: 0.5),
                 ),
-                // child: Obx(
-                //   () {
-                //     return PageView.builder(
-                //       scrollBehavior: ScrollBehavior(),
-                //       onPageChanged: (index) {
-                //         ctr.setCurrentPageIndex(index: index);
-                //         ctr.resetValues();
-                //         ctr.setSubmittedStatus(
-                //           staus: ctr.questionList[index].isAttempted ?? false,
-                //         );
+                child: Obx(() {
+                  if (ctr.timerExpired.value &&
+                      ctr.isReportLoading.value == false) {
+                    EasyLoading.show();
+                    Future.delayed(Duration.zero, () async {
+                      bool x = await ctr.generateExamReport(
+                        level: level,
+                        type: type,
+                      );
 
-                //         ctr.resetToCurrentDeafults();
+                      EasyLoading.dismiss();
 
-                //         ctr.resetAvgTimer();
-                //         ctr.startAvgTimer();
+                      if (x) {
+                        Get.to(() => ResultPage());
+                      } else {
+                        Fluttertoast.showToast(
+                          msg: ctr.examReportState.value.error ??
+                              'Something went wrong',
+                          textColor: Colors.white,
+                          fontSize: 16.0,
+                        );
+                      }
+                    });
+                  }
+                  return Obx(() {
+                    return PageView.builder(
+                      scrollBehavior: ScrollBehavior(),
+                      onPageChanged: (index) {
+                        ctr.setCurrentPageIndex(index: index);
+                        ctr.resetValues();
+                        ctr.setSubmittedStatus(
+                          staus: ctr.questionList[index].isAttempted ?? false,
+                        );
+                        ctr.resetToCurrentDeafults();
+                        ctr.resetAvgTimer();
+                        ctr.startAvgTimer();
+                      },
+                      controller: ctr.pageController,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: ctr.questionList.length,
+                      itemBuilder: (context, index) {
+                        ctr.setCurrentQuestion(
+                          question: ctr.questionList[index],
+                        );
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          ctr.setCurrentQuestionIndex(index: index + 1);
+                        });
 
-                //         // ctr.setLastVisitedIndex(index: index);
-                //         // ctr.onNextQuestionLoaded();
-                //       },
-                //       controller: ctr.pageController,
-                //       physics: NeverScrollableScrollPhysics(),
-                //       itemCount: ctr.questionList.length,
-                //       itemBuilder: (context, index) {
-                //         ctr.setCurrentQuestion(
-                //           question: ctr.questionList[index],
-                //         );
-                //         // log('qns :${ctr.questionList[index].question}');
-
-                //         // log('id :${ctr.questionList[index].questionId}');
-                //         // log("opt:${ctr.questionList[index].options}");
-                //         // log("ans:${ctr.questionList[index].answer}");
-
-                //         WidgetsBinding.instance.addPostFrameCallback((_) {
-                //           ctr.setCurrentQuestionIndex(index: index + 1);
-                //         });
-
-                //         // ctr.startAvgTimer();
-
-                //         // WidgetsBinding.instance.addPostFrameCallback((_) {
-                //         //   ctr.canShowAnswer();
-                //         // });
-
-                //         ///
-                //         return Container(
-                //           padding: EdgeInsets.only(left: 16, right: 16),
-                //           child: SingleChildScrollView(
-                //             child: Column(
-                //               crossAxisAlignment: CrossAxisAlignment.start,
-                //               children: [
-                //                 Row(
-                //                   children: [
-                //                     Text(
-                //                       "Question  ${index < 10 ? index + 1 : index}  of ${ctr.questionList.length}",
-                //                       style: GoogleFonts.urbanist(
-                //                         fontWeight: FontWeight.w600,
-                //                         fontSize: 16,
-                //                         color: const Color(0xff0100294d)
-                //                             .withValues(alpha: 0.3),
-                //                       ),
-                //                     ),
-                //                     SizedBox(
-                //                       width: 4,
-                //                     ),
-                //                     // Text(
-                //                     //     "ID:${ctr.questionList[index].questionId}")
-                //                   ],
-                //                 ),
-                //                 SizedBox(
-                //                   height: 8,
-                //                 ),
-                //                 // LaTexT(
-                //                 //   laTeXCode: Text(
-                //                 //     '${ctr.questionList[index].question}',
-                //                 //     style: GoogleFonts.urbanist(
-                //                 //       color: const Color(0xFF010029),
-                //                 //       fontWeight: FontWeight.w700,
-                //                 //       fontSize: 16,
-                //                 //     ),
-                //                 //   ),
-                //                 // ),
-
-                //                 // SizedBox(
-                //                 //   height: 400,
-                //                 //   child: Markdown(
-                //                 //     selectable: true,
-                //                 //     data:
-                //                 //         r'''${ctr.questionList[index].question}''',
-                //                 //     builders: {
-                //                 //       'latex': LatexElementBuilder(
-                //                 //         textStyle: const TextStyle(
-                //                 //           // color: Colors.blue,
-                //                 //           fontWeight: FontWeight.w100,
-                //                 //         ),
-                //                 //         textScaleFactor: 1.2,
-                //                 //       ),
-                //                 //     },
-                //                 //     extensionSet: md.ExtensionSet(
-                //                 //       [LatexBlockSyntax()],
-                //                 //       [LatexInlineSyntax()],
-                //                 //     ),
-                //                 //   ),
-                //                 // ),
-
-                //                 // GptMarkdown(
-                //                 //   '${ctr.questionList[index].question}',
-                //                 //   style: const TextStyle(
-                //                 //     color: Colors.red,
-                //                 //   ),
-                //                 // ),
-
-                //                 SizedBox(
-                //                   height: 5,
-                //                 ),
-                //                 // Math.tex(
-                //                 //   "{Å}", // API response
-                //                 //   mathStyle: MathStyle.display,
-                //                 //   textStyle: TextStyle(fontSize: 18),
-                //                 // ),
-
-                //                 TexText(
-                //                   "${ctr.questionList[index].question}",
-                //                   style: GoogleFonts.urbanist(
-                //                     color: const Color(0xFF010029),
-                //                     fontWeight: FontWeight.w700,
-                //                     fontSize: 16,
-                //                   ),
-                //                 ),
-
-                //                 // GptMarkdown(
-                //                 //   '${ctr.questionList[index].question}',
-                //                 //   style: GoogleFonts.urbanist(
-                //                 //     color: const Color(0xFF010029),
-                //                 //     fontWeight: FontWeight.w700,
-                //                 //     fontSize: 16,
-                //                 //   ),
-                //                 // ),
-
-                //                 SizedBox(
-                //                   height: 4,
-                //                 ),
-
-                //                 // Math.tex(
-                //                 //   r'''In Young's double slit experiment carried out with light of wavelength (\lambda)=5000 \AA, the distance between the slits is 0.2 \mathrm{~mm} and the screen is at 200 \mathrm{~cm} from the slits. The central maximum is at x=0. The third maximum (taking the central maximum as zeroth maximum) will be at x equal to''',
-                //                 //   textStyle: TextStyle(color: Colors.green),
-                //                 //   onErrorFallback: (err) {
-                //                 //     log("error,$err");
-                //                 //     return Container(
-                //                 //       height: 10,
-                //                 //       width: 10,
-                //                 //       color: Colors.red,
-                //                 //     );
-                //                 //   },
-                //                 // ),
-                //                 // GptMarkdown(
-                //                 //     r'''$\mathrm{V}=\mathrm{B}_{\mathrm{E}} \tan \delta, \mathrm{H}=\mathrm{B}_{\mathrm{E}},$'''),
-
-                //                 // GptMarkdown(
-                //                 //   r'''$\mathrm{V}=\mathrm{B}_{\mathrm{E}} \tan \delta, \quad \mathrm{H}=\mathrm{B}_{\mathrm{E}}$''',
-                //                 //   style: GoogleFonts.urbanist(
-                //                 //     color: Color(0xFF010029),
-                //                 //     fontWeight: FontWeight.w700,
-                //                 //     fontSize: 16,
-                //                 //   ),
-                //                 // ),
-                //                 // GptMarkdown(
-                //                 //   r'''$\mathrm{V}=\mathrm{B}_{\mathrm{E}} \tan \delta, \mathrm{H}=\mathrm{B}_{\mathrm{E}},''',
-                //                 //   style: GoogleFonts.urbanist(
-                //                 //     color: Color.fromARGB(255, 15, 224, 85),
-                //                 //     fontWeight: FontWeight.w700,
-                //                 //     fontSize: 16,
-                //                 //   ),
-                //                 // ),
-
-                //                 SizedBox(
-                //                   height: 4,
-                //                 ),
-
-                //                 // GptMarkdown(
-                //                 //   r'''$\left[\begin{array}{lll}2015 & R S\end{array}\right]$''',
-                //                 //   style: GoogleFonts.urbanist(
-                //                 //     color: Color(0xFF010029),
-                //                 //     fontWeight: FontWeight.w700,
-                //                 //     fontSize: 16,
-                //                 //   ),
-                //                 // ),
-
-                //                 // GptMarkdown(
-                //                 //   r'''$\mathrm{V}=\mathrm{B}_{\mathrm{E}}, \mathrm{H}=\mathrm{B}_{\mathrm{E}} \tan \delta$, ''',
-                //                 //   style: const TextStyle(
-                //                 //     color: Colors.red,
-                //                 //   ),
-                //                 // ),
-
-                //                 SizedBox(
-                //                   height: 24,
-                //                 ),
-                //                 ListView.builder(
-                //                   physics: NeverScrollableScrollPhysics(),
-                //                   shrinkWrap: true,
-                //                   itemCount: 4,
-                //                   itemBuilder: (BuildContext context, i) {
-                //                     // Option corresponding to the index
-                //                     String option =
-                //                         ctr.mapIndexToOption(index: i);
-
-                //                     // log("option =: $option");
-
-                //                     // Check if the current option is selected
-                //                     bool isSelected = ctr.currentQuestion.value
-                //                             .selectedOption ==
-                //                         option;
-
-                //                     // log("isSelected =: $isSelected");
-
-                //                     // Check if the answer has been submitted
-                //                     bool isSubmitted =
-                //                         ctr.currentQuestion.value.isAttempted ??
-                //                             false;
-
-                //                     // log("isSubmitted =: $isSubmitted");
-
-                //                     // Get the option title dynamically
-                //                     String optionTitle = _getOptionTitle(i);
-
-                //                     // Calculate the tile color based on the current selected option and the correct answer
-                //                     Color tileColor = _getTileColor(
-                //                         index, option, isSelected, isSubmitted);
-
-                //                     return Obx(
-                //                       () => OptionTile(
-                //                         index: i,
-                //                         isSelected: ctr
-                //                                 .currentUserSelectedOption
-                //                                 .value ==
-                //                             option,
-                //                         onTapFunction: (optionValue) {
-                //                           if (ctr.questionList[index]
-                //                                   .isAttempted !=
-                //                               true) {
-                //                             ctr.setCurrentUserSelectedOption(
-                //                               option: optionValue,
-                //                             );
-                //                           }
-                //                         },
-                //                         optionValue: option,
-                //                         tileColor: ctr.instantEvaluvation.value
-                //                             ? tileColor
-                //                             : null,
-                //                         title: optionTitle,
-                //                       ),
-                //                     );
-                //                   },
-                //                 ),
-                //                 SizedBox(
-                //                   height: 12,
-                //                 ),
-                //                 // Obx(() {
-                //                 //   if (ctr.currentUserSelectedOption.value !=
-                //                 //       null) {
-                //                 //     return (ctr.currentQuestion.value
-                //                 //                     .isMarkedCorrect !=
-                //                 //                 true
-                //                 //             ? false
-                //                 //             : true)
-                //                 //         ? Column(
-                //                 //             crossAxisAlignment:
-                //                 //                 CrossAxisAlignment.start,
-                //                 //             children: [
-                //                 //               Text(
-                //                 //                 "AI-Solution",
-                //                 //                 style: GoogleFonts.urbanist(
-                //                 //                   fontWeight: FontWeight.w800,
-                //                 //                   fontSize: 16,
-                //                 //                 ),
-                //                 //               ),
-                //                 //               SizedBox(
-                //                 //                 height: 8,
-                //                 //               ),
-                //                 //               GptMarkdown(
-                //                 //                 "${ctr.questionList[index].explanation}",
-                //                 //                 style: GoogleFonts.urbanist(
-                //                 //                   color:
-                //                 //                       const Color(0xFF010029),
-                //                 //                   fontWeight: FontWeight.w600,
-                //                 //                   fontSize: 16,
-                //                 //                 ),
-                //                 //               ),
-                //                 //               SizedBox(
-                //                 //                 height: 24,
-                //                 //               )
-                //                 //             ],
-                //                 //           )
-                //                 //         : SizedBox();
-                //                 //   } else {
-                //                 //     return SizedBox();
-                //                 //   }
-                //                 // })
-                //                 Obx(() {
-                //                   if (ctr.currentUserSelectedOption.value !=
-                //                           null &&
-                //                       ctr.instantEvaluvation.value) {
-                //                     return ctr.currentQuestion.value
-                //                                 .isMarkedCorrect ==
-                //                             true
-                //                         ? Column(
-                //                             crossAxisAlignment:
-                //                                 CrossAxisAlignment.start,
-                //                             children: [
-                //                               Text(
-                //                                 "AI-Solution",
-                //                                 style: GoogleFonts.urbanist(
-                //                                   fontWeight: FontWeight.w800,
-                //                                   fontSize: 16,
-                //                                 ),
-                //                               ),
-                //                               SizedBox(
-                //                                 height: 8,
-                //                               ),
-                //                               TexText(
-                //                                 "${ctr.questionList[index].explanation}",
-                //                                 style: GoogleFonts.urbanist(
-                //                                   color:
-                //                                       const Color(0xFF010029),
-                //                                   fontWeight: FontWeight.w600,
-                //                                   fontSize: 16,
-                //                                 ),
-                //                               ),
-                //                               SizedBox(
-                //                                 height: 24,
-                //                               )
-                //                             ],
-                //                           )
-                //                         : SizedBox();
-                //                   } else {
-                //                     return SizedBox();
-                //                   }
-                //                 }),
-
-                //                 // Expanded(
-                //                 //   flex: 1,
-                //                 //   child: SingleChildScrollView(
-                //                 //     child: Column(
-                //                 //       children: [
-                //                 //         ListView.builder(
-                //                 //           physics: NeverScrollableScrollPhysics(),
-                //                 //           shrinkWrap: true,
-                //                 //           itemCount: 4,
-                //                 //           itemBuilder: (BuildContext context, i) {
-                //                 //             // Option corresponding to the index
-                //                 //             String option =
-                //                 //                 ctr.mapIndexToOption(index: i);
-
-                //                 //             // log("option =: $option");
-
-                //                 //             // Check if the current option is selected
-                //                 //             bool isSelected = ctr.currentQuestion
-                //                 //                     .value.selectedOption ==
-                //                 //                 option;
-
-                //                 //             // log("isSelected =: $isSelected");
-
-                //                 //             // Check if the answer has been submitted
-                //                 //             bool isSubmitted = ctr.currentQuestion
-                //                 //                     .value.isAttempted ??
-                //                 //                 false;
-
-                //                 //             // log("isSubmitted =: $isSubmitted");
-
-                //                 //             // Get the option title dynamically
-                //                 //             String optionTitle =
-                //                 //                 _getOptionTitle(i);
-
-                //                 //             // Calculate the tile color based on the current selected option and the correct answer
-                //                 //             Color tileColor = _getTileColor(index,
-                //                 //                 option, isSelected, isSubmitted);
-
-                //                 //             return Obx(
-                //                 //               () => OptionTile(
-                //                 //                 index: i,
-                //                 //                 isSelected: ctr
-                //                 //                         .currentUserSelectedOption
-                //                 //                         .value ==
-                //                 //                     option,
-                //                 //                 onTapFunction: (optionValue) {
-                //                 //                   if (ctr.questionList[index]
-                //                 //                           .isAttempted !=
-                //                 //                       true) {
-                //                 //                     ctr.setCurrentUserSelectedOption(
-                //                 //                       option: optionValue,
-                //                 //                     );
-                //                 //                   }
-                //                 //                 },
-                //                 //                 optionValue: option,
-                //                 //                 tileColor: tileColor,
-                //                 //                 title: optionTitle,
-                //                 //               ),
-                //                 //             );
-                //                 //           },
-                //                 //         ),
-                //                 //         SizedBox(
-                //                 //           height: 12,
-                //                 //         ),
-                //                 //         Obx(() {
-                //                 //           if (ctr.currentUserSelectedOption
-                //                 //                   .value !=
-                //                 //               null) {
-                //                 //             return (ctr.currentQuestion.value
-                //                 //                             .isMarkedCorrect !=
-                //                 //                         true
-                //                 //                     ? false
-                //                 //                     : true)
-                //                 //                 ? Column(
-                //                 //                     crossAxisAlignment:
-                //                 //                         CrossAxisAlignment.start,
-                //                 //                     children: [
-                //                 //                       Text(
-                //                 //                         "AI-Solution",
-                //                 //                         style:
-                //                 //                             GoogleFonts.urbanist(
-                //                 //                           fontWeight:
-                //                 //                               FontWeight.w800,
-                //                 //                           fontSize: 16,
-                //                 //                         ),
-                //                 //                       ),
-                //                 //                       SizedBox(
-                //                 //                         height: 8,
-                //                 //                       ),
-                //                 //                       LaTexT(
-                //                 //                         laTeXCode: Text(
-                //                 //                           '${ctr.questionList[index].explanation}',
-                //                 //                           style: GoogleFonts
-                //                 //                               .urbanist(
-                //                 //                             color: const Color(
-                //                 //                                 0xFF010029),
-                //                 //                             fontWeight:
-                //                 //                                 FontWeight.w700,
-                //                 //                             fontSize: 16,
-                //                 //                           ),
-                //                 //                         ),
-                //                 //                       ),
-                //                 //                       SizedBox(
-                //                 //                         height: 24,
-                //                 //                       )
-                //                 //                     ],
-                //                 //                   )
-                //                 //                 : SizedBox();
-                //                 //           } else {
-                //                 //             return SizedBox();
-                //                 //           }
-                //                 //         })
-                //                 //       ],
-                //                 //     ),
-                //                 //   ),
-                //                 // ),
-                //               ],
-                //             ),
-                //           ),
-                //         );
-                //       },
-                //     );
-                //   },
-                // ),
-                child: Obx(
-                  () {
-                    if (ctr.timerExpired.value &&
-                        ctr.isReportLoading.value == false) {
-                      EasyLoading.show();
-                      Future.delayed(Duration.zero, () async {
-                        bool x = await ctr.generateExamReport(
-                            level: level, type: type);
-
-                        EasyLoading.dismiss();
-
-                        if (x) {
-                          Get.to(() => ResultPage());
-                        } else {
-                          Fluttertoast.showToast(
-                            msg: ctr.examReportState.value.error ??
-                                'Something went wrong',
-                            textColor: Colors.white,
-                            fontSize: 16.0,
-                          );
-                        }
-                      });
-                    }
-                    return Obx(
-                      () {
-                        return PageView.builder(
-                          scrollBehavior: ScrollBehavior(),
-                          onPageChanged: (index) {
-                            ctr.setCurrentPageIndex(index: index);
-                            ctr.resetValues();
-                            ctr.setSubmittedStatus(
-                              staus:
-                                  ctr.questionList[index].isAttempted ?? false,
-                            );
-                            ctr.resetToCurrentDeafults();
-                            ctr.resetAvgTimer();
-                            ctr.startAvgTimer();
-                          },
-                          controller: ctr.pageController,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: ctr.questionList.length,
-                          itemBuilder: (context, index) {
-                            ctr.setCurrentQuestion(
-                              question: ctr.questionList[index],
-                            );
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              ctr.setCurrentQuestionIndex(index: index + 1);
-                            });
-
-                            return Container(
-                              padding: EdgeInsets.only(left: 16, right: 16),
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                        return Container(
+                          padding: EdgeInsets.only(left: 16, right: 16),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
                                   children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          "Question  ${index + 1}  of ${ctr.questionList.length}",
-                                          style: GoogleFonts.urbanist(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 16,
-                                            color: const Color(0xff0100294d)
-                                                .withValues(alpha: 0.3),
-                                          ),
-                                        ),
-                                        SizedBox(width: 4),
-                                      ],
-                                    ),
-                                    SizedBox(height: 8),
-                                    SizedBox(height: 5),
-                                    TexText(
-                                      "${ctr.questionList[index].question}",
+                                    Text(
+                                      "Question  ${index + 1}  of ${ctr.questionList.length}",
                                       style: GoogleFonts.urbanist(
-                                        color: const Color(0xFF010029),
-                                        fontWeight: FontWeight.w700,
+                                        fontWeight: FontWeight.w600,
                                         fontSize: 16,
+                                        color: const Color(
+                                          0xff0100294d,
+                                        ).withValues(alpha: 0.3),
                                       ),
                                     ),
-                                    SizedBox(height: 4),
-                                    ListView.builder(
-                                      physics: NeverScrollableScrollPhysics(),
-                                      shrinkWrap: true,
-                                      itemCount: 4,
-                                      itemBuilder: (BuildContext context, i) {
-                                        String option =
-                                            ctr.mapIndexToOption(index: i);
-                                        bool isSelected = ctr.currentQuestion
-                                                .value.selectedOption ==
-                                            option;
-                                        bool isSubmitted = ctr.currentQuestion
-                                                .value.isAttempted ??
-                                            false;
-                                        String optionTitle = _getOptionTitle(i);
-                                        Color tileColor = _getTileColor(index,
-                                            option, isSelected, isSubmitted);
-
-                                        return Obx(
-                                          () => OptionTile(
-                                            index: i,
-                                            isSelected: ctr
-                                                    .currentUserSelectedOption
-                                                    .value ==
-                                                option,
-                                            onTapFunction: (optionValue) {
-                                              if (ctr.questionList[index]
-                                                      .isAttempted !=
-                                                  true) {
-                                                ctr.setCurrentUserSelectedOption(
-                                                    option: optionValue);
-                                              }
-                                            },
-                                            optionValue: option,
-                                            tileColor:
-                                                ctr.instantEvaluvation.value
-                                                    ? tileColor
-                                                    : null,
-                                            title: optionTitle,
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                    SizedBox(height: 12),
-                                    Obx(() {
-                                      if (ctr.currentUserSelectedOption.value !=
-                                              null &&
-                                          ctr.instantEvaluvation.value) {
-                                        return ctr.currentQuestion.value
-                                                    .isMarkedCorrect ==
-                                                true
-                                            ? Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    "AI-Solution",
-                                                    style: GoogleFonts.urbanist(
-                                                      fontWeight:
-                                                          FontWeight.w800,
-                                                      fontSize: 16,
-                                                    ),
-                                                  ),
-                                                  SizedBox(height: 8),
-                                                  TexText(
-                                                    "${ctr.questionList[index].explanation}",
-                                                    style: GoogleFonts.urbanist(
-                                                      color: const Color(
-                                                          0xFF010029),
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      fontSize: 16,
-                                                    ),
-                                                  ),
-                                                  SizedBox(height: 24),
-                                                ],
-                                              )
-                                            : SizedBox();
-                                      } else {
-                                        return SizedBox();
-                                      }
-                                    }),
+                                    SizedBox(width: 4),
                                   ],
                                 ),
-                              ),
-                            );
-                          },
+                                SizedBox(height: 8),
+                                SizedBox(height: 5),
+                                TexText(
+                                  "${ctr.questionList[index].question}",
+                                  style: GoogleFonts.urbanist(
+                                    color: const Color(0xFF010029),
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                ListView.builder(
+                                  physics: NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemCount: 4,
+                                  itemBuilder: (BuildContext context, i) {
+                                    String option = ctr.mapIndexToOption(
+                                      index: i,
+                                    );
+                                    bool isSelected = ctr.currentQuestion.value
+                                            .selectedOption ==
+                                        option;
+                                    bool isSubmitted =
+                                        ctr.currentQuestion.value.isAttempted ??
+                                            false;
+                                    String optionTitle = _getOptionTitle(i);
+                                    Color tileColor = _getTileColor(
+                                      index,
+                                      option,
+                                      isSelected,
+                                      isSubmitted,
+                                    );
+
+                                    return Obx(
+                                      () => OptionTile(
+                                        index: i,
+                                        isSelected: ctr
+                                                .currentUserSelectedOption
+                                                .value ==
+                                            option,
+                                        onTapFunction: (optionValue) {
+                                          if (ctr.questionList[index]
+                                                  .isAttempted !=
+                                              true) {
+                                            ctr.setCurrentUserSelectedOption(
+                                              option: optionValue,
+                                            );
+                                          }
+                                        },
+                                        optionValue: option,
+                                        tileColor: ctr.instantEvaluvation.value
+                                            ? tileColor
+                                            : null,
+                                        title: optionTitle,
+                                      ),
+                                    );
+                                  },
+                                ),
+                                SizedBox(height: 12),
+                                Obx(() {
+                                  if (ctr.currentUserSelectedOption.value !=
+                                          null &&
+                                      ctr.instantEvaluvation.value) {
+                                    return ctr.currentQuestion.value
+                                                .isMarkedCorrect ==
+                                            true
+                                        ? Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "AI-Solution",
+                                                style: GoogleFonts.urbanist(
+                                                  fontWeight: FontWeight.w800,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                              SizedBox(height: 8),
+                                              TexText(
+                                                "${ctr.questionList[index].explanation}",
+                                                style: GoogleFonts.urbanist(
+                                                  color:
+                                                      const Color(0xFF010029),
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                              SizedBox(height: 24),
+                                            ],
+                                          )
+                                        : SizedBox();
+                                  } else {
+                                    return SizedBox();
+                                  }
+                                }),
+                              ],
+                            ),
+                          ),
                         );
                       },
                     );
-                  },
-                ),
+                  });
+                }),
               ),
-            )
+            ),
           ],
         ),
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          border: Border(
-            top: BorderSide(
-              color: Colors.grey.withOpacity(0.5),
-            ),
-          ),
+          border: Border(top: BorderSide(color: Colors.grey.withOpacity(0.5))),
         ),
         padding: EdgeInsets.all(16),
         child: Row(
@@ -1207,15 +778,19 @@ class Exam extends StatelessWidget {
                 vpad: 12,
                 hpad: 20,
                 onTapFunction: () async {
+                  // log("skip:$}")
                   if (ctr.isSubmitted.value == true) {
                     try {
+                      log("call for submission");
                       if ((ctr.page.value >= ctr.questionList.length - 1) &&
                           ctr.isReportLoading.value == false) {
                         EasyLoading.show();
                         ctr.skippedCount();
                         bool x;
                         x = await ctr.generateExamReport(
-                            level: level, type: type);
+                          level: level,
+                          type: type,
+                        );
 
                         if (x) {
                           EasyLoading.dismiss();
@@ -1237,6 +812,7 @@ class Exam extends StatelessWidget {
                       log("error Next/Sumit/ :$e");
                     }
                   } else {
+                    log("call for submitAnswer");
                     ctr.submitAnswer();
 
                     if (ctr.currentUserSelectedOption.value == null) {
@@ -1276,7 +852,7 @@ class Exam extends StatelessWidget {
                 ctr.markFlagged(index: ctr.page.value);
                 ctr.updateIsFlagged();
               },
-            )
+            ),
           ],
         ),
       ),
@@ -1284,7 +860,11 @@ class Exam extends StatelessWidget {
   }
 
   Color _getTileColor(
-      int index, String option, bool isSelected, bool isSubmitted) {
+    int index,
+    String option,
+    bool isSelected,
+    bool isSubmitted,
+  ) {
     final ctr = Get.find<ExamController>();
 
     // log("ctr.currentUserSelectedOption.value : ${ctr.currentUserSelectedOption.value}");

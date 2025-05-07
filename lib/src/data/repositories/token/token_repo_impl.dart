@@ -11,10 +11,11 @@ import 'package:neuflo_learn/src/domain/repositories/token/token_repo.dart';
 
 class TokenRepoImpl extends TokenRepo {
   @override
-  Future<Either<Failure, Map<String, dynamic>>> getToken(
-      {required int studentId,
-      required String phoneNumber,
-      required String fcmToken}) async {
+  Future<Either<Failure, Map<String, dynamic>>> getToken({
+    required int studentId,
+    required String phoneNumber,
+    required String fcmToken,
+  }) async {
     try {
       if (kDebugMode) {
         log("getToken()");
@@ -40,7 +41,7 @@ class TokenRepoImpl extends TokenRepo {
         dynamic result = handleResponse(response);
         return Right({
           "access_token": result["access_token"],
-          "refresh_token": result["refresh_token"]
+          "refresh_token": result["refresh_token"],
         });
       } else {
         log("respstatuscode:${response.statusCode}");
@@ -63,12 +64,8 @@ class TokenRepoImpl extends TokenRepo {
       }
       final response = await http.post(
         Uri.parse("${Url.baseUrl1}/${Url.refreshToken}/"),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          "refresh_token": refreshToken,
-        }),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({"refresh_token": refreshToken}),
       );
 
       log("body in getNewTokens():${response.body}");
@@ -77,7 +74,7 @@ class TokenRepoImpl extends TokenRepo {
         dynamic result = handleResponse(response);
         return Right({
           "access_token": result["access_token"],
-          "refresh_token": result["refresh_token"]
+          "refresh_token": result["refresh_token"],
         });
       } else {
         return Left(Failure(message: '${response.statusCode}'));

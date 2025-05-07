@@ -60,7 +60,10 @@ class ProgressGraphtile extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: (weekdata?.entries ??
-                      List.generate(7, (index) => MapEntry("Day$index", 0.0)))
+                      List.generate(
+                        7,
+                        (index) => MapEntry("Day$index", 0.0),
+                      ))
                   .map((entry) {
                 double seconds = isDataInvalid
                     ? 0.0
@@ -68,7 +71,9 @@ class ProgressGraphtile extends StatelessWidget {
                 double progress =
                     maxLimit > 0 ? (seconds / maxLimit).clamp(0.0, 1.0) : 0.0;
 
-                log("Day: ${entry.key}, Time: $seconds sec, Progress: $progress");
+                log(
+                  "Day: ${entry.key}, Time: $seconds sec, Progress: $progress",
+                );
 
                 return Column(
                   children: [

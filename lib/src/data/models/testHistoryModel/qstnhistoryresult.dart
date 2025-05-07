@@ -66,17 +66,17 @@ class QstnHistoryModel {
 
   factory QstnHistoryModel.fromJson(Map<String, dynamic> json) =>
       QstnHistoryModel(
-          question: json["text"],
-          options:
-              json["options"] == null ? null : Options.fromMap(json["options"]),
-          answer: json["answer"],
-          explanation: json["explanation"],
-          questionId: json["question_id"],
-          submittedAnswer: json["student_answer"]
-          // images: json["has_image"] == false
-          //     ? []
-          //     : List<Image>.from(json["has_image"]?.map((x) => x)),
-          );
+        question: json["text"],
+        options:
+            json["options"] == null ? null : Options.fromMap(json["options"]),
+        answer: json["answer"],
+        explanation: json["explanation"],
+        questionId: json["question_id"],
+        submittedAnswer: json["student_answer"],
+        // images: json["has_image"] == false
+        //     ? []
+        //     : List<Image>.from(json["has_image"]?.map((x) => x)),
+      );
 
   @override
   String toString() {

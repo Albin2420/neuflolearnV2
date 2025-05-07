@@ -27,9 +27,10 @@ class CourseSelectionCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.transparent,
             border: Border.all(
-                color: ctr.selectedChapters.contains(chapter)
-                    ? Color(0xff18AC00)
-                    : Color(0xff02012a33).withValues(alpha: 0.2)),
+              color: ctr.selectedChapters.contains(chapter)
+                  ? Color(0xff18AC00)
+                  : Color(0xff02012a33).withValues(alpha: 0.2),
+            ),
             borderRadius: BorderRadius.circular(16),
           ),
           child: Row(
@@ -41,7 +42,9 @@ class CourseSelectionCard extends StatelessWidget {
                   chapter.chapterName ?? '',
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.urbanist(
-                      fontWeight: FontWeight.w600, fontSize: 16),
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
                 ),
               ),
               ctr.selectedChapters.contains(chapter) == true
@@ -50,7 +53,7 @@ class CourseSelectionCard extends StatelessWidget {
                       width: 24,
                       child: Image.asset('assets/icons/done.png'),
                     )
-                  : SizedBox()
+                  : SizedBox(),
             ],
           ),
         ),

@@ -95,13 +95,15 @@ class AppStartupController extends GetxController {
         String docName = "$curretntUserPhoneNumber@neuflo.io";
         docname.value = docName;
 
-        appUser.value =
-            await firestoreService.getCurrentUserDocument(userName: docName);
+        appUser.value = await firestoreService.getCurrentUserDocument(
+          userName: docName,
+        );
 
         log("appUser:${appUser.value}");
         if (appUser.value != null) {
           await firestoreService.dailyExamReportResetandStreakReset(
-              userName: docName);
+            userName: docName,
+          );
 
           if (kDebugMode) {
             log('current userInfo ===========> $appUser');
@@ -111,21 +113,26 @@ class AppStartupController extends GetxController {
           refreshToken.value = (await getRefreshToken()) ?? '';
 
           if (refreshToken.value != '') {
-            final token1 =
-                await tokenRepo.getNewTokens(refreshToken: refreshToken.value);
-            token1.fold((l) {
-              log("got it token expired()");
-              userState.value = Failed(e: 'token Expired');
-              isDone.value = false;
-            }, (r) async {
-              accessToken.value = r['access_token'];
-              refreshToken.value = r['refresh_token'];
-              await saveToken(
+            final token1 = await tokenRepo.getNewTokens(
+              refreshToken: refreshToken.value,
+            );
+            token1.fold(
+              (l) {
+                log("got it token expired()");
+                userState.value = Failed(e: 'token Expired');
+                isDone.value = false;
+              },
+              (r) async {
+                accessToken.value = r['access_token'];
+                refreshToken.value = r['refresh_token'];
+                await saveToken(
                   accessToken: r['access_token'],
-                  refreshToken: r['refresh_token']);
-              isDone.value = true;
-              userState.value = Success(data: appUser.value);
-            });
+                  refreshToken: r['refresh_token'],
+                );
+                isDone.value = true;
+                userState.value = Success(data: appUser.value);
+              },
+            );
           } else {
             isDone.value = false;
             userState.value = Failed(e: 'no token');
@@ -148,32 +155,54 @@ class AppStartupController extends GetxController {
 
   Future getAppStatus() async {
     final result = await appStatusService.getStatus();
-    result.fold((failure) {
-      isDisabled.value = false;
-    }, (data) {
-      isDisabled.value = data;
-    });
+    result.fold(
+      (failure) {
+        isDisabled.value = false;
+      },
+      (data) {
+        isDisabled.value = data;
+      },
+    );
   }
 
-  Future getToken({
+  RxBool istokengotIt = RxBool(false);
+  Future<bool> getToken({
     required int studentId,
     required String phoneNumber,
     required String fcmToken,
   }) async {
     final tokens = await tokenRepo.getToken(
-        studentId: studentId, phoneNumber: phoneNumber, fcmToken: fcmToken);
-    tokens.fold((l) {
-      log("token generation Failed");
-    }, (r) {
-      saveToken(
-          accessToken: r['access_token'], refreshToken: r['refresh_token']);
-    });
+      studentId: studentId,
+      phoneNumber: phoneNumber,
+      fcmToken: fcmToken,
+    );
+
+    return tokens.fold(
+      (l) {
+        log("token generation Failed");
+        istokengotIt.value = false;
+        return false;
+      },
+      (r) async {
+        await saveToken(
+          accessToken: r['access_token'],
+          refreshToken: r['refresh_token'],
+        );
+        istokengotIt.value = true;
+        log("tk:${istokengotIt.value}");
+        return true;
+      },
+    );
   }
 
-  Future<void> saveToken(
-      {required String accessToken, required String refreshToken}) async {
+  Future<void> saveToken({
+    required String accessToken,
+    required String refreshToken,
+  }) async {
     if (kDebugMode) {
-      log("Token gotit:->  accessToken :$accessToken  refreshToken  :$refreshToken");
+      log(
+        "Token gotit:->  accessToken :$accessToken  refreshToken  :$refreshToken",
+      );
     }
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('accessToken', accessToken);

@@ -4,6 +4,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+import 'package:get/get.dart';
+import 'package:neuflo_learn/src/presentation/controller/connectivity/connectivity_controller.dart';
 // import 'package:flutter_vlc_player/vlc_sout_options.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
@@ -33,6 +35,8 @@ class YtPlayer extends StatefulWidget {
 }
 
 class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
+  final connectivityCtrl = Get.find<ConnectivityController>();
+  bool isplayerpausedDuringNetissue = false;
   late AudioOnlyStreamInfo currentAudioStream;
   late VideoOnlyStreamInfo currentStream;
   List<VideoOnlyStreamInfo> videoOnlyStreams = [];
@@ -67,12 +71,52 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
 
     _seekctrlinitialization();
     _init();
+    // Watch for network changes
+    ever(connectivityCtrl.isnetConnected, (status) {
+      if (connectivityCtrl.isnetConnected.value == false) {
+        _handleNetworkDisconnected();
+        log("net gone");
+      } else {
+        _handleNetworkReconnected();
+        log("net get back");
+      }
+    });
+  }
+
+  _handleNetworkDisconnected() {
+    if (mounted) {
+      setState(() {
+        if (isvlcPlayerCtrlinitialized) {
+          vlcPlayerCtrl.pause();
+          isLoading = true;
+        }
+      });
+    }
+  }
+
+  _handleNetworkReconnected() {
+    if (mounted) {
+      setState(() {
+        if (isvlcPlayerCtrlinitialized) {
+          vlcPlayerCtrl.play();
+          isLoading = false;
+        }
+      });
+    }
   }
 
   Future<void> _init() async {
     try {
       if (widget.isLive == true && widget.isfakeLive == false) {
-        _fetchLiveStreamUrl(videoUrl: widget.url);
+        final bool isLive = await _isLiveonGoing(videoUrl: widget.url);
+
+        if (!isLive) {
+          setState(() {
+            error = "live ended";
+          });
+        } else {
+          _fetchLiveStreamUrl(videoUrl: widget.url);
+        }
       } else {
         videoOnlyStreams = await _fetchStreams();
         log("videoOnlyStreams(1):${videoOnlyStreams.length}");
@@ -123,11 +167,18 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
         });
       }
 
-      await _initPlayer(streamUrl: liveURL, live: true);
+      if (liveURL != '') {
+        await _initPlayer(streamUrl: liveURL, live: true);
+      }
 
       _liveStreamStatusChecking(videoId);
     } catch (e) {
       log("Error in _fetchLiveStreamUrl(): $e");
+      if (mounted) {
+        setState(() {
+          error = '$e';
+        });
+      }
       return null;
     } finally {
       yt.close();
@@ -135,32 +186,158 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
     return null;
   }
 
-  void _liveStreamStatusChecking(String videoId) {
-    log("_liveStreamStatusChecking() in $videoId");
-    Timer.periodic(const Duration(seconds: 2), (timer) async {
-      final yt = YoutubeExplode();
-      try {
-        var video = await yt.videos.get(VideoId(videoId));
-        if (video.isLive) {
-        } else {
-          log("Live stream has ended.");
-          timer.cancel();
-          // Handle live stream end (e.g., stop player, show message, etc.)
-          _handleLiveStreamEnd();
-        }
-      } catch (e) {
-        log("Error in  _liveStreamStatusChecking(): $e");
-        timer.cancel();
-      } finally {
-        yt.close();
+  Future<bool> _isLiveonGoing({required String videoUrl}) async {
+    log("Initializing _isLiveonGoing()");
+    final yt = YoutubeExplode();
+
+    try {
+      var videoId = _extractVideoId(videoUrl);
+      var vt = await yt.videos.get(VideoId(videoId ?? ''));
+
+      log("precheck:${vt.isLive}");
+      if (vt.isLive) {
+        return true;
+      } else {
+        return false;
       }
-    });
+    } catch (e) {
+      log("Error in _isLiveonGoing(): $e");
+      error = "$e";
+      return false;
+    } finally {
+      yt.close();
+    }
+  }
+
+  Future<void> _initPlayer({
+    required String streamUrl,
+    required bool live,
+  }) async {
+    try {
+      vlcPlayerCtrl = VlcPlayerController.network(
+        hwAcc: HwAcc.full,
+        streamUrl,
+        autoPlay: true,
+        autoInitialize: true,
+        options: VlcPlayerOptions(
+          advanced: VlcAdvancedOptions([
+            VlcAdvancedOptions.networkCaching(60000),
+            VlcAdvancedOptions.liveCaching(300),
+            // VlcAdvancedOptions.clockJitter(0),
+            VlcAdvancedOptions.fileCaching(150),
+          ]),
+          rtp: VlcRtpOptions([VlcRtpOptions.rtpOverRtsp(true)]),
+        ),
+      );
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+      if (!live) {
+        log("setup AudioTrack for recorded videos");
+        vlcPlayerCtrl.addOnInitListener(() {
+          if (mounted) {
+            setState(() {
+              vlcPlayerCtrl.addAudioFromNetwork(
+                currentAudioStream.url.toString(),
+              );
+            });
+          }
+        });
+      }
+
+      vlcPlayerCtrl.addListener(() {
+        if (!widget.isLive) {
+          _listenPlayingduration();
+        } else {}
+        if (mounted) {
+          setState(() {
+            if (vlcPlayerCtrl.value.position != Duration.zero ||
+                vlcPlayerCtrl.value.position > const Duration(seconds: 0)) {
+              currentPosition = vlcPlayerCtrl.value.position;
+              backupPosition = currentPosition;
+            }
+            if (vlcPlayerCtrl.value.position != Duration.zero &&
+                totalDuration == Duration.zero) {
+              totalDuration = vlcPlayerCtrl.value.duration;
+            }
+            if (vlcPlayerCtrl.value.playingState == PlayingState.playing) {
+              isPlaying.value = true;
+            }
+            if (vlcPlayerCtrl.value.playingState == PlayingState.stopped) {
+              isPlaying.value = null;
+            }
+          });
+        }
+        if (vlcPlayerCtrl.value.playingState == PlayingState.error) {
+          log("Error: ${PlayingState.error}");
+        }
+      });
+
+      if (mounted) {
+        setState(() {
+          isvlcPlayerCtrlinitialized = true;
+        });
+      }
+    } catch (e) {
+      log("Error :$e");
+      if (mounted) {
+        setState(() {
+          error = e.toString();
+        });
+      }
+    }
+  }
+
+  void _liveStreamStatusChecking(String videoId) {
+    try {
+      log("_liveStreamStatusChecking() in $videoId");
+      final yt = YoutubeExplode();
+      Timer? timer;
+
+      timer = Timer.periodic(const Duration(minutes: 1), (timer) async {
+        log("Checking stream status...");
+        try {
+          var video = await yt.videos.get(VideoId(videoId));
+          if (video.isLive) {
+            log("Still live.");
+          } else {
+            log("Live stream has ended.");
+            timer.cancel();
+            _handleLiveStreamEnd();
+          }
+        } catch (e) {
+          log("Error in _liveStreamStatusChecking(): $e");
+          timer.cancel();
+        }
+      });
+
+      // Close the client after a set duration or use another trigger to avoid memory leaks
+      Future.delayed(const Duration(minutes: 5), () {
+        yt.close(); // Only close once you're done with the periodic checks
+        timer?.cancel();
+      });
+    } catch (e) {
+      log("error: $e");
+    }
   }
 
   void _handleLiveStreamEnd() {
-    // Implement your logic to handle the end of the live stream
-    // For example, stop the player, show a message, etc.
     log("Handling live stream end.");
+
+    // Stop the VLC player if it's initialized
+    if (isvlcPlayerCtrlinitialized) {
+      vlcPlayerCtrl.stop();
+    }
+
+    // Optionally show a placeholder or error message
+    if (mounted) {
+      setState(() {
+        error = "The live stream has ended.";
+        isPlaying.value = false;
+      });
+    }
   }
 
   String? _extractVideoId(String url) {
@@ -289,105 +466,6 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
     }
   }
 
-  Future<void> _initPlayer({
-    required String streamUrl,
-    required bool live,
-  }) async {
-    try {
-      vlcPlayerCtrl = VlcPlayerController.network(
-        hwAcc: HwAcc.full,
-        streamUrl,
-        autoPlay: true,
-        autoInitialize: true,
-        options: VlcPlayerOptions(
-          advanced: VlcAdvancedOptions([
-            VlcAdvancedOptions.networkCaching(60000),
-            VlcAdvancedOptions.liveCaching(300),
-            // VlcAdvancedOptions.clockJitter(0),
-            VlcAdvancedOptions.fileCaching(150),
-          ]),
-          rtp: VlcRtpOptions([VlcRtpOptions.rtpOverRtsp(true)]),
-        ),
-      );
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
-      if (!live) {
-        vlcPlayerCtrl.addOnInitListener(() {
-          if (mounted) {
-            setState(() {
-              vlcPlayerCtrl.addAudioFromNetwork(
-                currentAudioStream.url.toString(),
-              );
-            });
-          }
-        });
-      }
-
-      vlcPlayerCtrl.addListener(() {
-        if (!widget.isLive) {
-          _listenPlayingduration();
-        } else {}
-        if (mounted) {
-          setState(() {
-            if (vlcPlayerCtrl.value.position != Duration.zero ||
-                vlcPlayerCtrl.value.position > const Duration(seconds: 0)) {
-              currentPosition = vlcPlayerCtrl.value.position;
-              backupPosition = currentPosition;
-            }
-            if (vlcPlayerCtrl.value.position != Duration.zero &&
-                totalDuration == Duration.zero) {
-              totalDuration = vlcPlayerCtrl.value.duration;
-            }
-            if (vlcPlayerCtrl.value.playingState == PlayingState.playing) {
-              isPlaying.value = true;
-            }
-            if (vlcPlayerCtrl.value.playingState == PlayingState.stopped) {
-              isPlaying.value = null;
-            }
-          });
-        }
-        if (vlcPlayerCtrl.value.playingState == PlayingState.error) {
-          log("Error: ${PlayingState.error}");
-        }
-      });
-
-      if (mounted) {
-        setState(() {
-          isvlcPlayerCtrlinitialized = true;
-        });
-      }
-    } catch (e) {
-      log("Error :$e");
-      if (mounted) {
-        setState(() {
-          error = e.toString();
-        });
-      }
-    }
-  }
-
-  void _seekctrlinitialization() {
-    //handle seeking animations ctrl initialization;
-
-    _controllerLeftseek = AnimationController(
-      duration: const Duration(milliseconds: 500), // Animation duration
-      vsync: this,
-    );
-    _controllerRightseek = AnimationController(
-      duration: const Duration(milliseconds: 500), // Animation duration
-      vsync: this,
-    );
-    _LeftAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _controllerLeftseek, curve: Curves.easeInOut),
-    );
-    _RightAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _controllerRightseek, curve: Curves.easeInOut),
-    );
-  }
-
   Future _changeQuality({required VideoOnlyStreamInfo stream}) async {
     Navigator.of(context).pop();
     try {
@@ -423,10 +501,11 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
   }
 
   void _listenPlayingduration() {
-    log('backup pos:$backupPosition');
-    log('player pos:${vlcPlayerCtrl.value.position}');
+    // log('backup pos:$backupPosition');
+    // log('player pos:${vlcPlayerCtrl.value.position}');
+    // log("total duration:${vlcPlayerCtrl.value.duration}");
     Duration diff = vlcPlayerCtrl.value.position - backupPosition;
-    log("difference :$diff");
+
     if ((diff >= const Duration(seconds: 1) || diff <= Duration.zero) &&
         vlcPlayerCtrl.value.playingState == PlayingState.playing) {
       if (mounted) {
@@ -544,48 +623,55 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
 
       switch (vlcPlayerCtrl.value.playingState) {
         case PlayingState.playing:
-          log("Pausing the player...");
-          if (widget.isLive == true && widget.isfakeLive == false) {
-            var backup = await _fetch();
-            await vlcPlayerCtrl.pause().then((_) {
-              setState(() {
-                isPlaying.value = false;
-                liveBackupPosition = backup;
-                log("live_backupPosition:$liveBackupPosition");
+          try {
+            log("Pausing the player...");
+            if (widget.isLive == true && widget.isfakeLive == false) {
+              var backup = await _fetch();
+              await vlcPlayerCtrl.pause().then((_) {
+                setState(() {
+                  isPlaying.value = false;
+                  liveBackupPosition = backup;
+                  log("live_backupPosition:$liveBackupPosition");
+                });
+              }).catchError((e) {
+                log("Error in : $e");
               });
-            }).catchError((e) {
-              log("Error in : $e");
-            });
-          } else {
-            log("our br");
-            await vlcPlayerCtrl.pause().then((val) {
-              log("paused successfully");
-              isPlaying.value = false;
-            }).catchError((e) {
-              log("Error: $e");
-            });
+            } else {
+              await vlcPlayerCtrl.pause().then((val) {
+                log("paused successfully");
+                isPlaying.value = false;
+              }).catchError((e) {
+                log("Error: $e");
+              });
+            }
+          } catch (e) {
+            log("E1:$e");
           }
           break;
 
         case PlayingState.paused:
-          log("Resuming play...");
-          if (widget.isLive == true && widget.isfakeLive == false) {
-            await vlcPlayerCtrl.seekTo(liveBackupPosition).then((_) async {
-              log("seeking to live_backupPosition:$liveBackupPosition");
-              await vlcPlayerCtrl.play().then((_) {
+          try {
+            log("Resuming play...");
+            if (widget.isLive == true && widget.isfakeLive == false) {
+              await vlcPlayerCtrl.seekTo(liveBackupPosition).then((_) async {
+                log("seeking to live_backupPosition:$liveBackupPosition");
+                await vlcPlayerCtrl.play().then((_) {
+                  log("playing started");
+                  isPlaying.value = true;
+                }).catchError((e) {
+                  log("Error while resuming play: $e");
+                });
+              }).catchError((e) {
+                log("Error while seeking to position: $e");
+              });
+            } else {
+              vlcPlayerCtrl.play().whenComplete(() {
                 log("playing started");
                 isPlaying.value = true;
-              }).catchError((e) {
-                log("Error while resuming play: $e");
               });
-            }).catchError((e) {
-              log("Error while seeking to position: $e");
-            });
-          } else {
-            vlcPlayerCtrl.play().whenComplete(() {
-              log("playing started");
-              isPlaying.value = true;
-            });
+            }
+          } catch (e) {
+            log("E2:$e");
           }
           break;
 
@@ -593,17 +679,20 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
           isPlaying.value = null;
           log("Player is stopped, attempting to play...");
           try {
-            vlcPlayerCtrl.stop(); // Ensure it's fully stopped
-            await vlcPlayerCtrl
-                .setMediaFromNetwork(vlcPlayerCtrl.dataSource)
-                .then((_) async {
-              await vlcPlayerCtrl.addAudioFromNetwork(
-                currentAudioStream.url.toString(),
-                isSelected: true,
-              );
-            }); // Reload the media from the URL
+            if (widget.isLive == true && widget.isfakeLive == false) {
+            } else {
+              vlcPlayerCtrl.stop();
+              await vlcPlayerCtrl
+                  .setMediaFromNetwork(vlcPlayerCtrl.dataSource)
+                  .then((_) async {
+                await vlcPlayerCtrl.addAudioFromNetwork(
+                  currentAudioStream.url.toString(),
+                  isSelected: true,
+                );
+              });
+            }
           } catch (e) {
-            log("Error seeking or playing: $e");
+            log("Error seeking or playing E3: $e");
           }
           break;
 
@@ -960,6 +1049,25 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
     }
   }
 
+  void _seekctrlinitialization() {
+    //handle seeking animations ctrl initialization;
+
+    _controllerLeftseek = AnimationController(
+      duration: const Duration(milliseconds: 500), // Animation duration
+      vsync: this,
+    );
+    _controllerRightseek = AnimationController(
+      duration: const Duration(milliseconds: 500), // Animation duration
+      vsync: this,
+    );
+    _LeftAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _controllerLeftseek, curve: Curves.easeInOut),
+    );
+    _RightAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _controllerRightseek, curve: Curves.easeInOut),
+    );
+  }
+
   void _showmenu() {
     showModalBottomSheet(
       backgroundColor: Colors.transparent,
@@ -1258,9 +1366,9 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
                 child: ListView.separated(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   itemBuilder: (BuildContext ctx, index) {
-                    // String resolution =
-                    //     videoOnlyStreams[index].videoResolution.toString();
-                    // String height = resolution.split('x').last;
+                    String resolution =
+                        videoOnlyStreams[index].videoResolution.toString();
+                    String height = resolution.split('x').last;
                     return InkWell(
                       customBorder: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -1269,13 +1377,13 @@ class YtPlayerState extends State<YtPlayer> with TickerProviderStateMixin {
                         _changeQuality(stream: videoOnlyStreams[index]);
                       },
                       child: Container(
-                         height: 50,
+                        height: 50,
                         padding: const EdgeInsets.all(10),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              videoOnlyStreams[index].qualityLabel,
+                              "${height}p",
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
