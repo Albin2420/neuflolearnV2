@@ -10,11 +10,12 @@ class Scoregrowthgraph extends StatelessWidget {
   final Map<String, dynamic> map; // Dynamic map for handling data
   final double scorePercentage;
 
-  const Scoregrowthgraph(
-      {super.key,
-      required this.score,
-      required this.map,
-      required this.scorePercentage});
+  const Scoregrowthgraph({
+    super.key,
+    required this.score,
+    required this.map,
+    required this.scorePercentage,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -72,9 +73,7 @@ class Scoregrowthgraph extends StatelessWidget {
                     const SizedBox(
                       height: 12,
                       width: 14,
-                      child: Image(
-                        image: AssetImage("assets/icons/book.png"),
-                      ),
+                      child: Image(image: AssetImage("assets/icons/book.png")),
                     ),
                     const SizedBox(width: 6),
                     Text(
@@ -92,13 +91,15 @@ class Scoregrowthgraph extends StatelessWidget {
                       height: 8,
                       width: 8,
                       child: Center(
-                        child: Image.asset(scorePercentage <= 0
-                            ? "assets/icons/down_arrow.png"
-                            : "assets/icons/uparrow.png"),
+                        child: Image.asset(
+                          scorePercentage <= 0
+                              ? "assets/icons/down_arrow.png"
+                              : "assets/icons/uparrow.png",
+                        ),
                       ),
                     ),
                   ],
-                )
+                ),
               ],
             ),
           ),
@@ -112,10 +113,7 @@ class Scoregrowthgraph extends StatelessWidget {
                     LineChartBarData(
                       spots: spots,
                       gradient: const LinearGradient(
-                        colors: [
-                          Colors.green,
-                          Colors.red,
-                        ],
+                        colors: [Colors.green, Colors.red],
                       ),
                       isCurved: true,
                       color: Colors.green,
@@ -146,7 +144,7 @@ class Scoregrowthgraph extends StatelessWidget {
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

@@ -19,15 +19,16 @@ class TargetCard extends StatelessWidget {
   final int selectedChapterCount;
   final String type;
 
-  const TargetCard(
-      {super.key,
-      required this.title,
-      this.description,
-      this.iconImg,
-      required this.color,
-      required this.showBottomSheet,
-      required this.type,
-      required this.selectedChapterCount});
+  const TargetCard({
+    super.key,
+    required this.title,
+    this.description,
+    this.iconImg,
+    required this.color,
+    required this.showBottomSheet,
+    required this.type,
+    required this.selectedChapterCount,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -80,11 +81,12 @@ class TargetCard extends StatelessWidget {
                                     Text(
                                       title,
                                       style: GoogleFonts.urbanist(
-                                          fontSize: Constant.screenWidth *
-                                              (16 / Constant.figmaScreenWidth),
-                                          fontWeight: FontWeight.w600,
-                                          color: const Color.fromRGBO(
-                                              1, 0, 41, 1)),
+                                        fontSize: Constant.screenWidth *
+                                            (16 / Constant.figmaScreenWidth),
+                                        fontWeight: FontWeight.w600,
+                                        color:
+                                            const Color.fromRGBO(1, 0, 41, 1),
+                                      ),
                                     ),
                                     Text(
                                       "Tap to select strengths",
@@ -110,97 +112,108 @@ class TargetCard extends StatelessWidget {
                               ),
                             ],
                           ),
-                          SizedBox(
-                            height: 15,
-                          ),
+                          SizedBox(height: 15),
                           Expanded(
-                              child: SizedBox(
-                            height: Constant.screenHeight * 0.74,
-                            child: Obx(() {
-                              List<int> excludedIds = type == "Strength"
-                                  ? ctr.weaknessMap.values
-                                      .expand((list) => list)
-                                      .cast<int>()
-                                      .toList()
-                                  : ctr.strengthMap.values
-                                      .expand((list) => list)
-                                      .cast<int>()
-                                      .toList();
-                              return ctr.chapterState.value.onState(
-                                onInitial: () => SizedBox(),
-                                success: (data) {
-                                  // Filter out the chapters that are already selected in the opposite list
-                                  var filteredChapters = data
-                                      .where((chapter) => !excludedIds
-                                          .contains(chapter.chapterId))
-                                      .toList();
+                            child: SizedBox(
+                              height: Constant.screenHeight * 0.74,
+                              child: Obx(() {
+                                List<int> excludedIds = type == "Strength"
+                                    ? ctr.weaknessMap.values
+                                        .expand((list) => list)
+                                        .cast<int>()
+                                        .toList()
+                                    : ctr.strengthMap.values
+                                        .expand((list) => list)
+                                        .cast<int>()
+                                        .toList();
+                                return ctr.chapterState.value.onState(
+                                  onInitial: () => SizedBox(),
+                                  success: (data) {
+                                    // Filter out the chapters that are already selected in the opposite list
+                                    var filteredChapters = data
+                                        .where(
+                                          (chapter) => !excludedIds.contains(
+                                            chapter.chapterId,
+                                          ),
+                                        )
+                                        .toList();
 
-                                  return ListView.builder(
-                                    padding: EdgeInsets.only(bottom: 10),
-                                    controller: ScrollController(),
-                                    scrollDirection: Axis.vertical,
-                                    physics: const ScrollPhysics(),
-                                    itemCount: filteredChapters.length,
-                                    shrinkWrap: true,
-                                    itemBuilder: (context, index) {
-                                      var chapter = filteredChapters[index];
+                                    return ListView.builder(
+                                      padding: EdgeInsets.only(bottom: 10),
+                                      controller: ScrollController(),
+                                      scrollDirection: Axis.vertical,
+                                      physics: const ScrollPhysics(),
+                                      itemCount: filteredChapters.length,
+                                      shrinkWrap: true,
+                                      itemBuilder: (context, index) {
+                                        var chapter = filteredChapters[index];
 
-                                      int key = ctr.mapSubjectToId(
-                                          title.substring(0, 3));
+                                        int key = ctr.mapSubjectToId(
+                                          title.substring(0, 3),
+                                        );
 
-                                      List<int> list = [];
-                                      if (type == "Strength") {
-                                        list = List.from(
-                                            ctr.strengthMap['$key'] ?? []);
-                                      } else {
-                                        list = List.from(
-                                            ctr.weaknessMap['$key'] ?? []);
-                                      }
+                                        List<int> list = [];
+                                        if (type == "Strength") {
+                                          list = List.from(
+                                            ctr.strengthMap['$key'] ?? [],
+                                          );
+                                        } else {
+                                          list = List.from(
+                                            ctr.weaknessMap['$key'] ?? [],
+                                          );
+                                        }
 
-                                      return AddTopicCard(
-                                        text: chapter.chapterName ?? '',
-                                        value: list.contains(chapter.chapterId),
-                                        onTap: (isSelected) {
-                                          if (type == "Strength") {
-                                            ctr.addStrength(
-                                              subject: title,
-                                              chapterName:
-                                                  chapter.chapterName ?? '',
-                                              chapterId: chapter.chapterId ?? 0,
-                                            );
-                                          } else {
-                                            ctr.addWeakness(
-                                              subject: title,
-                                              chapterName:
-                                                  chapter.chapterName ?? '',
-                                              chapterId: chapter.chapterId ?? 0,
-                                            );
-                                          }
-                                        },
-                                      );
-                                    },
-                                  );
-                                },
-                                onFailed: (error) => SizedBox(
-                                  height: Constant.screenHeight * 0.74,
-                                  child: Center(
-                                    child: Text(
-                                        'Chapter failed to load! Try again'),
+                                        return AddTopicCard(
+                                          text: chapter.chapterName ?? '',
+                                          value:
+                                              list.contains(chapter.chapterId),
+                                          onTap: (isSelected) {
+                                            if (type == "Strength") {
+                                              ctr.addStrength(
+                                                subject: title,
+                                                chapterName:
+                                                    chapter.chapterName ?? '',
+                                                chapterId:
+                                                    chapter.chapterId ?? 0,
+                                              );
+                                            } else {
+                                              ctr.addWeakness(
+                                                subject: title,
+                                                chapterName:
+                                                    chapter.chapterName ?? '',
+                                                chapterId:
+                                                    chapter.chapterId ?? 0,
+                                              );
+                                            }
+                                          },
+                                        );
+                                      },
+                                    );
+                                  },
+                                  onFailed: (error) => SizedBox(
+                                    height: Constant.screenHeight * 0.74,
+                                    child: Center(
+                                      child: Text(
+                                        'Chapter failed to load! Try again',
+                                      ),
+                                    ),
                                   ),
-                                ),
-                                onLoading: () => SizedBox(
-                                  height: Constant.screenHeight * 0.74,
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                        color: Colors.green),
+                                  onLoading: () => SizedBox(
+                                    height: Constant.screenHeight * 0.74,
+                                    child: Center(
+                                      child: CircularProgressIndicator(
+                                        color: Colors.green,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              );
-                            }),
-                          )),
+                                );
+                              }),
+                            ),
+                          ),
                           AppBtn(
-                              btnName: "Done",
-                              onTapFunction: () => Navigator.pop(context)),
+                            btnName: "Done",
+                            onTapFunction: () => Navigator.pop(context),
+                          ),
                           Gap(
                             Constant.screenHeight *
                                 (16 / Constant.figmaScreenHeight),
@@ -220,7 +233,8 @@ class TargetCard extends StatelessWidget {
               },
               child: Container(
                 padding: EdgeInsets.all(
-                    Constant.screenWidth * (16 / Constant.figmaScreenWidth)),
+                  Constant.screenWidth * (16 / Constant.figmaScreenWidth),
+                ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
@@ -238,21 +252,27 @@ class TargetCard extends StatelessWidget {
                         iconImg != null
                             ? Center(child: Icon(iconImg))
                             : const SizedBox.shrink(),
-                        Gap(Constant.screenWidth *
-                            (12 / Constant.figmaScreenWidth)),
+                        Gap(
+                          Constant.screenWidth *
+                              (12 / Constant.figmaScreenWidth),
+                        ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
-                                Text(title,
-                                    style: GoogleFonts.urbanist(
-                                      fontSize: Constant.screenHeight *
-                                          (20 / Constant.figmaScreenHeight),
-                                      fontWeight: FontWeight.w600,
-                                    )),
-                                Gap(Constant.screenWidth *
-                                    (8 / Constant.figmaScreenWidth)),
+                                Text(
+                                  title,
+                                  style: GoogleFonts.urbanist(
+                                    fontSize: Constant.screenHeight *
+                                        (20 / Constant.figmaScreenHeight),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                Gap(
+                                  Constant.screenWidth *
+                                      (8 / Constant.figmaScreenWidth),
+                                ),
                                 Container(
                                   padding: EdgeInsets.symmetric(
                                     horizontal: Constant.screenWidth *
@@ -280,7 +300,7 @@ class TargetCard extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                                )
+                                ),
                               ],
                             ),
                             SizedBox(
@@ -298,15 +318,17 @@ class TargetCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    Gap(Constant.screenWidth *
-                        (24 / Constant.figmaScreenWidth)),
+                    Gap(
+                      Constant.screenWidth * (24 / Constant.figmaScreenWidth),
+                    ),
                   ],
                 ),
               ),
             )
           : Container(
               padding: EdgeInsets.all(
-                  Constant.screenWidth * (16 / Constant.figmaScreenWidth)),
+                Constant.screenWidth * (16 / Constant.figmaScreenWidth),
+              ),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
@@ -324,21 +346,26 @@ class TargetCard extends StatelessWidget {
                       // iconImg != null
                       //     ? Center(child: Icon(widget.iconImg))
                       //     : const SizedBox.shrink(),
-                      Gap(Constant.screenWidth *
-                          (12 / Constant.figmaScreenWidth)),
+                      Gap(
+                        Constant.screenWidth * (12 / Constant.figmaScreenWidth),
+                      ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             children: [
-                              Text(title,
-                                  style: GoogleFonts.urbanist(
-                                    fontSize: Constant.screenHeight *
-                                        (20 / Constant.figmaScreenHeight),
-                                    fontWeight: FontWeight.w600,
-                                  )),
-                              Gap(Constant.screenWidth *
-                                  (8 / Constant.figmaScreenWidth)),
+                              Text(
+                                title,
+                                style: GoogleFonts.urbanist(
+                                  fontSize: Constant.screenHeight *
+                                      (20 / Constant.figmaScreenHeight),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Gap(
+                                Constant.screenWidth *
+                                    (8 / Constant.figmaScreenWidth),
+                              ),
                               Container(
                                 padding: EdgeInsets.symmetric(
                                   horizontal: Constant.screenWidth *
@@ -354,21 +381,23 @@ class TargetCard extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(18),
                                   ),
                                 ),
-                                child: Center(child: Builder(
-                                  builder: (context) {
-                                    return Text(
-                                      '$selectedChapterCount topics selected',
-                                      style: TextStyle(
-                                        color: const Color(0xFFF7FEFF),
-                                        fontSize: Constant.screenHeight *
-                                            (10 / Constant.figmaScreenHeight),
-                                        fontFamily: 'Urbanist',
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    );
-                                  },
-                                )),
-                              )
+                                child: Center(
+                                  child: Builder(
+                                    builder: (context) {
+                                      return Text(
+                                        '$selectedChapterCount topics selected',
+                                        style: TextStyle(
+                                          color: const Color(0xFFF7FEFF),
+                                          fontSize: Constant.screenHeight *
+                                              (10 / Constant.figmaScreenHeight),
+                                          fontFamily: 'Urbanist',
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                           SizedBox(
@@ -386,7 +415,9 @@ class TargetCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Gap(Constant.screenWidth * (24 / Constant.figmaScreenWidth)),
+                  Gap(
+                    Constant.screenWidth * (24 / Constant.figmaScreenWidth),
+                  ),
                 ],
               ),
             ),

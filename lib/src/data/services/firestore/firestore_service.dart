@@ -13,18 +13,34 @@ class FirestoreService {
 
   factory FirestoreService() => _instance;
 
-  Future setStreakData(
-      {required String userName, required List streakvalue}) async {
+  Future setStreakData({
+    required String userName,
+    required List streakvalue,
+  }) async {
     await FirebaseFirestore.instance
         .collection("neuflo_basic")
         .doc(userName)
-        .update({
-      'streakComplted': streakvalue,
-    });
+        .update({'streakComplted': streakvalue});
   }
 
-  Future<List<bool>> getdailyTestReportTest(
-      {required String docName, required String sub}) async {
+  Future updateStudentId({required String userName, required int iD}) async {
+    await FirebaseFirestore.instance
+        .collection("neuflo_basic")
+        .doc(userName)
+        .update({'id': iD});
+  }
+
+  Future updateProfilestatus({required String userName}) async {
+    await FirebaseFirestore.instance
+        .collection("neuflo_basic")
+        .doc(userName)
+        .update({'isProfileSetupComplete': true});
+  }
+
+  Future<List<bool>> getdailyTestReportTest({
+    required String docName,
+    required String sub,
+  }) async {
     try {
       final doc = await FirebaseFirestore.instance
           .collection("neuflo_basic")
@@ -33,7 +49,9 @@ class FirestoreService {
 
       if (doc.exists) {
         List<bool> res = [];
-        log("report of getdailyTestReportTest(): ${doc['dialyexamReport'][sub]}");
+        log(
+          "report of getdailyTestReportTest(): ${doc['dialyexamReport'][sub]}",
+        );
         var data = doc['dialyexamReport'][sub];
 
         res.add(data['Easy']);
@@ -66,8 +84,9 @@ class FirestoreService {
     }
   }
 
-  Future<AppUserInfo?> getCurrentUserDocument(
-      {required String userName}) async {
+  Future<AppUserInfo?> getCurrentUserDocument({
+    required String userName,
+  }) async {
     DocumentSnapshot snap = await FirebaseFirestore.instance
         .collection("neuflo_basic")
         .doc(userName)
@@ -107,13 +126,17 @@ class FirestoreService {
         if (isDatePassed(data['endOfWeek'])) {
           log("timesup for reset streaklist");
           resetStreakDailyExamReport(
-              userName: userName, formattedDate: formattedDate);
+            userName: userName,
+            formattedDate: formattedDate,
+          );
         } else if (formattedDate != data['dialyexamReport']['currentDate']) {
           // Convert the formattedDate (current date) and data['dialyexamReport']['currentDate'] to DateTime objects
           DateTime currentDate = DateTime.parse(
-              formattedDate); // formattedDate is in yyyy-MM-dd format
-          DateTime storedDate = DateTime.parse(data['dialyexamReport']
-              ['currentDate']); // stored date in yyyy-MM-dd format
+            formattedDate,
+          ); // formattedDate is in yyyy-MM-dd format
+          DateTime storedDate = DateTime.parse(
+            data['dialyexamReport']['currentDate'],
+          ); // stored date in yyyy-MM-dd format
 
           // Calculate the difference between the two dates
           Duration difference = currentDate.difference(storedDate);
@@ -125,7 +148,9 @@ class FirestoreService {
           log("Difference in days: $daysDifference");
           log("reset dialyexamReport and update the currentDate");
           resetDailyExamReport(
-              userName: userName, formattedDate: formattedDate);
+            userName: userName,
+            formattedDate: formattedDate,
+          );
           updateStreak(docname: userName, difference: daysDifference);
         } else {
           log("today");
@@ -149,8 +174,11 @@ class FirestoreService {
       final today = DateTime(now.year, now.month, now.day);
 
       // Extract just the date part of the input
-      final inputDateOnly =
-          DateTime(inputDate.year, inputDate.month, inputDate.day);
+      final inputDateOnly = DateTime(
+        inputDate.year,
+        inputDate.month,
+        inputDate.day,
+      );
 
       // If dates are the same (today), it's not passed
       if (inputDateOnly.isAtSameMomentAs(today)) {
@@ -189,7 +217,7 @@ class FirestoreService {
         "Physics": {"Easy": false, "Medium": false, "Difficult": false},
         "Chemistry": {"Easy": false, "Medium": false, "Difficult": false},
         "Biology": {"Easy": false, "Medium": false, "Difficult": false},
-        "currentDate": formattedDate
+        "currentDate": formattedDate,
       };
 
       // Reset streak and update the start and end of the week as strings
@@ -209,10 +237,11 @@ class FirestoreService {
     }
   }
 
-  Future<void> updateDailyExamReport(
-      {required String subject,
-      required String level,
-      required String docname}) async {
+  Future<void> updateDailyExamReport({
+    required String subject,
+    required String level,
+    required String docname,
+  }) async {
     try {
       log("subject in updateDailyExamReport():$subject");
       log("level in updateDailyExamReport():$level");
@@ -316,17 +345,17 @@ class FirestoreService {
         int streakIndex = docSnapshot['currentstreakIndex'];
 
         streakCompleted[streakIndex] = 2;
-        await docRef.update({
-          "streakComplted": streakCompleted,
-        });
+        await docRef.update({"streakComplted": streakCompleted});
       }
     } catch (e) {
       log("Error in setstreakTocompleted():$e");
     }
   }
 
-  Future<void> updateStreak(
-      {required String docname, required int difference}) async {
+  Future<void> updateStreak({
+    required String docname,
+    required int difference,
+  }) async {
     try {
       // Get the document reference
       var docRef =
@@ -350,7 +379,7 @@ class FirestoreService {
         }
         await docRef.update({
           "streakComplted": streakCompleted,
-          'currentstreakIndex': streakIndex + difference
+          'currentstreakIndex': streakIndex + difference,
         });
       }
     } catch (e) {
@@ -368,15 +397,17 @@ class FirestoreService {
       "Physics": {"Easy": false, "Medium": false, "Difficult": false},
       "Chemistry": {"Easy": false, "Medium": false, "Difficult": false},
       "Biology": {"Easy": false, "Medium": false, "Difficult": false},
-      "currentDate": formattedDate
+      "currentDate": formattedDate,
     };
 
     // Update the Firestore document
     await FirebaseFirestore.instance
         .collection("neuflo_basic")
         .doc(userName)
-        .update(
-            {'dialyexamReport': dialyexamReport, 'totalTestsDoneperDay': 0});
+        .update({
+      'dialyexamReport': dialyexamReport,
+      'totalTestsDoneperDay': 0,
+    });
   }
 
   int getCurrentDayIndex() {
@@ -402,6 +433,61 @@ class FirestoreService {
     }
     return days;
   }
+
+  // Future addBasicDetails({
+  //   required String userName,
+  //   required String phonenum,
+  //   required String? email,
+  //   required String? name,
+  //   String? imageUrl,
+  //   required int id,
+  //   bool? isProfileSetupComplete,
+  //   required List<int> streaklist,
+  //   required int currentstreakIndex,
+  //   required int organization,
+  // }) async {
+  //   DateTime now = DateTime.now();
+  //   String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+
+  //   // Calculate the start of the week (Sunday)
+  //   int daysToSunday = now.weekday % 7; // 0 for Sunday, 1 for Monday, etc.
+  //   DateTime startOfWeek = now.subtract(Duration(days: daysToSunday));
+  //   DateTime endOfWeek = startOfWeek.add(Duration(days: 6));
+
+  //   // Format start and end of the week
+  //   String startOfWeekFormatted = DateFormat('yyyy-MM-dd').format(startOfWeek);
+  //   String endOfWeekFormatted = DateFormat('yyyy-MM-dd').format(endOfWeek);
+
+  //   // Prepare the daily exam report
+
+  //   var dialyexamReport = {
+  //     "Physics": {"Easy": false, "Medium": false, "Difficult": false},
+  //     "Chemistry": {"Easy": false, "Medium": false, "Difficult": false},
+  //     "Biology": {"Easy": false, "Medium": false, "Difficult": false},
+  //     "currentDate": formattedDate,
+  //   };
+
+  //   // Add the current week's start and end date to the data
+  //   await FirebaseFirestore.instance
+  //       .collection("neuflo_basic")
+  //       .doc(userName)
+  //       .set({
+  //         "streakComplted": streaklist,
+  //         "Todate": formattedDate,
+  //         "phone": phonenum,
+  //         "email": email,
+  //         "name": name,
+  //         "imageUrl": imageUrl,
+  //         "id": id,
+  //         "isProfileSetupComplete": isProfileSetupComplete,
+  //         "dialyexamReport": dialyexamReport,
+  //         "startOfWeek": startOfWeekFormatted, // Start of the current week
+  //         "endOfWeek": endOfWeekFormatted, // End of the current week
+  //         "currentstreakIndex": currentstreakIndex,
+  //         "totalTestsDoneperDay": 0,
+  //         "organization": organization,
+  //       });
+  // }
 
   Future addBasicDetails({
     required String userName,
@@ -433,7 +519,7 @@ class FirestoreService {
       "Physics": {"Easy": false, "Medium": false, "Difficult": false},
       "Chemistry": {"Easy": false, "Medium": false, "Difficult": false},
       "Biology": {"Easy": false, "Medium": false, "Difficult": false},
-      "currentDate": formattedDate
+      "currentDate": formattedDate,
     };
 
     // Add the current week's start and end date to the data
@@ -454,19 +540,15 @@ class FirestoreService {
       "endOfWeek": endOfWeekFormatted, // End of the current week
       "currentstreakIndex": currentstreakIndex,
       "totalTestsDoneperDay": 0,
-      "organization": organization
+      "organization": organization,
     });
   }
 
-  Future createUser({
-    required String phonenum,
-  }) async {
+  Future createUser({required String phonenum}) async {
     await FirebaseFirestore.instance
         .collection("neuflo_users")
         .doc(phonenum)
-        .set({
-      "phone": phonenum,
-    });
+        .set({"phone": phonenum});
   }
 
   void updateBasicDetails({
@@ -477,25 +559,20 @@ class FirestoreService {
     await FirebaseFirestore.instance
         .collection("neuflo_basic")
         .doc(userName)
-        .update({
-      "email": email,
-      "name": name,
-    });
+        .update({"email": email, "name": name});
   }
 
-  void addPhoneDetails(
-      {required String userName, required String phonenum}) async {
+  void addPhoneDetails({
+    required String userName,
+    required String phonenum,
+  }) async {
     await FirebaseFirestore.instance
         .collection("neuflo_basic")
         .doc(userName)
-        .update({
-      "phone": phonenum,
-    });
+        .update({"phone": phonenum});
   }
 
-  Future<dynamic> getStreakValueFromFirebase({
-    required String userName,
-  }) async {
+  Future<dynamic> getStreakValueFromFirebase({required String userName}) async {
     DocumentSnapshot snap = await FirebaseFirestore.instance
         .collection("neuflo_basic")
         .doc(userName)
@@ -535,16 +612,20 @@ class FirestoreService {
   //   }
   // }
 
-  Future<void> updateTodate(
-      {required String userName, required String date}) async {
+  Future<void> updateTodate({
+    required String userName,
+    required String date,
+  }) async {
     await FirebaseFirestore.instance
         .collection("neuflo_basic")
         .doc(userName)
         .update({'Todate': date});
   }
 
-  Future<bool> doesDocumentExist(
-      {required String userName, required String collectionName}) async {
+  Future<bool> doesDocumentExist({
+    required String userName,
+    required String collectionName,
+  }) async {
     final CollectionReference collection =
         FirebaseFirestore.instance.collection(collectionName);
     final DocumentSnapshot document = await collection.doc(userName).get();
@@ -561,8 +642,9 @@ class FirestoreService {
     // If we find a document, return the first document from the query
     if (querySnapshot.docs.isNotEmpty) {
       if (querySnapshot.docs.first.data() != null) {
-        Map<String, dynamic> data =
-            jsonDecode(jsonEncode(querySnapshot.docs.first.data()));
+        Map<String, dynamic> data = jsonDecode(
+          jsonEncode(querySnapshot.docs.first.data()),
+        );
 
         AppUserInfo userInfo = AppUserInfo.fromMap(data);
         if (kDebugMode) {
@@ -577,9 +659,7 @@ class FirestoreService {
     }
   }
 
-  Future<int> getId({
-    required String userName,
-  }) async {
+  Future<int> getId({required String userName}) async {
     log('  GET ID USERNAME => $userName');
     final DocumentSnapshot snap = await FirebaseFirestore.instance
         .collection('neuflo_basic')

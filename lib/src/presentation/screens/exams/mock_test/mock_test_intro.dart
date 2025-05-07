@@ -41,13 +41,19 @@ class MockTestIntro extends StatelessWidget {
             const Spacer(), // This pushes the container to the bottom
             Container(
               height: 1,
-              decoration: BoxDecoration(boxShadow: [
-                BoxShadow(
-                  color: Colors.black
-                      .withOpacity(0.2), // Shadow color with opacity
-                  offset: const Offset(0, 1), // Horizontal and Vertical offset
-                ),
-              ]),
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(
+                      0.2,
+                    ), // Shadow color with opacity
+                    offset: const Offset(
+                      0,
+                      1,
+                    ), // Horizontal and Vertical offset
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -65,22 +71,26 @@ class MockTestIntro extends StatelessWidget {
                     width: 56,
                     child: Image.asset("assets/icons/mocktest.png"),
                   ),
-                  SizedBox(
-                    height: 8,
-                  ),
+                  SizedBox(height: 8),
                   Container(
-                    padding:
-                        EdgeInsets.only(top: 4, bottom: 4, right: 12, left: 12),
+                    padding: EdgeInsets.only(
+                      top: 4,
+                      bottom: 4,
+                      right: 12,
+                      left: 12,
+                    ),
                     decoration: BoxDecoration(
-                        color: AppColors.kOrange,
-                        borderRadius: BorderRadius.circular(56)),
+                      color: AppColors.kOrange,
+                      borderRadius: BorderRadius.circular(56),
+                    ),
                     height: 25,
                     child: Text(
                       'intermediate',
                       style: GoogleFonts.urbanist(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 14,
-                          color: Colors.white),
+                        fontWeight: FontWeight.w400,
+                        fontSize: 14,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                   Column(
@@ -88,7 +98,9 @@ class MockTestIntro extends StatelessWidget {
                       Text(
                         "Mock Test",
                         style: GoogleFonts.urbanist(
-                            fontWeight: FontWeight.w700, fontSize: 32),
+                          fontWeight: FontWeight.w700,
+                          fontSize: 32,
+                        ),
                       ),
                       Text(
                         "NEET mock test",
@@ -97,7 +109,7 @@ class MockTestIntro extends StatelessWidget {
                           fontSize: 16,
                           color: Color(0xff02013B),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ],
@@ -107,7 +119,7 @@ class MockTestIntro extends StatelessWidget {
               timeLimit: '3hr time limit',
               noOfQuestion: '200',
               // negativeMark: '-1 for incorrect ans',
-            )
+            ),
           ],
         ),
       ),
@@ -128,7 +140,7 @@ class MockTestIntro extends StatelessWidget {
                 await ctr.initiatemockTest();
               },
               iconImg: Icons.arrow_forward,
-            )
+            ),
           ],
         ),
       ),

@@ -19,23 +19,23 @@ import 'package:neuflo_learn/src/presentation/controller/connectivity/connectivi
 import 'package:neuflo_learn/src/presentation/screens/account_setup/account_setup.dart';
 
 class AddUserInfoController extends GetxController {
-//Twilio Services
+  //Twilio Services
 
   TwilioService twilio = TwilioService();
 
-// firestore service
+  // firestore service
   FirestoreService firestoreService = FirestoreService();
 
   // hive service
   HiveService hiveService = HiveService();
 
-// handle name textfield
+  // handle name textfield
   TextEditingController nameController = TextEditingController();
 
-// handle email textfield
+  // handle email textfield
   TextEditingController emailController = TextEditingController();
 
-// handle phone textfield
+  // handle phone textfield
   TextEditingController phoneController = TextEditingController();
 
   /// firebase auth
@@ -149,8 +149,9 @@ class AddUserInfoController extends GetxController {
 
       String docUsername = "${phoneController.text.trim()}@neuflo.io";
 
-      AppUserInfo? appUserInfo =
-          await firestoreService.getCurrentUserDocument(userName: docUsername);
+      AppUserInfo? appUserInfo = await firestoreService.getCurrentUserDocument(
+        userName: docUsername,
+      );
 
       if (appUserInfo != null) {
         int day = getCurrentDayIndex();

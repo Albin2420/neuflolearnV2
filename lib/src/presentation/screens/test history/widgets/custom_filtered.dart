@@ -28,8 +28,9 @@ class CustomFiltered extends StatelessWidget {
               child: TestCard(
                 onTap: () {
                   ctr.fetchDetailedHistory(
-                      testId: ctr.customTest[index].testId,
-                      testName: ctr.customTest[index].testName);
+                    testId: ctr.customTest[index].testId,
+                    testName: ctr.customTest[index].testName,
+                  );
                 },
                 currentScore: ctr.customTest[index].score,
                 totalScore: ctr.customTest[index].totalScore,

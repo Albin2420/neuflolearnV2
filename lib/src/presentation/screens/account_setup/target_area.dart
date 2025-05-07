@@ -241,9 +241,7 @@ class TargetArea extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          SizedBox(
-            height: 4,
-          ),
+          SizedBox(height: 4),
           Text(
             'This will help us curate the best learning\n experience for you.',
             style: GoogleFonts.urbanist(
@@ -261,15 +259,17 @@ class TargetArea extends StatelessWidget {
               children: [
                 Container(
                   padding: EdgeInsets.symmetric(
-                      horizontal: Constant.screenWidth *
-                          (8 / Constant.figmaScreenWidth),
-                      vertical: Constant.screenHeight *
-                          (16 / Constant.figmaScreenHeight)),
+                    horizontal:
+                        Constant.screenWidth * (8 / Constant.figmaScreenWidth),
+                    vertical: Constant.screenHeight *
+                        (16 / Constant.figmaScreenHeight),
+                  ),
                   width:
                       Constant.screenWidth * (33 / Constant.figmaScreenWidth),
                   decoration: BoxDecoration(
-                      color: AppColors.kgreen,
-                      borderRadius: BorderRadius.circular(8)),
+                    color: AppColors.kgreen,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -313,8 +313,10 @@ class TargetArea extends StatelessWidget {
                           );
                         },
                       ),
-                      Gap(Constant.screenHeight *
-                          (12 / Constant.figmaScreenHeight)),
+                      Gap(
+                        Constant.screenHeight *
+                            (12 / Constant.figmaScreenHeight),
+                      ),
                       GetBuilder<SetupAccountController>(
                         builder: (controller) {
                           return TargetCard(
@@ -329,8 +331,10 @@ class TargetArea extends StatelessWidget {
                           );
                         },
                       ),
-                      Gap(Constant.screenHeight *
-                          (12 / Constant.figmaScreenHeight)),
+                      Gap(
+                        Constant.screenHeight *
+                            (12 / Constant.figmaScreenHeight),
+                      ),
                       GetBuilder<SetupAccountController>(
                         builder: (controller) {
                           return TargetCard(
@@ -359,15 +363,17 @@ class TargetArea extends StatelessWidget {
               children: [
                 Container(
                   padding: EdgeInsets.symmetric(
-                      horizontal: Constant.screenWidth *
-                          (8 / Constant.figmaScreenWidth),
-                      vertical: Constant.screenHeight *
-                          (16 / Constant.figmaScreenHeight)),
+                    horizontal:
+                        Constant.screenWidth * (8 / Constant.figmaScreenWidth),
+                    vertical: Constant.screenHeight *
+                        (16 / Constant.figmaScreenHeight),
+                  ),
                   width:
                       Constant.screenWidth * (33 / Constant.figmaScreenWidth),
                   decoration: BoxDecoration(
-                      color: AppColors.kred,
-                      borderRadius: BorderRadius.circular(8)),
+                    color: AppColors.kred,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                   child: Column(
                     children: [
                       Icon(
@@ -411,8 +417,10 @@ class TargetArea extends StatelessWidget {
                           );
                         },
                       ),
-                      Gap(Constant.screenHeight *
-                          (12 / Constant.figmaScreenHeight)),
+                      Gap(
+                        Constant.screenHeight *
+                            (12 / Constant.figmaScreenHeight),
+                      ),
                       GetBuilder<SetupAccountController>(
                         builder: (controller) {
                           return TargetCard(
@@ -427,8 +435,10 @@ class TargetArea extends StatelessWidget {
                           );
                         },
                       ),
-                      Gap(Constant.screenHeight *
-                          (12 / Constant.figmaScreenHeight)),
+                      Gap(
+                        Constant.screenHeight *
+                            (12 / Constant.figmaScreenHeight),
+                      ),
                       GetBuilder<SetupAccountController>(
                         builder: (controller) {
                           return TargetCard(
@@ -449,7 +459,7 @@ class TargetArea extends StatelessWidget {
               ],
             ),
           ),
-          Gap(Constant.screenHeight * (16 / Constant.figmaScreenHeight))
+          Gap(Constant.screenHeight * (16 / Constant.figmaScreenHeight)),
         ],
       ),
     );

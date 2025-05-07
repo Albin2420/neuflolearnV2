@@ -6,11 +6,12 @@ class ChapterTile extends StatelessWidget {
   final int index;
   final String title;
   final VoidCallback onTap;
-  const ChapterTile(
-      {super.key,
-      required this.index,
-      required this.title,
-      required this.onTap});
+  const ChapterTile({
+    super.key,
+    required this.index,
+    required this.title,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {

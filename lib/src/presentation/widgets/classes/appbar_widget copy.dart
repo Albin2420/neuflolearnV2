@@ -15,56 +15,55 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     ChapterController chapterController = Get.find<ChapterController>();
     chapterController.selectedSubjectName.value = subjectName;
     return AppBar(
-        backgroundColor: AppColors.white,
-        automaticallyImplyLeading: false,
-        title: Row(
-          children: [
-            Container(
-              width: 25,
+      backgroundColor: AppColors.white,
+      automaticallyImplyLeading: false,
+      title: Row(
+        children: [
+          Container(
+            width: 25,
+            color: Colors.white,
+            child: IconButton(
+              onPressed: () {
+                Get.back();
+              },
+              icon: Image.asset('assets/images/vector.png'),
+            ),
+          ),
+          Align(
+            alignment: Alignment.center,
+            child: Container(
+              height: 80,
+              width: MediaQuery.of(context).size.width - 70,
               color: Colors.white,
-              child: IconButton(
-                onPressed: () {
-                  Get.back();
-                },
-                icon: Image.asset('assets/images/vector.png'),
-              ),
-            ),
-            Align(
-              alignment: Alignment.center,
-              child: Container(
-                height: 80,
-                width: MediaQuery.of(context).size.width - 70,
-                color: Colors.white,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.subtitles),
-                    // Image.asset(
-                    //   // subject.icon,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.subtitles),
+                  // Image.asset(
+                  //   // subject.icon,
 
-                    //   height: 24,
-                    //   width: 24,
-                    //   errorBuilder: (context, error, stackTrace) {
-                    //     return Image.asset('assets/images/steth.png');
-                    //   },
-                    // ),
-                    const SizedBox(width: 10),
-                    Text(
-                      subjectName,
-                      style: GoogleFonts.urbanist(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  //   height: 24,
+                  //   width: 24,
+                  //   errorBuilder: (context, error, stackTrace) {
+                  //     return Image.asset('assets/images/steth.png');
+                  //   },
+                  // ),
+                  const SizedBox(width: 10),
+                  Text(
+                    subjectName,
+                    style: GoogleFonts.urbanist(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
                     ),
-                    SizedBox(
-                      width: 30,
-                    )
-                  ],
-                ),
+                  ),
+                  SizedBox(width: 30),
+                ],
               ),
             ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 
   @override

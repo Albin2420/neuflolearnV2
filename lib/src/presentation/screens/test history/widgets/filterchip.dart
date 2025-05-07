@@ -6,8 +6,11 @@ import 'package:neuflo_learn/src/presentation/controller/test%20history/test_his
 class Filterchip extends StatelessWidget {
   final int selectedIndex;
   final String label;
-  const Filterchip(
-      {super.key, required this.selectedIndex, required this.label});
+  const Filterchip({
+    super.key,
+    required this.selectedIndex,
+    required this.label,
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -12,15 +12,17 @@ import 'package:neuflo_learn/src/domain/repositories/testHistory/test_history_re
 
 class TestHistoryRepoImpl extends TestHistoryRepo {
   @override
-  Future<Either<Failure, Map<String, dynamic>>> fetchTestHistorys(
-      {required String accessToken}) async {
+  Future<Either<Failure, Map<String, dynamic>>> fetchTestHistorys({
+    required String accessToken,
+  }) async {
     try {
       if (kDebugMode) {
         log("${Url.baseUrl1}/${Url.studentTestHistory}");
       }
       final response = await http.get(
-          Uri.parse('${Url.baseUrl1}/${Url.studentTestHistory}'),
-          headers: {"Authorization": "Bearer $accessToken"});
+        Uri.parse('${Url.baseUrl1}/${Url.studentTestHistory}'),
+        headers: {"Authorization": "Bearer $accessToken"},
+      );
       log("body:${response.body}");
 
       dynamic result = handleResponse(response);
@@ -65,7 +67,7 @@ class TestHistoryRepoImpl extends TestHistoryRepo {
         "customTests": customTests,
         "physics": physics,
         "chemistry": chemistry,
-        "biology": biology
+        "biology": biology,
       });
     } catch (e) {
       log("Error :$e");
@@ -74,18 +76,23 @@ class TestHistoryRepoImpl extends TestHistoryRepo {
   }
 
   @override
-  Future<Either<Failure, Map<String, dynamic>>> fetchTestDetails(
-      {required int testId,
-      required String accestoken,
-      required String testName}) async {
+  Future<Either<Failure, Map<String, dynamic>>> fetchTestDetails({
+    required int testId,
+    required String accestoken,
+    required String testName,
+  }) async {
     try {
       if (kDebugMode) {
-        log('${Url.baseUrl1}/${Url.detailstudentTestHistory}?test_id=$testId&test_name=$testName');
+        log(
+          '${Url.baseUrl1}/${Url.detailstudentTestHistory}?test_id=$testId&test_name=$testName',
+        );
       }
       final response = await http.get(
-          Uri.parse(
-              '${Url.baseUrl1}/${Url.detailstudentTestHistory}?test_id=$testId&test_name=$testName'),
-          headers: {"Authorization": "Bearer $accestoken"});
+        Uri.parse(
+          '${Url.baseUrl1}/${Url.detailstudentTestHistory}?test_id=$testId&test_name=$testName',
+        ),
+        headers: {"Authorization": "Bearer $accestoken"},
+      );
 
       log("response:${response.statusCode}");
 
@@ -108,7 +115,7 @@ class TestHistoryRepoImpl extends TestHistoryRepo {
         "correct": result["correct_number"],
         "incorrect": result["incorrect_number"],
         "unAttempted": result["unattempted"],
-        "qstns": qstns
+        "qstns": qstns,
       });
     } catch (e) {
       log("Error:$e");

@@ -26,9 +26,7 @@ class ChapterPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
-      appBar: CustomAppBar(
-        subjectName: subjectName,
-      ),
+      appBar: CustomAppBar(subjectName: subjectName),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -37,11 +35,11 @@ class ChapterPage extends StatelessWidget {
             Text(
               "Chapters",
               style: GoogleFonts.urbanist(
-                  fontSize: 24, fontWeight: FontWeight.bold),
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            SizedBox(
-              height: 20,
-            ),
+            SizedBox(height: 20),
             classesController.currentSelectedList.isEmpty
                 ? Text(
                     "No chapters found",
@@ -56,7 +54,9 @@ class ChapterPage extends StatelessWidget {
                         child: ChapterTile(
                           index: index,
                           onTap: () {
-                            log("vdo:${classesController.currentSelectedList[index]['videos']}");
+                            log(
+                              "vdo:${classesController.currentSelectedList[index]['videos']}",
+                            );
                             classesController.classIndex.value = index;
                             Get.to(
                               () => Videos(
@@ -74,7 +74,7 @@ class ChapterPage extends StatelessWidget {
                         ),
                       );
                     },
-                  )
+                  ),
           ],
         ),
       ),

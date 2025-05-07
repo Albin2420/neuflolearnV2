@@ -1,7 +1,6 @@
 import 'chapter.dart';
 import 'package:neuflo_learn/src/data/models/live_chapter.dart';
 
-
 class Subject {
   final String icon;
   final String subjectName;
@@ -25,7 +24,9 @@ class Subject {
       completedCount: map['completedCount'] ?? '',
       completedText: map['completedText'] ?? '',
       chapters: (map['chapters'] as List<dynamic>? ?? [])
-          .map((chapter) => LiveChapter.fromMap(chapter as Map<String, dynamic>))
+          .map(
+            (chapter) => LiveChapter.fromMap(chapter as Map<String, dynamic>),
+          )
           .toList(),
     );
   }

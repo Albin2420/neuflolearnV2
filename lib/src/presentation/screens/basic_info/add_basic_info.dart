@@ -1,12 +1,12 @@
 import 'dart:developer';
 
+import 'package:neuflo_learn/src/presentation/controller/add_user_info/add_user_info_controller.dart';
+import 'package:neuflo_learn/src/presentation/screens/basic_info/add_phone_umber.dart';
+import 'package:neuflo_learn/src/presentation/widgets/app_btn/app_btn.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:neuflo_learn/src/presentation/controller/add_user_info/add_user_info_controller.dart';
-import 'package:neuflo_learn/src/presentation/screens/basic_info/add_phone_umber.dart';
-import 'package:neuflo_learn/src/presentation/widgets/app_btn/app_btn.dart';
 
 class AddBasicInfo extends StatelessWidget {
   const AddBasicInfo({super.key});
@@ -41,13 +41,19 @@ class AddBasicInfo extends StatelessWidget {
             const Spacer(), // This pushes the container to the bottom
             Container(
               height: 1,
-              decoration: BoxDecoration(boxShadow: [
-                BoxShadow(
-                  color: Colors.black
-                      .withOpacity(0.2), // Shadow color with opacity
-                  offset: const Offset(0, 1), // Horizontal and Vertical offset
-                ),
-              ]),
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(
+                      0.2,
+                    ), // Shadow color with opacity
+                    offset: const Offset(
+                      0,
+                      1,
+                    ), // Horizontal and Vertical offset
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -67,12 +73,13 @@ class AddBasicInfo extends StatelessWidget {
                     decoration: InputDecoration(
                       prefixIcon: Container(
                         margin: const EdgeInsets.only(
-                            bottom: 19, top: 10, right: 15),
+                          bottom: 19,
+                          top: 10,
+                          right: 15,
+                        ),
                         height: 16,
                         width: 16,
-                        child: Image.asset(
-                          "assets/icons/person.png",
-                        ),
+                        child: Image.asset("assets/icons/person.png"),
                       ),
                       hintText: "Your name",
                       hintStyle: GoogleFonts.urbanist(
@@ -81,9 +88,7 @@ class AddBasicInfo extends StatelessWidget {
                         color: const Color(0xFF010029),
                       ),
                       focusedBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Color(0xFF000000),
-                        ),
+                        borderSide: BorderSide(color: Color(0xFF000000)),
                       ),
                     ),
                   ),
@@ -113,7 +118,11 @@ class AddBasicInfo extends StatelessWidget {
             }),
             Container(
               padding: const EdgeInsets.only(
-                  left: 24, right: 24, top: 32, bottom: 32),
+                left: 24,
+                right: 24,
+                top: 32,
+                bottom: 32,
+              ),
               child: Column(
                 children: [
                   TextField(
@@ -122,12 +131,13 @@ class AddBasicInfo extends StatelessWidget {
                     decoration: InputDecoration(
                       prefixIcon: Container(
                         margin: const EdgeInsets.only(
-                            bottom: 19, top: 10, right: 15),
+                          bottom: 19,
+                          top: 10,
+                          right: 15,
+                        ),
                         height: 16,
                         width: 16,
-                        child: Image.asset(
-                          "assets/icons/mail.png",
-                        ),
+                        child: Image.asset("assets/icons/mail.png"),
                       ),
                       hintText: "Your email",
                       hintStyle: GoogleFonts.urbanist(
@@ -136,15 +146,13 @@ class AddBasicInfo extends StatelessWidget {
                         color: const Color(0xFF010029),
                       ),
                       focusedBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Color(0xFF000000),
-                        ),
+                        borderSide: BorderSide(color: Color(0xFF000000)),
                       ),
                     ),
                   ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),

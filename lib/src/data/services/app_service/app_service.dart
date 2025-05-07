@@ -25,9 +25,7 @@ class AppStatusService {
       return Right(result["enabled"]);
     } on FormatException catch (e) {
       debugPrint('exception : $e');
-      return const Left(
-        Failure(message: 'Format Exception'),
-      );
+      return const Left(Failure(message: 'Format Exception'));
     } on SocketException catch (e) {
       debugPrint('exception : $e');
       return const Left(
@@ -38,9 +36,7 @@ class AppStatusService {
       );
     } on Exception catch (e) {
       debugPrint('exception : $e');
-      return const Left(
-        Failure(message: 'Unknown error, Try again later'),
-      );
+      return const Left(Failure(message: 'Unknown error, Try again later'));
     }
     // return Right(true);
   }

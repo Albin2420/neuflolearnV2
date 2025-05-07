@@ -22,8 +22,9 @@ class TestStatusController extends GetxController {
   RxBool showmoreproblemAreas = RxBool(false);
   RxBool showStrengths = RxBool(false);
 
-  Rx<Ds<Map<String, dynamic>>> statState =
-      Rx<Ds<Map<String, dynamic>>>(Initial());
+  Rx<Ds<Map<String, dynamic>>> statState = Rx<Ds<Map<String, dynamic>>>(
+    Initial(),
+  );
 
   //chapter status;
 
@@ -56,34 +57,44 @@ class TestStatusController extends GetxController {
   Future<void> weeklystats() async {
     statState.value = Loading();
     final result = await stRepo.weeklystats(
-        accessToken: await appctr.getAccessToken() ?? '');
+      accessToken: await appctr.getAccessToken() ?? '',
+    );
 
-    result.fold((f) async {
-      if (f.message == 'user is not authorised') {
-        final tokenResp = await tokenRepo.getNewTokens(
-            refreshToken: appctr.refreshToken.value);
+    result.fold(
+      (f) async {
+        if (f.message == 'user is not authorised') {
+          final tokenResp = await tokenRepo.getNewTokens(
+            refreshToken: appctr.refreshToken.value,
+          );
 
-        tokenResp.fold((l) {
+          tokenResp.fold(
+            (l) {
+              statState.value = Failed();
+            },
+            (R) async {
+              await appctr.saveToken(
+                accessToken: R['access_token'],
+                refreshToken: R['refresh_token'],
+              );
+              weeklystats();
+            },
+          );
+        } else {
           statState.value = Failed();
-        }, (R) async {
-          await appctr.saveToken(
-              accessToken: R['access_token'], refreshToken: R['refresh_token']);
-          weeklystats();
-        });
-      } else {
-        statState.value = Failed();
-      }
-    }, (r) {
-      stdataPracticeTest.value = r['practice_test_stats'];
-      stdataMockTest.value = r['mock_test_stats'];
-      stdataChaptStatus.value = r['chapter_stats'];
+        }
+      },
+      (r) {
+        stdataPracticeTest.value = r['practice_test_stats'];
+        stdataMockTest.value = r['mock_test_stats'];
+        stdataChaptStatus.value = r['chapter_stats'];
 
-      if (stdataChaptStatus.isNotEmpty ||
-          stdataMockTest.isNotEmpty ||
-          stdataChaptStatus.isNotEmpty) {
-        seperateChapters();
-      }
-    });
+        if (stdataChaptStatus.isNotEmpty ||
+            stdataMockTest.isNotEmpty ||
+            stdataChaptStatus.isNotEmpty) {
+          seperateChapters();
+        }
+      },
+    );
   }
 
   void seperateChapters() {

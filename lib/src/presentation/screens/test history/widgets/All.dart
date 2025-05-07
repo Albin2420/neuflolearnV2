@@ -30,8 +30,9 @@ class All extends StatelessWidget {
               child: TestCard(
                 onTap: () {
                   ctr.fetchDetailedHistory(
-                      testId: ctr.testHistorys[index].testId,
-                      testName: ctr.testHistorys[index].testName);
+                    testId: ctr.testHistorys[index].testId,
+                    testName: ctr.testHistorys[index].testName,
+                  );
                 },
                 currentScore: ctr.testHistorys[index].score,
                 totalScore: ctr.testHistorys[index].totalScore,

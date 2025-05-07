@@ -32,83 +32,105 @@ extension ErrorMapperExtension on ApiStatus {
     switch (this) {
       case ApiStatus.BAD_REQUEST:
         return const Failure(
-            code: ResponseCode.BAD_REQUEST,
-            message: ResponseMessage.BAD_REQUEST);
+          code: ResponseCode.BAD_REQUEST,
+          message: ResponseMessage.BAD_REQUEST,
+        );
 
       case ApiStatus.FORBIDDEN:
         return const Failure(
-            code: ResponseCode.FORBIDDEN, message: ResponseMessage.FORBIDDEN);
+          code: ResponseCode.FORBIDDEN,
+          message: ResponseMessage.FORBIDDEN,
+        );
 
       case ApiStatus.UNAUTHORISED:
         return const Failure(
-            code: ResponseCode.UNAUTHORISED,
-            message: ResponseMessage.UNAUTHORISED);
+          code: ResponseCode.UNAUTHORISED,
+          message: ResponseMessage.UNAUTHORISED,
+        );
 
       case ApiStatus.NOT_FOUND:
         return const Failure(
-            code: ResponseCode.NOT_FOUND, message: ResponseMessage.NOT_FOUND);
+          code: ResponseCode.NOT_FOUND,
+          message: ResponseMessage.NOT_FOUND,
+        );
 
       case ApiStatus.INTERNAL_SERVER_ERROR:
         return const Failure(
-            code: ResponseCode.INTERNAL_SERVER_ERROR,
-            message: ResponseMessage.INTERNAL_SERVER_ERROR);
+          code: ResponseCode.INTERNAL_SERVER_ERROR,
+          message: ResponseMessage.INTERNAL_SERVER_ERROR,
+        );
 
       case ApiStatus.CONNECT_TIMEOUT:
         return const Failure(
-            code: ResponseCode.CONNECT_TIMEOUT,
-            message: ResponseMessage.CONNECT_TIMEOUT);
+          code: ResponseCode.CONNECT_TIMEOUT,
+          message: ResponseMessage.CONNECT_TIMEOUT,
+        );
 
       case ApiStatus.CANCEL:
         return const Failure(
-            code: ResponseCode.CANCEL, message: ResponseMessage.CANCEL);
+          code: ResponseCode.CANCEL,
+          message: ResponseMessage.CANCEL,
+        );
 
       case ApiStatus.RECEIVE_TIMEOUT:
         return const Failure(
-            code: ResponseCode.RECEIVE_TIMEOUT,
-            message: ResponseMessage.RECEIVE_TIMEOUT);
+          code: ResponseCode.RECEIVE_TIMEOUT,
+          message: ResponseMessage.RECEIVE_TIMEOUT,
+        );
 
       case ApiStatus.SEND_TIMEOUT:
         return const Failure(
-            code: ResponseCode.SEND_TIMEOUT,
-            message: ResponseMessage.SEND_TIMEOUT);
+          code: ResponseCode.SEND_TIMEOUT,
+          message: ResponseMessage.SEND_TIMEOUT,
+        );
 
       case ApiStatus.CACHE_ERROR:
         return const Failure(
-            code: ResponseCode.CACHE_ERROR,
-            message: ResponseMessage.CACHE_ERROR);
+          code: ResponseCode.CACHE_ERROR,
+          message: ResponseMessage.CACHE_ERROR,
+        );
 
       case ApiStatus.NO_INTERNET_CONNECTION:
         return const Failure(
-            code: ResponseCode.NO_INTERNET_CONNECTION,
-            message: ResponseMessage.NO_INTERNET_CONNECTION);
+          code: ResponseCode.NO_INTERNET_CONNECTION,
+          message: ResponseMessage.NO_INTERNET_CONNECTION,
+        );
 
       case ApiStatus.UN_PROCESSABLE_DATA:
         return const Failure(
-            code: ResponseCode.UN_PROCESSABLE_DATA,
-            message: ResponseMessage.UN_PROCESSABLE_DATA);
+          code: ResponseCode.UN_PROCESSABLE_DATA,
+          message: ResponseMessage.UN_PROCESSABLE_DATA,
+        );
 
       case ApiStatus.NOT_IMPLEMENTED:
         return const Failure(
-            code: ResponseCode.NOT_IMPLEMENTED,
-            message: ResponseMessage.NOT_IMPLEMENTED);
+          code: ResponseCode.NOT_IMPLEMENTED,
+          message: ResponseMessage.NOT_IMPLEMENTED,
+        );
 
       case ApiStatus.SERVICE_UNAVAILABLE:
         return const Failure(
-            code: ResponseCode.SERVICE_UNAVAILABLE,
-            message: ResponseMessage.SERVICE_UNAVAILABLE);
+          code: ResponseCode.SERVICE_UNAVAILABLE,
+          message: ResponseMessage.SERVICE_UNAVAILABLE,
+        );
 
       case ApiStatus.BAD_GATEWAY:
         return const Failure(
-            code: ResponseCode.BAD_GATEWAY,
-            message: ResponseMessage.BAD_GATEWAY);
+          code: ResponseCode.BAD_GATEWAY,
+          message: ResponseMessage.BAD_GATEWAY,
+        );
 
       case ApiStatus.DEFAULT:
         return const Failure(
-            code: ResponseCode.DEFAULT, message: ResponseMessage.DEFAULT);
+          code: ResponseCode.DEFAULT,
+          message: ResponseMessage.DEFAULT,
+        );
 
       default:
         return const Failure(
-            code: ResponseCode.DEFAULT, message: ResponseMessage.DEFAULT);
+          code: ResponseCode.DEFAULT,
+          message: ResponseMessage.DEFAULT,
+        );
     }
   }
 }

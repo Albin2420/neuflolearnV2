@@ -6,21 +6,22 @@ class NextPrevBtn extends StatelessWidget {
 
   final Function onTapFunction;
 
-  const NextPrevBtn(
-      {super.key, required this.onTapFunction, required this.iconImg});
+  const NextPrevBtn({
+    super.key,
+    required this.onTapFunction,
+    required this.iconImg,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(
-          vertical: Constant.screenHeight * (8 / Constant.figmaScreenHeight),
-          horizontal: Constant.screenWidth * (8 / Constant.figmaScreenWidth)),
+        vertical: Constant.screenHeight * (8 / Constant.figmaScreenHeight),
+        horizontal: Constant.screenWidth * (8 / Constant.figmaScreenWidth),
+      ),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [
-            Color(0xFF010029),
-            Color(0xFF010048),
-          ],
+          colors: [Color(0xFF010029), Color(0xFF010048)],
         ),
         borderRadius: BorderRadius.circular(12),
       ),
@@ -34,14 +35,13 @@ class NextPrevBtn extends StatelessWidget {
           },
           child: Container(
             padding: EdgeInsets.symmetric(
-                vertical:
-                    Constant.screenHeight * (8 / Constant.figmaScreenHeight),
-                horizontal:
-                    Constant.screenWidth * (8 / Constant.figmaScreenWidth)),
-
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
+              vertical:
+                  Constant.screenHeight * (8 / Constant.figmaScreenHeight),
+              horizontal:
+                  Constant.screenWidth * (8 / Constant.figmaScreenWidth),
             ),
+
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
             child: Image.asset(
               iconImg,
               width: Constant.screenWidth * (10 / Constant.figmaScreenWidth),

@@ -12,9 +12,7 @@ class DailyStreak extends StatelessWidget {
     return Column(
       children: [
         widget,
-        SizedBox(
-          height: 4,
-        ),
+        SizedBox(height: 4),
         Text(
           day,
           style: GoogleFonts.urbanist(
@@ -22,7 +20,7 @@ class DailyStreak extends StatelessWidget {
             fontWeight: FontWeight.w500,
             color: const Color(0xFF000000),
           ),
-        )
+        ),
       ],
     );
   }

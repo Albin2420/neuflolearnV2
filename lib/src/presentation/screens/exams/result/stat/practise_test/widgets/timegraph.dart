@@ -10,11 +10,12 @@ class TimeGrowthGraph extends StatelessWidget {
   final Map<String, dynamic> map; // Expecting a dynamic map for data
   final double timegrowthPercentage;
 
-  const TimeGrowthGraph(
-      {super.key,
-      required this.seconds,
-      required this.map,
-      required this.timegrowthPercentage});
+  const TimeGrowthGraph({
+    super.key,
+    required this.seconds,
+    required this.map,
+    required this.timegrowthPercentage,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -80,9 +81,7 @@ class TimeGrowthGraph extends StatelessWidget {
                           ],
                         ),
                       ),
-                      SizedBox(
-                        width: 3,
-                      ),
+                      SizedBox(width: 3),
                     ],
                     if (mins > 0) ...[
                       RichText(
@@ -106,9 +105,7 @@ class TimeGrowthGraph extends StatelessWidget {
                           ],
                         ),
                       ),
-                      SizedBox(
-                        width: 3,
-                      ),
+                      SizedBox(width: 3),
                     ],
                     RichText(
                       text: TextSpan(
@@ -165,19 +162,19 @@ class TimeGrowthGraph extends StatelessWidget {
                       height: 8,
                       width: 8,
                       child: Center(
-                        child: Image.asset(timegrowthPercentage <= 0
-                            ? "assets/icons/down_arrow.png"
-                            : "assets/icons/uparrow.png"),
+                        child: Image.asset(
+                          timegrowthPercentage <= 0
+                              ? "assets/icons/down_arrow.png"
+                              : "assets/icons/uparrow.png",
+                        ),
                       ),
-                    )
+                    ),
                   ],
-                )
+                ),
               ],
             ),
           ),
-          SizedBox(
-            width: 4,
-          ),
+          SizedBox(width: 4),
           Expanded(
             child: Container(
               padding: const EdgeInsets.only(bottom: 10, left: 6),
@@ -204,8 +201,9 @@ class TimeGrowthGraph extends StatelessWidget {
                       ),
                     ),
                     bottomTitles: AxisTitles(
-                      sideTitles:
-                          SideTitles(showTitles: false), // **Hiding X-axis**
+                      sideTitles: SideTitles(
+                        showTitles: false,
+                      ), // **Hiding X-axis**
                     ),
                     rightTitles: AxisTitles(
                       sideTitles: SideTitles(showTitles: false),
@@ -219,7 +217,7 @@ class TimeGrowthGraph extends StatelessWidget {
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

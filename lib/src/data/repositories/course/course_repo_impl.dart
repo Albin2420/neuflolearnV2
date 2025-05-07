@@ -20,8 +20,9 @@ class CourseRepoImpl extends CourseRepo {
       log('${Url.baseUrl1}/${Url.courses}');
     }
     try {
-      final response =
-          await apiService.get(url: '${Url.baseUrl1}/${Url.courses}');
+      final response = await apiService.get(
+        url: '${Url.baseUrl1}/${Url.courses}',
+      );
       dynamic result = handleResponse(response);
 
       log("result : $response");
@@ -35,9 +36,7 @@ class CourseRepoImpl extends CourseRepo {
       return Right(courseList);
     } on FormatException catch (e) {
       debugPrint('exception : $e');
-      return const Left(
-        Failure(message: 'Format Exception'),
-      );
+      return const Left(Failure(message: 'Format Exception'));
     } on SocketException catch (e) {
       debugPrint('exception : $e');
       return const Left(
@@ -48,17 +47,16 @@ class CourseRepoImpl extends CourseRepo {
       );
     } on Exception catch (e) {
       debugPrint('exception : $e');
-      return const Left(
-        Failure(message: 'Unknown error, Try again later'),
-      );
+      return const Left(Failure(message: 'Unknown error, Try again later'));
     }
   }
 
   @override
   Future<Either<Failure, List<Course>>> setSkillLevels() async {
     try {
-      final response =
-          await apiService.get(url: '${Url.baseUrl1}/${Url.setSkillLevels}');
+      final response = await apiService.get(
+        url: '${Url.baseUrl1}/${Url.setSkillLevels}',
+      );
       dynamic result = handleResponse(response);
       List<Course> courseList =
           (result as List<dynamic>).map((e) => Course.fromJson(e)).toList();
@@ -66,9 +64,7 @@ class CourseRepoImpl extends CourseRepo {
       return Right(courseList);
     } on FormatException catch (e) {
       debugPrint('exception : $e');
-      return const Left(
-        Failure(message: 'Format Exception'),
-      );
+      return const Left(Failure(message: 'Format Exception'));
     } on SocketException catch (e) {
       debugPrint('exception : $e');
       return const Left(
@@ -79,9 +75,7 @@ class CourseRepoImpl extends CourseRepo {
       );
     } on Exception catch (e) {
       debugPrint('exception : $e');
-      return const Left(
-        Failure(message: 'Unknown error, Try again later'),
-      );
+      return const Left(Failure(message: 'Unknown error, Try again later'));
     }
   }
 }

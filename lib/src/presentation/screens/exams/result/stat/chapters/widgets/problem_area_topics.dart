@@ -5,8 +5,11 @@ import 'package:neuflo_learn/src/core/config/theme/colors.dart';
 class ProblemAreaTopics extends StatelessWidget {
   final String toPic;
   final double inCRCpercentage;
-  const ProblemAreaTopics(
-      {super.key, required this.toPic, required this.inCRCpercentage});
+  const ProblemAreaTopics({
+    super.key,
+    required this.toPic,
+    required this.inCRCpercentage,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +31,7 @@ class ProblemAreaTopics extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(
-                width: 13,
-              ),
+              SizedBox(width: 13),
               Text(
                 "${(inCRCpercentage).toInt()}% incorrect",
                 style: GoogleFonts.urbanist(
@@ -38,7 +39,7 @@ class ProblemAreaTopics extends StatelessWidget {
                   fontSize: 14,
                   color: AppColors.kred,
                 ),
-              )
+              ),
             ],
           ),
           LinearProgressIndicator(
@@ -46,7 +47,7 @@ class ProblemAreaTopics extends StatelessWidget {
             backgroundColor: Color(0xffD84040).withValues(alpha: 0.2),
             valueColor: AlwaysStoppedAnimation<Color?>(Color(0xffD84040)),
             value: inCRCpercentage / 100,
-          )
+          ),
         ],
       ),
     );

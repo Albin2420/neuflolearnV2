@@ -25,21 +25,20 @@ class CustomTestExamView extends StatelessWidget {
           if (data.isEmpty) {
             return CustomTestIntro();
           }
-          return Exam(
-            level: '',
-            type: 'customTest',
-          );
+          return Exam(level: '', type: 'customTest');
           // return CustomTestIntro();
         },
         onFailed: (error) {
-          return FailureUi(onTapFunction: () async {
-            await ctr.initiateCustomTestExam(
-              physicsChapters: customctr.physicsSelectedChapters,
-              chemistryChapters: customctr.chemistrySelectedChapters,
-              biologyChapters: customctr.biologySelectedChapters,
-              noOfQuestions: customctr.questionCount.value,
-            );
-          });
+          return FailureUi(
+            onTapFunction: () async {
+              await ctr.initiateCustomTestExam(
+                physicsChapters: customctr.physicsSelectedChapters,
+                chemistryChapters: customctr.chemistrySelectedChapters,
+                biologyChapters: customctr.biologySelectedChapters,
+                noOfQuestions: customctr.questionCount.value,
+              );
+            },
+          );
         },
         onLoading: () => Scaffold(body: ExamLoading()),
       );

@@ -4,12 +4,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:neuflo_learn/src/core/util/constants/app_constants.dart';
 
 class TestNavigateCard extends StatelessWidget {
-  const TestNavigateCard(
-      {super.key,
-      required this.image,
-      required this.title,
-      required this.description,
-      required this.onTap});
+  const TestNavigateCard({
+    super.key,
+    required this.image,
+    required this.title,
+    required this.description,
+    required this.onTap,
+  });
   final String image, title, description;
   final Function() onTap;
 
@@ -20,8 +21,9 @@ class TestNavigateCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         onTap: onTap,
         child: Card(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           child: Container(
             padding: EdgeInsets.all(
               Constant.screenWidth * (16 / Constant.figmaScreenWidth),
@@ -33,11 +35,7 @@ class TestNavigateCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Image.asset(
-                  image,
-                  width: 40,
-                  height: 40,
-                ),
+                Image.asset(image, width: 40, height: 40),
                 Gap(Constant.screenHeight * (16 / Constant.figmaScreenHeight)),
                 Text(
                   title,
@@ -56,7 +54,7 @@ class TestNavigateCard extends StatelessWidget {
                     fontWeight: FontWeight.w400,
                     color: const Color(0xFF000000),
                   ),
-                )
+                ),
               ],
             ),
           ),

@@ -26,9 +26,7 @@ class MockTestStat extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                height: 40,
-              ),
+              SizedBox(height: 40),
               Container(
                 padding: EdgeInsets.only(left: 8),
                 child: Row(
@@ -43,20 +41,17 @@ class MockTestStat extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(
-                height: 16,
-              ),
+              SizedBox(height: 16),
               Obx(() {
                 return Testhourcard(
-                    testAttended:
-                        '${ctrc.stdataMockTest["total_tests_attended"] ?? 0}',
-                    seconds: ctrc.stdataMockTest["total_time_spent"] == null
-                        ? 0.0
-                        : ctrc.stdataMockTest["total_time_spent"].toDouble());
+                  testAttended:
+                      '${ctrc.stdataMockTest["total_tests_attended"] ?? 0}',
+                  seconds: ctrc.stdataMockTest["total_time_spent"] == null
+                      ? 0.0
+                      : ctrc.stdataMockTest["total_time_spent"].toDouble(),
+                );
               }),
-              SizedBox(
-                height: 16,
-              ),
+              SizedBox(height: 16),
               Obx(() {
                 return ProgressGraphtile(
                   maxLimit: (ctrc.stdataMockTest['total_time_spent'] as num)
@@ -64,9 +59,7 @@ class MockTestStat extends StatelessWidget {
                   weekdata: ctrc.stdataMockTest['total_time_per_dayMap'],
                 );
               }),
-              SizedBox(
-                height: 16,
-              ),
+              SizedBox(height: 16),
               Container(
                 padding: EdgeInsets.all(24),
                 decoration: BoxDecoration(
@@ -92,12 +85,11 @@ class MockTestStat extends StatelessWidget {
                               SizedBox(
                                 height: 18,
                                 width: 18,
-                                child:
-                                    Image.asset("assets/icons/done_square.png"),
+                                child: Image.asset(
+                                  "assets/icons/done_square.png",
+                                ),
                               ),
-                              SizedBox(
-                                width: 4,
-                              ),
+                              SizedBox(width: 4),
                               Text(
                                 "average correct answers",
                                 style: GoogleFonts.urbanist(
@@ -105,14 +97,17 @@ class MockTestStat extends StatelessWidget {
                                   fontSize: 16,
                                   color: AppColors.kgreen,
                                 ),
-                              )
+                              ),
                             ],
                           ),
                           Obx(() {
                             return Expanded(
                               child: Container(
                                 padding: EdgeInsets.only(
-                                    top: 10, left: 16, right: 16),
+                                  top: 10,
+                                  left: 16,
+                                  right: 16,
+                                ),
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -148,7 +143,7 @@ class MockTestStat extends StatelessWidget {
                                                     fontSize: 24,
                                                   ),
                                                 ),
-                                              )
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -159,7 +154,7 @@ class MockTestStat extends StatelessWidget {
                                             fontSize: 14,
                                             color: Color(0xff010029),
                                           ),
-                                        )
+                                        ),
                                       ],
                                     ),
                                     Column(
@@ -193,7 +188,7 @@ class MockTestStat extends StatelessWidget {
                                                     fontSize: 24,
                                                   ),
                                                 ),
-                                              )
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -204,7 +199,7 @@ class MockTestStat extends StatelessWidget {
                                             fontSize: 14,
                                             color: Color(0xff010029),
                                           ),
-                                        )
+                                        ),
                                       ],
                                     ),
                                     Column(
@@ -238,7 +233,7 @@ class MockTestStat extends StatelessWidget {
                                                     fontSize: 24,
                                                   ),
                                                 ),
-                                              )
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -249,7 +244,7 @@ class MockTestStat extends StatelessWidget {
                                             fontSize: 14,
                                             color: Color(0xff010029),
                                           ),
-                                        )
+                                        ),
                                       ],
                                     ),
                                   ],
@@ -260,9 +255,7 @@ class MockTestStat extends StatelessWidget {
                         ],
                       ),
                     ),
-                    SizedBox(
-                      height: 30,
-                    ),
+                    SizedBox(height: 30),
                     SizedBox(
                       height: 124,
                       child: Column(
@@ -273,11 +266,10 @@ class MockTestStat extends StatelessWidget {
                                 height: 18,
                                 width: 18,
                                 child: Image.asset(
-                                    "assets/icons/wrong_square.png"),
+                                  "assets/icons/wrong_square.png",
+                                ),
                               ),
-                              SizedBox(
-                                width: 4,
-                              ),
+                              SizedBox(width: 4),
                               Text(
                                 "average incorrect answers",
                                 style: GoogleFonts.urbanist(
@@ -285,14 +277,17 @@ class MockTestStat extends StatelessWidget {
                                   fontSize: 16,
                                   color: AppColors.kred,
                                 ),
-                              )
+                              ),
                             ],
                           ),
                           Obx(() {
                             return Expanded(
                               child: Container(
                                 padding: EdgeInsets.only(
-                                    top: 10, left: 16, right: 16),
+                                  top: 10,
+                                  left: 16,
+                                  right: 16,
+                                ),
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -328,7 +323,7 @@ class MockTestStat extends StatelessWidget {
                                                     fontSize: 24,
                                                   ),
                                                 ),
-                                              )
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -339,7 +334,7 @@ class MockTestStat extends StatelessWidget {
                                             fontSize: 14,
                                             color: Color(0xff010029),
                                           ),
-                                        )
+                                        ),
                                       ],
                                     ),
                                     Column(
@@ -373,7 +368,7 @@ class MockTestStat extends StatelessWidget {
                                                     fontSize: 24,
                                                   ),
                                                 ),
-                                              )
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -384,7 +379,7 @@ class MockTestStat extends StatelessWidget {
                                             fontSize: 14,
                                             color: Color(0xff010029),
                                           ),
-                                        )
+                                        ),
                                       ],
                                     ),
                                     Column(
@@ -418,7 +413,7 @@ class MockTestStat extends StatelessWidget {
                                                     fontSize: 24,
                                                   ),
                                                 ),
-                                              )
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -429,23 +424,21 @@ class MockTestStat extends StatelessWidget {
                                             fontSize: 14,
                                             color: Color(0xff010029),
                                           ),
-                                        )
+                                        ),
                                       ],
                                     ),
                                   ],
                                 ),
                               ),
                             );
-                          })
+                          }),
                         ],
                       ),
                     ),
                   ],
                 ),
               ),
-              SizedBox(
-                height: 16,
-              ),
+              SizedBox(height: 16),
               Obx(() {
                 return Scoregrowthgraph(
                   scorePercentage:
@@ -456,22 +449,18 @@ class MockTestStat extends StatelessWidget {
                       "${(ctrc.stdataMockTest['average_score'] ?? 0).toInt()}",
                 );
               }),
-              SizedBox(
-                height: 16,
-              ),
+              SizedBox(height: 16),
               Obx(() {
                 return TimeGrowthGraph(
-                    timegrowthPercentage:
-                        (ctrc.stdataPracticeTest['time_change'] ?? 0)
-                            .toDouble(),
-                    // '${(ctrc.stdataMockTest['time_change'] ?? 0).toInt()}',
-                    map: ctrc.stdataMockTest["daily_average_timeMap"],
-                    seconds:
-                        (ctrc.stdataMockTest['average_time'] ?? 0).toDouble());
+                  timegrowthPercentage:
+                      (ctrc.stdataPracticeTest['time_change'] ?? 0).toDouble(),
+                  // '${(ctrc.stdataMockTest['time_change'] ?? 0).toInt()}',
+                  map: ctrc.stdataMockTest["daily_average_timeMap"],
+                  seconds:
+                      (ctrc.stdataMockTest['average_time'] ?? 0).toDouble(),
+                );
               }),
-              SizedBox(
-                height: 40,
-              ),
+              SizedBox(height: 40),
               Center(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -480,13 +469,12 @@ class MockTestStat extends StatelessWidget {
                       "Want to see your performance in previous tests?",
                       textAlign: TextAlign.center,
                       style: GoogleFonts.urbanist(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
-                          color: Color(0xff010029)),
+                        fontWeight: FontWeight.w500,
+                        fontSize: 14,
+                        color: Color(0xff010029),
+                      ),
                     ),
-                    SizedBox(
-                      height: 16,
-                    ),
+                    SizedBox(height: 16),
                     GradientButton(
                       onTap: () {
                         Get.to(() => TestHistory(), arguments: 1);
@@ -497,9 +485,7 @@ class MockTestStat extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(
-                height: 70,
-              ),
+              SizedBox(height: 70),
             ],
           ),
         ),

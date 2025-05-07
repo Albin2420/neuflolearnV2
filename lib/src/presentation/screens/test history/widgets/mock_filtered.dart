@@ -28,8 +28,9 @@ class MockFiltered extends StatelessWidget {
               child: TestCard(
                 onTap: () {
                   ctr.fetchDetailedHistory(
-                      testId: ctr.mockTest[index].testId,
-                      testName: ctr.mockTest[index].testName);
+                    testId: ctr.mockTest[index].testId,
+                    testName: ctr.mockTest[index].testName,
+                  );
                 },
                 currentScore: ctr.mockTest[index].score,
                 totalScore: ctr.mockTest[index].totalScore,

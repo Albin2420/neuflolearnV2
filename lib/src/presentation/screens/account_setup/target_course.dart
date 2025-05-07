@@ -50,8 +50,9 @@ class TargetCourse extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: EdgeInsets.only(
-                        bottom: Constant.screenHeight *
-                            (12 / Constant.figmaScreenHeight)),
+                      bottom: Constant.screenHeight *
+                          (12 / Constant.figmaScreenHeight),
+                    ),
                     child: CourseCard(
                       course: data[index],
                       title: data[index].courseName ?? '',
@@ -64,15 +65,16 @@ class TargetCourse extends StatelessWidget {
                 },
               ),
               onFailed: (error) => Center(
-                  child: Text(
-                error.toString(),
-                textAlign: TextAlign.center,
-                style: GoogleFonts.urbanist(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: const Color(0xFF010029),
+                child: Text(
+                  error.toString(),
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.urbanist(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xFF010029),
+                  ),
                 ),
-              )),
+              ),
               onLoading: () => Center(
                 child: Transform.scale(
                   scale: 0.5,
@@ -80,7 +82,7 @@ class TargetCourse extends StatelessWidget {
                 ),
               ),
             );
-          })
+          }),
         ],
       ),
     );

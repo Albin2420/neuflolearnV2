@@ -1,10 +1,7 @@
 import 'package:neuflo_learn/src/core/network/error_handler.dart';
 
 class Failure implements Exception {
-  const Failure({
-    required this.message,
-    this.code,
-  });
+  const Failure({required this.message, this.code});
   final String message;
   final int? code;
 

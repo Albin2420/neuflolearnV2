@@ -11,7 +11,6 @@
 //   final TestCompletionResult che;
 //   final TestCompletionResult bio;
 
-
 //   TestCompletionData({
 //     required this.physicsCounter,
 //     required this.chemistryCounter,

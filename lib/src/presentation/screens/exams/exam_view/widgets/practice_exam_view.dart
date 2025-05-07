@@ -23,30 +23,29 @@ class PracticeTestExamView extends StatelessWidget {
 
     return Obx(() {
       return ctr.examState.value.onState(
-        onInitial: () => DailyTestIntro(
-          subjectName: subjectName,
-          test_level: level,
-        ),
+        onInitial: () =>
+            DailyTestIntro(subjectName: subjectName, test_level: level),
         success: (data) {
           if (data.isEmpty) {
             return FailureUi(
               onTapFunction: () async {
                 await ctr.initiatePracticeTestExam(
-                    subjectName: subjectName, testlevel: level);
+                  subjectName: subjectName,
+                  testlevel: level,
+                );
               },
             );
           }
-          return Exam(
-            level: level,
-            type: 'PracticeTest',
-          );
+          return Exam(level: level, type: 'PracticeTest');
         },
         onFailed: (error) {
           log("Error..................................:$error");
           return FailureUi(
             onTapFunction: () async {
               await ctr.initiatePracticeTestExam(
-                  subjectName: subjectName, testlevel: level);
+                subjectName: subjectName,
+                testlevel: level,
+              );
             },
           );
         },

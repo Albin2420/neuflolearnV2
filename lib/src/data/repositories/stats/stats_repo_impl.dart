@@ -10,8 +10,9 @@ import 'package:neuflo_learn/src/domain/repositories/stats/stats_repo.dart';
 
 class StatsRepoImpl extends StatsRepo {
   @override
-  Future<Either<Failure, Map<String, dynamic>>> weeklystats(
-      {required String accessToken}) async {
+  Future<Either<Failure, Map<String, dynamic>>> weeklystats({
+    required String accessToken,
+  }) async {
     try {
       if (kDebugMode) {
         log("initializing in fetchStatus()");
@@ -19,8 +20,9 @@ class StatsRepoImpl extends StatsRepo {
       }
 
       final response = await http.get(
-          Uri.parse('${Url.baseUrl1}/${Url.weeklystats}/'),
-          headers: {"Authorization": "Bearer $accessToken"});
+        Uri.parse('${Url.baseUrl1}/${Url.weeklystats}/'),
+        headers: {"Authorization": "Bearer $accessToken"},
+      );
 
       dynamic result = handleResponse(response);
 
@@ -51,7 +53,7 @@ class StatsRepoImpl extends StatsRepo {
         "average_score": practiceTestStats["average_score"],
         "average_time": practiceTestStats["average_time"],
         "score_change": practiceTestStats["score_change"],
-        "time_change": practiceTestStats["time_change"]
+        "time_change": practiceTestStats["time_change"],
       };
 
       final mockStatsMap = {
@@ -67,19 +69,20 @@ class StatsRepoImpl extends StatsRepo {
         "average_score": mockTestStats["average_score"],
         "average_time": mockTestStats["average_time"],
         "score_change": mockTestStats["score_change"],
-        "time_change": mockTestStats["time_change"]
+        "time_change": mockTestStats["time_change"],
       };
 
       final chapterWiseStatsMap = chapterStats.map((subject, chapters) {
         return MapEntry(
-            subject,
-            (chapters as Map<String, dynamic>).map((chapter, stats) {
-              return MapEntry(chapter, {
-                "correct_percentage": stats["correct_percentage"],
-                "incorrect_percentage": stats["incorrect_percentage"],
-                "total_questions": stats["total_questions"],
-              });
-            }));
+          subject,
+          (chapters as Map<String, dynamic>).map((chapter, stats) {
+            return MapEntry(chapter, {
+              "correct_percentage": stats["correct_percentage"],
+              "incorrect_percentage": stats["incorrect_percentage"],
+              "total_questions": stats["total_questions"],
+            });
+          }),
+        );
       });
 
       log("Br in mockTest:$mockStatsMap");

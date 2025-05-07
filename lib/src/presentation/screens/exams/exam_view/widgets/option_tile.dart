@@ -65,9 +65,7 @@ class OptionTile extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(
-              width: 8,
-            ),
+            SizedBox(width: 8),
             // Expanded(
             //   child: LaTexT(
             //     laTeXCode: Text(
@@ -89,7 +87,7 @@ class OptionTile extends StatelessWidget {
                   fontSize: 16,
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

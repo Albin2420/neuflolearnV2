@@ -26,9 +26,9 @@ class IntroItems extends StatelessWidget {
         Text(
           title,
           style: GoogleFonts.urbanist(
-              fontSize:
-                  Constant.screenHeight * (24 / Constant.figmaScreenHeight),
-              fontWeight: FontWeight.w600),
+            fontSize: Constant.screenHeight * (24 / Constant.figmaScreenHeight),
+            fontWeight: FontWeight.w600,
+          ),
         ),
         Gap(Constant.screenHeight * (8 / Constant.figmaScreenHeight)),
         Text(
@@ -38,7 +38,7 @@ class IntroItems extends StatelessWidget {
             fontSize: Constant.screenHeight * (16 / Constant.figmaScreenHeight),
             fontWeight: FontWeight.w400,
           ),
-        )
+        ),
       ],
     );
   }

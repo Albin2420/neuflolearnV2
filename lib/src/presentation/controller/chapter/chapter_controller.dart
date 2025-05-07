@@ -22,15 +22,19 @@ class ChapterController extends GetxController {
       List<ChapterModel> chapters = [];
 
       for (var chapter in subjectData) {
-        chapters.add(ChapterModel(
-          chapterName: chapter["chaptername"],
-          chapterNo: (chapters.length + 1).toString(),
-        ));
+        chapters.add(
+          ChapterModel(
+            chapterName: chapter["chaptername"],
+            chapterNo: (chapters.length + 1).toString(),
+          ),
+        );
       }
 
       chapterList.assignAll(chapters);
 
-      log("Chapters for ${selectedSubjectName.value} => ${chapters.map((c) => c.chapterName).toList()}");
+      log(
+        "Chapters for ${selectedSubjectName.value} => ${chapters.map((c) => c.chapterName).toList()}",
+      );
     } else {
       chapterList.clear();
       log("No chapters found for ${selectedSubjectName.value}");

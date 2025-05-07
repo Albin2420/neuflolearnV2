@@ -71,11 +71,13 @@ class FirebaseAuthService extends Auth {
         final GoogleSignInAuthentication googleAuth =
             await googleUser.authentication;
 
-        final UserCredential userCredential = await _firebaseAuth
-            .signInWithCredential(GoogleAuthProvider.credential(
-          idToken: googleAuth.idToken,
-          accessToken: googleAuth.accessToken,
-        ));
+        final UserCredential userCredential =
+            await _firebaseAuth.signInWithCredential(
+          GoogleAuthProvider.credential(
+            idToken: googleAuth.idToken,
+            accessToken: googleAuth.accessToken,
+          ),
+        );
         if (userCredential.user != null) {
           status = AuthStatus.successful;
         } else {

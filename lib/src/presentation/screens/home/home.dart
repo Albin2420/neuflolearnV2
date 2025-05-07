@@ -39,10 +39,7 @@ class Home extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFF010029),
-                    Color(0xFF003538),
-                  ],
+                  colors: [Color(0xFF010029), Color(0xFF003538)],
                 ),
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(16),
@@ -54,8 +51,9 @@ class Home extends StatelessWidget {
               child: Column(
                 children: [
                   Padding(
-                    padding: EdgeInsets.all(Constant.screenWidth *
-                        (16 / Constant.figmaScreenWidth)),
+                    padding: EdgeInsets.all(
+                      Constant.screenWidth * (16 / Constant.figmaScreenWidth),
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -80,21 +78,22 @@ class Home extends StatelessWidget {
                                         ),
                                       ),
                                       Expanded(
-                                        child: Obx(() => Text(
-                                              '${Get.find<AppStartupController>().appUser.value?.name}',
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: GoogleFonts.urbanist(
-                                                fontSize: Constant
-                                                        .screenHeight *
-                                                    (20 /
-                                                        Constant
-                                                            .figmaScreenHeight),
-                                                fontWeight: FontWeight.w800,
-                                                color: const Color(0xFFF3FAFF),
-                                              ),
-                                            )),
-                                      )
+                                        child: Obx(
+                                          () => Text(
+                                            '${Get.find<AppStartupController>().appUser.value?.name}',
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: GoogleFonts.urbanist(
+                                              fontSize: Constant.screenHeight *
+                                                  (20 /
+                                                      Constant
+                                                          .figmaScreenHeight),
+                                              fontWeight: FontWeight.w800,
+                                              color: const Color(0xFFF3FAFF),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
                                     ],
                                   ),
                                   Text(
@@ -106,9 +105,7 @@ class Home extends StatelessWidget {
                                       color: const Color(0xFFF3FAFF),
                                     ),
                                   ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
+                                  SizedBox(height: 10),
                                 ],
                               ),
                             ),
@@ -173,7 +170,7 @@ class Home extends StatelessWidget {
                                   );
                                 }),
                               ),
-                            )
+                            ),
                           ],
                         ),
                         Gap(
@@ -195,7 +192,8 @@ class Home extends StatelessWidget {
                         ),
                         Card(
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16)),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
                           child: Container(
                             padding: EdgeInsets.all(
                               Constant.screenWidth *
@@ -222,8 +220,9 @@ class Home extends StatelessWidget {
                                       (16 / Constant.figmaScreenHeight),
                                 ),
                                 Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 8.0),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 8.0,
+                                  ),
                                   child: StreakWidget(),
                                 ),
                                 Gap(
@@ -261,17 +260,20 @@ class Home extends StatelessWidget {
                                   Constant.screenHeight *
                                       (8 / Constant.figmaScreenHeight),
                                 ),
-                                Obx(() => ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: LinearProgressIndicator(
-                                        minHeight: 8,
-                                        value: int.parse(
-                                                '${ctr.totalTestDonePerDay}') /
-                                            9,
-                                        color: Color(0xFF010029),
-                                        backgroundColor: Color(0xFFD9D9D9),
-                                      ),
-                                    )),
+                                Obx(
+                                  () => ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: LinearProgressIndicator(
+                                      minHeight: 8,
+                                      value: int.parse(
+                                            '${ctr.totalTestDonePerDay}',
+                                          ) /
+                                          9,
+                                      color: Color(0xFF010029),
+                                      backgroundColor: Color(0xFFD9D9D9),
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -292,9 +294,7 @@ class Home extends StatelessWidget {
                               width: 24,
                               child: Image.asset('assets/icons/physics.png'),
                             ),
-                            const SizedBox(
-                              width: 2,
-                            ),
+                            const SizedBox(width: 2),
                             Text(
                               'Physics',
                               style: GoogleFonts.urbanist(
@@ -311,15 +311,15 @@ class Home extends StatelessWidget {
                               () => Text(
                                 "${ctr.physicsattendedCount.value}/3",
                                 style: TextStyle(
-                                    fontSize: 15, fontWeight: FontWeight.bold),
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
-                            SizedBox(
-                              width: 3,
-                            ),
-                            Text("tests Done")
+                            SizedBox(width: 3),
+                            Text("tests Done"),
                           ],
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -328,10 +328,8 @@ class Home extends StatelessWidget {
                         (136 / Constant.figmaScreenHeight),
                     child: ListView.separated(
                       padding: const EdgeInsets.only(right: 16, top: 16),
-                      separatorBuilder: (context, index) => const SizedBox(
-                        width: 8,
-                        height: 8,
-                      ),
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(width: 8, height: 8),
                       itemCount: 3,
                       itemBuilder: (context, index) => Padding(
                         padding: EdgeInsets.only(left: index == 0 ? 16 : 0),
@@ -339,7 +337,8 @@ class Home extends StatelessWidget {
                           onTap: () {
                             if (ctr.physics[index] == true) {
                               Fluttertoast.showToast(
-                                  msg: 'Test already completed');
+                                msg: 'Test already completed',
+                              );
                               return;
                             }
 
@@ -375,8 +374,11 @@ class Home extends StatelessWidget {
                     ),
                   ),
                   Padding(
-                    padding:
-                        const EdgeInsets.only(left: 16, right: 16, top: 16),
+                    padding: const EdgeInsets.only(
+                      left: 16,
+                      right: 16,
+                      top: 16,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -388,9 +390,7 @@ class Home extends StatelessWidget {
                               width: 24,
                               child: Image.asset('assets/icons/chemistry.png'),
                             ),
-                            const SizedBox(
-                              width: 2,
-                            ),
+                            const SizedBox(width: 2),
                             Text(
                               'Chemistry',
                               style: GoogleFonts.urbanist(
@@ -407,15 +407,15 @@ class Home extends StatelessWidget {
                               () => Text(
                                 "${ctr.chemattendedCount.value ?? '0'}/3",
                                 style: TextStyle(
-                                    fontSize: 15, fontWeight: FontWeight.bold),
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
-                            SizedBox(
-                              width: 3,
-                            ),
-                            Text("tests Done")
+                            SizedBox(width: 3),
+                            Text("tests Done"),
                           ],
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -424,10 +424,8 @@ class Home extends StatelessWidget {
                         (136 / Constant.figmaScreenHeight),
                     child: ListView.separated(
                       padding: const EdgeInsets.only(right: 16, top: 16),
-                      separatorBuilder: (context, index) => const SizedBox(
-                        width: 8,
-                        height: 8,
-                      ),
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(width: 8, height: 8),
                       itemCount: 3,
                       itemBuilder: (context, index) => Padding(
                         padding: EdgeInsets.only(left: index == 0 ? 16 : 0),
@@ -435,7 +433,8 @@ class Home extends StatelessWidget {
                           onTap: () {
                             if (ctr.chemistry[index] == true) {
                               Fluttertoast.showToast(
-                                  msg: 'Test already completed');
+                                msg: 'Test already completed',
+                              );
                               return;
                             }
 
@@ -471,8 +470,11 @@ class Home extends StatelessWidget {
                     ),
                   ),
                   Padding(
-                    padding:
-                        const EdgeInsets.only(left: 16, right: 16, top: 16),
+                    padding: const EdgeInsets.only(
+                      left: 16,
+                      right: 16,
+                      top: 16,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -484,9 +486,7 @@ class Home extends StatelessWidget {
                               width: 24,
                               child: Image.asset('assets/icons/biology.png'),
                             ),
-                            const SizedBox(
-                              width: 2,
-                            ),
+                            const SizedBox(width: 2),
                             Text(
                               'Biology',
                               style: GoogleFonts.urbanist(
@@ -503,15 +503,15 @@ class Home extends StatelessWidget {
                               () => Text(
                                 "${ctr.bioattendedCount.value ?? '0'}/3",
                                 style: TextStyle(
-                                    fontSize: 15, fontWeight: FontWeight.bold),
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
-                            SizedBox(
-                              width: 3,
-                            ),
-                            Text("tests Done")
+                            SizedBox(width: 3),
+                            Text("tests Done"),
                           ],
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -520,10 +520,8 @@ class Home extends StatelessWidget {
                         (136 / Constant.figmaScreenHeight),
                     child: ListView.separated(
                       padding: const EdgeInsets.only(right: 16, top: 16),
-                      separatorBuilder: (context, index) => const SizedBox(
-                        width: 8,
-                        height: 8,
-                      ),
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(width: 8, height: 8),
                       itemCount: 3,
                       itemBuilder: (context, index) => Padding(
                         padding: EdgeInsets.only(left: index == 0 ? 16 : 0),
@@ -531,7 +529,8 @@ class Home extends StatelessWidget {
                           onTap: () {
                             if (ctr.biology[index] == true) {
                               Fluttertoast.showToast(
-                                  msg: 'Test already completed');
+                                msg: 'Test already completed',
+                              );
                               return;
                             }
 
@@ -566,13 +565,15 @@ class Home extends StatelessWidget {
                       scrollDirection: Axis.horizontal,
                     ),
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                   Container(
                     // color: Colors.teal,
                     padding: const EdgeInsets.only(
-                        top: 40, right: 16, left: 16, bottom: 40),
+                      top: 40,
+                      right: 16,
+                      left: 16,
+                      bottom: 40,
+                    ),
                     height: 80,
                     child: Divider(
                       color: const Color(0xFF000000).withOpacity(0.5),
@@ -591,8 +592,10 @@ class Home extends StatelessWidget {
                             Get.to(() => MockTestExamView());
                           },
                         ),
-                        Gap(Constant.screenWidth *
-                            (8 / Constant.figmaScreenWidth)),
+                        Gap(
+                          Constant.screenWidth *
+                              (8 / Constant.figmaScreenWidth),
+                        ),
                         TestNavigateCard(
                           image: "assets/images/custom_test.png",
                           title: "Custom test",
@@ -623,16 +626,17 @@ class Home extends StatelessWidget {
                       height: 126,
                       width: MediaQuery.sizeOf(context).width,
                       decoration: BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              offset: const Offset(0, 4),
-                              blurRadius: 10,
-                              spreadRadius: 0,
-                            ),
-                          ],
-                          color: const Color(0xFF010029),
-                          borderRadius: BorderRadius.circular(16)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            offset: const Offset(0, 4),
+                            blurRadius: 10,
+                            spreadRadius: 0,
+                          ),
+                        ],
+                        color: const Color(0xFF010029),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                       child: Stack(
                         children: [
                           LayoutBuilder(
@@ -640,7 +644,10 @@ class Home extends StatelessWidget {
                               return Container(
                                 width: constraints.maxWidth,
                                 padding: const EdgeInsets.only(
-                                    top: 10, bottom: 10, left: 18),
+                                  top: 10,
+                                  bottom: 10,
+                                  left: 18,
+                                ),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(16),
                                 ),
@@ -685,17 +692,15 @@ class Home extends StatelessWidget {
                               width: 172,
                               height: 172,
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 43,
-                  ),
+                  const SizedBox(height: 43),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),
