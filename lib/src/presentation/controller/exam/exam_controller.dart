@@ -177,6 +177,11 @@ class ExamController extends GetxController {
     );
   }
 
+  RxInt checkIndex = RxInt(0);
+  void indexupdate({required int index}) {
+    checkIndex.value = index;
+  }
+
   void toggleIsxapanded() {
     isExpanded.value = !isExpanded.value;
     // log("isExpanded => $isExpanded");
@@ -333,6 +338,7 @@ class ExamController extends GetxController {
         questionList.value = data["questions"];
         tempQuestionList.value = data["questions"];
         testId.value = data["practiceTestID"];
+        log("testIDvAlue:$testId");
 
         examState.value = Success(data: questionList);
         startTimer();
@@ -814,6 +820,7 @@ class ExamController extends GetxController {
 
   void resetToCurrentDeafults() {
     isSubmitted.value = currentQuestion.value.isAttempted ?? false;
+    log("submitted or not in resetToCurrentDeafults():$isSubmitted");
     setCurrentUserSelectedOption(option: currentQuestion.value.selectedOption);
 
     // log(" currentQuestion.value.isMarkedCorrect : ${currentQuestion.value.isMarkedCorrect}");
@@ -833,6 +840,7 @@ class ExamController extends GetxController {
   RxBool isSubmitted = RxBool(false);
 
   void setSubmittedStatus({required bool staus}) {
+    log("submitted or not in submittstatus:$staus");
     isSubmitted.value = staus;
   }
 
@@ -847,13 +855,16 @@ class ExamController extends GetxController {
   }
 
   RxList<int> correctList = RxList([]);
+  RxList<String> correctIdList = RxList([]);
   RxList<int> inCorrectList = RxList([]);
 
-  RxList<int> inCorrectIdList = RxList([]);
+  RxList<String> inCorrectIdList = RxList([]);
   RxList<int> skippedList = RxList([]);
+  RxList<String> skippedIds = RxList([]);
 
-  generateCorrectList({required int index}) {
+  generateCorrectList({required int index, required String id}) {
     correctList.add(index);
+    correctIdList.add(id);
 
     log("NO OF CORRECT ==> ${correctList.length}");
   }
@@ -864,14 +875,16 @@ class ExamController extends GetxController {
     log("NO OF INCORRECT ==> ${inCorrectList.length}");
   }
 
-  generateIncorrectIdList({required int index}) {
-    inCorrectIdList.add(index);
+  generateIncorrectIdList({required String id}) {
+    inCorrectIdList.add(id);
     log("INCORRECT ID LIST : $inCorrectIdList");
     log("skipped list:$skippedList");
   }
 
-  generateSkippedList({required int index}) {
+  generateSkippedList({required int index, required String id}) {
+    log("add to skip :$index id :$id");
     skippedList.add(index);
+    skippedIds.add(id);
     log("NO OF SKIPPED ==> ${skippedList.length}");
   }
 
@@ -1003,15 +1016,36 @@ class ExamController extends GetxController {
 
   void addData({
     required int id,
-    required String selectedOpt,
     required int timeTaken,
   }) {
     resuLT.add({
-      "question_id": id,
-      "selected_option": selectedOpt,
-      "time_taken": timeTaken,
+      "$id": "$timeTaken",
     });
     update();
+  }
+
+  void addDetailedAnswer(
+      {required int questionId,
+      required int subjectId,
+      required int chapterId,
+      required String selectedAnswer,
+      required String originalAnswer,
+      required bool isCorrect,
+      required int timeTaken}) {
+    try {
+      detailedAnswers.add({
+        "question_id": questionId,
+        "subject_id": subjectId,
+        "chapter_id": chapterId,
+        "selected_answer": selectedAnswer,
+        "original_answer": originalAnswer,
+        "is_correct": isCorrect,
+        "time_taken": timeTaken
+      });
+      update();
+    } catch (e) {
+      log("Error:$e");
+    }
   }
 
   Map<String, dynamic> answerMap = {};
@@ -1251,12 +1285,17 @@ class ExamController extends GetxController {
     }
   }
 
+  var detailedAnswers = [].obs;
+  var resultquestionIdTime;
+  final RxSet<String> missingIds = <String>{}.obs;
+
   Future submitPractiseTest({
     required String level,
     required String type,
   }) async {
+    missingIds.clear();
     log("CURRENT SUBJECT ID : $currentSubjectId");
-    log("keys:${answerMap.keys},runtimetype:${answerMap.keys.runtimeType}");
+    log("keys:${answerMap.keys},runtimetype:${answerMap.values.runtimeType}");
     log("resuLT 1:$resuLT");
 
     Set<int> addedIds = {};
@@ -1271,31 +1310,49 @@ class ExamController extends GetxController {
         if (answerMap.containsKey(idString)) {
           var timeValue =
               answerMap[idString]["time"]; // Get the time value safely
+          log("timevalue in :$timeValue");
           if (timeValue is int) {
             timeTaken = timeValue; // Assign if it's already an int
           } else if (timeValue is String) {
             timeTaken =
-                int.tryParse(timeValue) ?? 0; // Convert String to int safely
+                int.tryParse(timeValue) ?? 1; // Convert String to int safely
           } else {
             log("Invalid time format for ID: $idString");
           }
         } else {
-          log("Not found: $idString"); // Log missing IDs
+          if (!correctIdList.contains("$id") &&
+              !inCorrectIdList.contains("$id") &&
+              !skippedIds.contains("$id")) {
+            log("id not found and not in any list: $idString");
+            missingIds.add(idString);
+          }
         }
 
         addData(
           id: id,
-          selectedOpt: questionList[i].selectedOption == null
-              ? 'unattempted'
-              : questionList[i].selectedOption ?? '',
           timeTaken: timeTaken, // Use the correct timeTaken value
         );
+
+        addDetailedAnswer(
+            questionId: id,
+            subjectId: currentSubjectId.value,
+            chapterId: questionList[i].chapterId ?? 0,
+            selectedAnswer: questionList[i].selectedOption == null
+                ? 'unattempted'
+                : questionList[i].selectedOption ?? '',
+            originalAnswer: questionList[i].answer ?? '',
+            isCorrect: questionList[i].selectedOption == questionList[i].answer
+                ? true
+                : false,
+            timeTaken: timeTaken);
 
         addedIds.add(id); // Store the added ID
       }
     }
 
-    log("final res:$resuLT");
+    Map<String, String> result =
+        resuLT.fold({}, (acc, map) => {...acc, ...map});
+    resultquestionIdTime = result;
 
     if (currentSubjectId.value == 1) {
     } else if (currentSubjectId.value == 2) {
@@ -1304,7 +1361,21 @@ class ExamController extends GetxController {
       currentSubjectId.value = 5;
     }
     leVEl.value = level;
-    return await submitPracticetestAnswers();
+
+    log("final resultquestionIdTime =======>:$resultquestionIdTime");
+    log("detailed Answer:$detailedAnswers");
+    log("corrected List:$correctIdList");
+    log("corrected count:${correctIdList.length}");
+
+    log("incorrect List:$inCorrectIdList");
+    log("incorrect count:${inCorrectIdList.length}");
+
+    log("unattempted ids:$missingIds");
+    log("unattempted count:${missingIds.length}");
+
+    log("skipped list:$skippedList");
+    log("len skipped:${skippedList.length}");
+    // return await submitPracticetestAnswers();
   }
 
   // Future<void> submitPracticetestAnswers() async {
@@ -1361,14 +1432,20 @@ class ExamController extends GetxController {
     log("Submitting practice test answers...");
 
     final resp = await examRepo.sumbitPracticeTestAnswers(
-      accessToken: accessToken.value,
-      practiceTestId: testId.value,
-      studentId: studentId.value,
-      subjectId: currentSubjectId.value,
-      testLevel: leVEl.value,
-      totalTimeTaken: secondsLeft.value,
-      questions: resuLT,
-    );
+        accessToken: accessToken.value,
+        totalquestions: questionList.length,
+        correctAnswer: correctList.length,
+        incorrectAnswer: inCorrectIdList.length,
+        skippedAnswer: skippedIds.length,
+        unattemptedAnswer: missingIds.length,
+        totalAttended: correctList.length + inCorrectIdList.length,
+        practiceTestId: testId.value,
+        subjectId: currentSubjectId.value,
+        testLevel: leVEl.value,
+        totalTimeTaken: secondsLeft.value,
+        detailedAnswers: detailedAnswers,
+        subjectName: currentSubjectName,
+        questionIdTime: resultquestionIdTime);
 
     bool isSuccess = false;
 
@@ -1642,14 +1719,14 @@ class ExamController extends GetxController {
 
   void skippedCount() {
     log("skip updating manuallyyyyyyyyyyyy");
-    int count = 0;
+    int unattempted = 0;
     for (int i = 0; i < questionList.length; i++) {
       if (questionList[i].selectedOption == null) {
-        count++;
+        unattempted++;
       }
     }
-    log("skipped count:$count");
-    skippedValue.value = count;
+    // log("skipped counter:$unattempted");
+    skippedValue.value = unattempted;
     update();
   }
 

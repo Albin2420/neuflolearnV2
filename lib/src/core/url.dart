@@ -2,7 +2,7 @@ class Url {
   // static String baseUrl1 = 'http://192.168.1.50:8000';
   // static String baseUrl2 = 'http://192.168.1.50:8001';
 
-  static String baseUrl1 = 'http://13.202.147.190:8000';
+  static String baseUrl1 = 'http://13.232.252.23:8000';
   static String baseUrl2 = 'http://13.202.147.190:8010';
 
   static const generatePracticeTest = 'generate-practice-test/';

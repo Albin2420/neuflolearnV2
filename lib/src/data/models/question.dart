@@ -9,6 +9,7 @@ class Question {
   final String? explanation;
   final int? questionId;
   final List<Image>? images;
+  final int? chapterId;
 
   ///
   final String? selectedOption;
@@ -18,20 +19,20 @@ class Question {
   final bool? isFlagged;
   final bool? isMarkedCorrect;
 
-  Question({
-    this.question,
-    this.options,
-    this.answer,
-    this.explanation,
-    this.questionId,
-    this.images,
-    this.selectedOption,
-    this.isSelected = false,
-    this.isAttempted = false,
-    this.isSkipped = false,
-    this.isFlagged = false,
-    this.isMarkedCorrect = false,
-  });
+  Question(
+      {this.question,
+      this.options,
+      this.answer,
+      this.explanation,
+      this.questionId,
+      this.images,
+      this.selectedOption,
+      this.isSelected = false,
+      this.isAttempted = false,
+      this.isSkipped = false,
+      this.isFlagged = false,
+      this.isMarkedCorrect = false,
+      this.chapterId});
 
   Question copyWith({
     String? question,
@@ -63,20 +64,21 @@ class Question {
       );
 
   factory Question.fromJson(Map<String, dynamic> json) => Question(
-        question: json["text"],
-        options:
-            json["options"] == null ? null : Options.fromMap(json["options"]),
-        answer: json["answer"],
-        explanation: json["explanation"],
-        questionId: json["question_id"],
-        // images: json["has_image"] == false
-        //     ? []
-        //     : List<Image>.from(json["has_image"]?.map((x) => x)),
+      question: json["text"],
+      options:
+          json["options"] == null ? null : Options.fromMap(json["options"]),
+      answer: json["answer"],
+      explanation: json["explanation"],
+      questionId: json["question_id"],
+      chapterId: json["chapter_id"]
+      // images: json["has_image"] == false
+      //     ? []
+      //     : List<Image>.from(json["has_image"]?.map((x) => x)),
       );
 
   @override
   String toString() {
-    return 'Question(question: $question, options: $options, answer: $answer, explanation: $explanation, questionId: $questionId, images: $images, isAttempted: $isAttempted, isSkipped: $isSkipped, isFlagged: $isFlagged,isSelected: $isSelected,isMarkedCorrect : $isMarkedCorrect)';
+    return 'Question(question: $question, options: $options, answer: $answer, explanation: $explanation, questionId: $questionId, images: $images, isAttempted: $isAttempted, isSkipped: $isSkipped, isFlagged: $isFlagged,isSelected: $isSelected,isMarkedCorrect : $isMarkedCorrect),chapterId:$chapterId';
   }
 
   @override

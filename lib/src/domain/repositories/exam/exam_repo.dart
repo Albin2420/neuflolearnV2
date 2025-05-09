@@ -41,15 +41,21 @@ abstract class ExamRepo {
     required int noOfQuestions,
   });
 
-  Future<Either<Failure, Map<String, dynamic>>> sumbitPracticeTestAnswers({
-    required final String accessToken,
-    required int practiceTestId,
-    required int studentId,
-    required int subjectId,
-    required String testLevel,
-    required int totalTimeTaken,
-    required List<dynamic> questions,
-  }); //v2
+  Future<Either<Failure, Map<String, dynamic>>> sumbitPracticeTestAnswers(
+      {required final String accessToken,
+      required int totalquestions,
+      required int totalAttended,
+      required int correctAnswer,
+      required int incorrectAnswer,
+      required int skippedAnswer,
+      required int unattemptedAnswer,
+      required int practiceTestId,
+      required int subjectId,
+      required String testLevel,
+      required int totalTimeTaken,
+      required List<dynamic> detailedAnswers,
+      required String subjectName,
+      required Map<String, String> questionIdTime}); //v2
 
   Future<Either<Failure, ExamReport>> getPracticeTestResultsSubjectwise({
     required int studentId,

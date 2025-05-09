@@ -328,29 +328,25 @@ class ExamRepoImpl extends ExamRepo {
   }
 
   @override
-  Future<Either<Failure, Map<String, dynamic>>> sumbitPracticeTestAnswers({
-    required final String accessToken,
-    required int practiceTestId,
-    required int studentId,
-    required int subjectId,
-    required String testLevel,
-    required int totalTimeTaken,
-    required List<dynamic> questions,
-  }) async {
+  Future<Either<Failure, Map<String, dynamic>>> sumbitPracticeTestAnswers(
+      {required final String accessToken,
+      required int totalquestions,
+      required int totalAttended,
+      required int correctAnswer,
+      required int incorrectAnswer,
+      required int skippedAnswer,
+      required int unattemptedAnswer,
+      required int practiceTestId,
+      required int subjectId,
+      required String testLevel,
+      required int totalTimeTaken,
+      required List<dynamic> detailedAnswers,
+      required String subjectName,
+      required Map<String, String> questionIdTime}) async {
     if (kDebugMode) {
       log("sumbitPracticeTestAnswers()");
       log(
         "url:${Uri.parse('${Url.baseUrl1}/${Url.submitPracticeTestAnswers}/')}",
-      );
-      log(
-        {
-          "practice_test_id": practiceTestId,
-          "student_id": studentId,
-          "subject_id": subjectId,
-          "test_level": testLevel.toLowerCase(),
-          "total_time_taken": totalTimeTaken,
-          "questions": questions,
-        }.toString(),
       );
     }
     final url = Uri.parse('${Url.baseUrl1}/${Url.submitPracticeTestAnswers}/');
@@ -363,11 +359,17 @@ class ExamRepoImpl extends ExamRepo {
         },
         body: jsonEncode({
           "practice_test_id": practiceTestId,
-          // "student_id": studentId,
           "subject_id": subjectId,
           "test_level": testLevel.toLowerCase(),
           "total_time_taken": totalTimeTaken,
-          "questions": questions,
+          "total_questions": totalquestions,
+          "total_attended": totalAttended,
+          "correct_answer": correctAnswer,
+          "incorrect_answer": incorrectAnswer,
+          "skipped_answer": skippedAnswer,
+          "unattempted_answer": unattemptedAnswer,
+          "time_taken_per_questions": {subjectName: questionIdTime},
+          "detailed_answers": detailedAnswers
         }),
       );
 

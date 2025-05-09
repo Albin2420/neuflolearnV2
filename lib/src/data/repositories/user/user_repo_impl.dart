@@ -169,7 +169,7 @@ class UserRepoImpl extends UserRepo {
       "current_identifier": "",
       "mail_id": student.mailId,
       "name": student.name,
-      "academy": "Aimes",
+      "academy": "organisation1",
       "is_active": false,
       "fcm_token": fcmToken,
     });

@@ -305,8 +305,30 @@ class Exam extends StatelessWidget {
                         NextPrevBtn(
                           iconImg: 'assets/icons/next3.png',
                           onTapFunction: () {
-                            ctr.gotoNext();
-                            ctr.resetAvgTimer();
+                            //check whether already attended or not;
+                            log("index::${ctr.page.value}");
+
+                            if (ctr.page.value == ctr.questionList.length - 1) {
+                              log("lst page");
+                            } else {
+                              if (ctr.answerMap.containsKey(
+                                  "${ctr.questionList[ctr.page.value].questionId}")) {
+                                log("already submitted");
+                                ctr.gotoNext();
+                                ctr.resetAvgTimer();
+                              } else if (!ctr.skippedList
+                                  .contains(ctr.page.value)) {
+                                ctr.generateSkippedList(
+                                    index: ctr.page.value,
+                                    id: "${ctr.questionList[ctr.page.value].questionId}");
+                                ctr.gotoNext();
+                                ctr.resetAvgTimer();
+                              } else {
+                                log("bit confused");
+                                ctr.gotoNext();
+                                ctr.resetAvgTimer();
+                              }
+                            }
                           },
                         ),
                       ],
@@ -380,6 +402,7 @@ class Exam extends StatelessWidget {
                                               onTap: () {
                                                 ctr.toggleIsxapanded();
                                                 ctr.gotoPage(pageIndex: index);
+                                                ctr.indexupdate(index: index);
                                               },
                                               child: Container(
                                                 height: 30,
@@ -526,7 +549,17 @@ class Exam extends StatelessWidget {
                                       hpad: 12,
                                       onTapFunction: () {
                                         // ctr.gotoPage(pageIndex: 4);
-                                        Get.back(result: true);
+                                        if (ctr.answerMap.containsKey(
+                                            "${ctr.questionList[ctr.page.value].questionId}")) {
+                                          log("already attended");
+                                          Get.back(result: true);
+                                        } else {
+                                          log("add to skip");
+                                          Get.back(result: true);
+                                          ctr.generateSkippedList(
+                                              index: ctr.page.value,
+                                              id: "${ctr.questionList[ctr.page.value].questionId}");
+                                        }
                                       },
                                     ),
                                     Gap(
@@ -615,7 +648,7 @@ class Exam extends StatelessWidget {
                         ctr.setSubmittedStatus(
                           staus: ctr.questionList[index].isAttempted ?? false,
                         );
-                        ctr.resetToCurrentDeafults();
+                        // ctr.resetToCurrentDeafults();
                         ctr.resetAvgTimer();
                         ctr.startAvgTimer();
                       },
@@ -639,7 +672,7 @@ class Exam extends StatelessWidget {
                                 Row(
                                   children: [
                                     Text(
-                                      "Question  ${index + 1}  of ${ctr.questionList.length}",
+                                      "Question  ${index + 1}  of ${ctr.questionList.length}   id:${ctr.questionList[index].questionId}",
                                       style: GoogleFonts.urbanist(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 16,
@@ -778,7 +811,7 @@ class Exam extends StatelessWidget {
                 vpad: 12,
                 hpad: 20,
                 onTapFunction: () async {
-                  // log("skip:$}")
+                  log("page:${ctr.page.value}     index:${ctr.checkIndex}");
                   if (ctr.isSubmitted.value == true) {
                     try {
                       log("call for submission");
@@ -812,31 +845,52 @@ class Exam extends StatelessWidget {
                       log("error Next/Sumit/ :$e");
                     }
                   } else {
-                    log("call for submitAnswer");
                     ctr.submitAnswer();
 
                     if (ctr.currentUserSelectedOption.value == null) {
-                      ctr.generateSkippedList(index: ctr.page.value);
+                      if (ctr.skippedList.contains(ctr.page.value)) {
+                      } else {
+                        ctr.generateSkippedList(
+                            index: ctr.page.value,
+                            id: "${ctr.questionList[ctr.page.value].questionId}");
+                      }
                     }
 
                     if (ctr.currentUserSelectedOption.value != null) {
-                      ctr.saveResult();
-                      ctr.resetAvgTimer();
+                      if (ctr.skippedList.contains(ctr.page.value) &&
+                          ctr.skippedIds.contains(
+                              '${ctr.questionList[ctr.page.value].questionId}')) {
+                        ctr.skippedList.remove(ctr.page.value);
+                        ctr.skippedIds.remove(
+                            '${ctr.questionList[ctr.page.value].questionId}');
+                        ctr.saveResult();
+                        ctr.resetAvgTimer();
+                      } else {
+                        ctr.saveResult();
+                        ctr.resetAvgTimer();
+                      }
                     }
 
                     if (ctr.currentQnAnswer.value ==
                         ctr.currentUserSelectedOption.value) {
-                      ctr.generateCorrectList(index: ctr.page.value);
+                      ctr.generateCorrectList(
+                          index: ctr.page.value,
+                          id: "${ctr.questionList[ctr.page.value].questionId}");
                     }
 
                     if (ctr.currentQnAnswer.value !=
                             ctr.currentUserSelectedOption.value &&
                         ctr.currentUserSelectedOption.value != null) {
-                      ctr.generateIncorrectIdList(index: ctr.page.value);
+                      ctr.generateIncorrectIdList(
+                          id: "${ctr.questionList[ctr.page.value].questionId}");
                       ctr.generateIncorrectList(index: ctr.page.value);
                     }
 
                     log("ctr.page.value : ${ctr.page.value}");
+
+                    log('ans:${ctr.answerMap}');
+
+                    // log("answermap:${ctr.answerMap.containsKey("588")}");
                   }
                 },
               ),
