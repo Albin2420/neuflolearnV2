@@ -31,6 +31,7 @@ class ExamController extends GetxController {
   var chemistryIds = [];
   var botonyIds = [];
   var zoologyIds = [];
+  var biologyIds = [];
 
   /// exam repo
   ExamRepo examRepo = ExamRepoImpl();
@@ -88,6 +89,15 @@ class ExamController extends GetxController {
 
   void setCurrentPageIndex({required int index}) {
     page.value = index;
+  }
+
+  RxInt currenPageIndex = RxInt(0);
+
+  void nothing({required int index}) {
+    currenPageIndex.value = index;
+    page.value = index;
+    log("pageIndex from pageview :$index");
+    log("pageview : ${page.value}");
   }
 
   @override
@@ -416,7 +426,15 @@ class ExamController extends GetxController {
   RxList userAttendedChemisTryAnswers = RxList([]);
   RxList biologyAnswers = RxList([]);
 
+  var questionIdTimePhysics;
+  var questionIdTimeChemistry;
+  var questionIdTimezoology;
+  var questionIdTimeBotany;
+  Map<String, String> biologytimeMap = {};
+
   Future submitMockTestAnswers() async {
+    missingIds.clear();
+    detailedAnswers.clear();
     log("Mock Test Submission");
     log("Test ID: $testId");
 
@@ -446,41 +464,91 @@ class ExamController extends GetxController {
     var userAttendedZoologyAnswers = [];
 
     // Process user-attended answers and categorize them
-    for (var user in userAnswer) {
-      var timeValue = answerMap.containsKey(user.questionId.toString())
-          ? answerMap[user.questionId.toString()]["time"]
-          : null;
+    for (var user in questionList) {
+      if (answerMap.containsKey(user.questionId.toString()) == false) {
+        log("id not found:${user.questionId}");
+        missingIds.add(user.questionId.toString());
+        addDetailedAnswer(
+            questionId: user.questionId ?? -1,
+            subjectId: currentSubjectId.value,
+            chapterId: user.chapterId ?? 0,
+            selectedAnswer: user.selectedOption == null
+                ? 'unattempted'
+                : user.selectedOption ?? '',
+            originalAnswer: user.answer ?? '',
+            isCorrect: user.selectedOption == user.answer ? true : false,
+            timeTaken: 0);
+      } else {
+        var timeValue = answerMap.containsKey(user.questionId.toString())
+            ? answerMap[user.questionId.toString()]["time"]
+            : null;
 
-      var answerData = {
-        "question_id": user.questionId,
-        "student_answer": user.selectedOption,
-        "original_answer": user.answer,
-        "time_taken": timeValue,
-      };
+        var answerData = {"${user.questionId}": timeValue};
 
-      if (physicsIdSet.contains(user.questionId)) {
-        userAttendedPhysicsAnswers.add(answerData);
-      } else if (chemistryIdSet.contains(user.questionId)) {
-        userAttendedChemistryAnswers.add(answerData);
-      } else if (botanyIdSet.contains(user.questionId)) {
-        userAttendedBotanyAnswers.add(answerData);
-      } else if (zoologyIdSet.contains(user.questionId)) {
-        userAttendedZoologyAnswers.add(answerData);
+        if (physicsIdSet.contains(user.questionId)) {
+          userAttendedPhysicsAnswers.add(answerData);
+        } else if (chemistryIdSet.contains(user.questionId)) {
+          userAttendedChemistryAnswers.add(answerData);
+        } else if (botanyIdSet.contains(user.questionId)) {
+          userAttendedBotanyAnswers.add(answerData);
+        } else if (zoologyIdSet.contains(user.questionId)) {
+          userAttendedZoologyAnswers.add(answerData);
+        }
+
+        addDetailedAnswer(
+            questionId: user.questionId ?? -1,
+            subjectId: currentSubjectId.value,
+            chapterId: user.chapterId ?? 0,
+            selectedAnswer: user.selectedOption == null
+                ? 'unattempted'
+                : user.selectedOption ?? '',
+            originalAnswer: user.answer ?? '',
+            isCorrect: user.selectedOption == user.answer ? true : false,
+            timeTaken: int.parse(timeValue));
       }
     }
 
     // Final logs for categorized answers
-    log("Physics Answers : ${userAttendedPhysicsAnswers.length}");
+    Map<String, String> physicsResult =
+        userAttendedPhysicsAnswers.fold({}, (acc, map) => {...acc, ...map});
+    questionIdTimePhysics = physicsResult;
 
-    log("Chemistry Answers : ${userAttendedChemistryAnswers.length}");
-    log("Botany Answers : ${userAttendedChemistryAnswers.length}");
-    log("Zoology Answers : ${userAttendedZoologyAnswers.length}");
+    log("physics time map:$questionIdTimePhysics");
+
+    Map<String, String> chemistryResult =
+        userAttendedChemistryAnswers.fold({}, (acc, map) => {...acc, ...map});
+    questionIdTimeChemistry = chemistryResult;
+
+    log("Chemistry time map : $questionIdTimeChemistry");
+
+    Map<String, String> zoologyResult =
+        userAttendedZoologyAnswers.fold({}, (acc, map) => {...acc, ...map});
+    questionIdTimezoology = zoologyResult;
+
+    log("Zoology time map : $questionIdTimezoology");
+
+    Map<String, String> botanyResult =
+        userAttendedBotanyAnswers.fold({}, (acc, map) => {...acc, ...map});
+    questionIdTimeBotany = botanyResult;
+
+    log("botany time map:$questionIdTimeBotany");
+
+    Map<String, String> combinedResult = {
+      ...zoologyResult,
+      ...botanyResult,
+    };
+    biologytimeMap = combinedResult;
 
     totalAttenDed.value = totalAttended;
-    userAttendedPhysicSAnswers.value = userAttendedPhysicsAnswers;
-    userAttendedChemisTryAnswers.value = userAttendedChemistryAnswers;
-    biologyAnswers.value =
-        userAttendedBotanyAnswers + userAttendedZoologyAnswers;
+    log("total attended:$totalAttenDed");
+    log("dtAnswer:$detailedAnswers");
+
+    log("correct count:${correctIdList.length}");
+    log("Incorrect count:${inCorrectList.length}");
+    log("skipped count:${skippedList.length}");
+    log("unattempted count:${missingIds.length}");
+
+    log("missing ids:$missingIds");
 
     return await subMitMockTest();
   }
@@ -490,17 +558,19 @@ class ExamController extends GetxController {
     bool isSuccess = false;
 
     final resp = await examRepo.submitMockTestAnswers(
-      accessToken: accessToken.value,
-      mockTestId: testId.value,
-      studentId: studentId.value,
-      totalAttended: totalAttenDed.value,
-      correctNumber: correctList.length,
-      incorrectNumber: inCorrectList.length,
-      physicsAnswers: userAttendedPhysicSAnswers,
-      chemistryAnswers: userAttendedChemisTryAnswers,
-      totalTimeTaken: secondsLeft.value,
-      biologyAnswers: biologyAnswers,
-    );
+        accessToken: accessToken.value,
+        mockTestId: testId.value,
+        totalAttended: totalAttenDed.value,
+        correctNumber: correctList.length,
+        incorrectNumber: inCorrectList.length,
+        skippedcount: skippedList.length,
+        unattempted: missingIds.length,
+        totalquestionCount: questionList.length,
+        physicsAnswers: questionIdTimePhysics,
+        chemistryAnswers: questionIdTimeChemistry,
+        totalTimeTaken: secondsLeft.value,
+        biologyAnswers: biologytimeMap,
+        detailedAnswers: detailedAnswers);
 
     await resp.fold(
       (f) async {
@@ -688,6 +758,11 @@ class ExamController extends GetxController {
         testId.value = data["custom_test_id"];
         questionList.value = data["questions"];
         tempQuestionList.value = data["questions"];
+        physicsIds = data['physicsId'];
+        chemistryIds = data['chemistryId'];
+        zoologyIds = data['zoologyId'];
+        botonyIds = data['botanyId'];
+
         examState.value = Success(data: questionList);
         setSubjectName(subj: 'Custom Test');
         startTimer();
@@ -795,7 +870,8 @@ class ExamController extends GetxController {
   RxInt skippedValue = RxInt(0);
 
   /// set current question
-  void setCurrentQuestion({required Question question}) {
+  void setCurrentQuestion({required Question question, required int index}) {
+    log("setting current qstnId:${question.questionId} \nindex:$index");
     currentQuestion.value = question;
     setCurrentAnswer(answer: currentQuestion.value.answer ?? '');
     setCurrentUserSelectedOption(option: currentQuestion.value.selectedOption);
@@ -1053,6 +1129,7 @@ class ExamController extends GetxController {
   RxInt currentSubjectId = RxInt(0);
 
   void saveResult() {
+    log("add to answermap ==========>>>>>>>:${currentQuestion.value.questionId}");
     answerMap['${currentQuestion.value.questionId}'] = {
       "answer": currentUserSelectedOption.value,
       "time": elapsedTime.toString(),
@@ -1175,37 +1252,124 @@ class ExamController extends GetxController {
 
   Future<bool> submitCustomTest() async {
     try {
+      missingIds.clear();
+      detailedAnswers.clear();
       log("submit:submitCustomTest()");
       // Calculate total attended questions
       int totalAttended =
           questionList.where((q) => q.selectedOption != null).length;
 
       totalAttenDed.value = totalAttended;
+      log("Attended: $totalAttended");
 
-      Map<String, String> answer = {};
-      Map<String, dynamic> qstnAvgTime = {};
+      // Logging correct and incorrect answers
+      log("Correct Answers: ${correctList.length}");
+      log("Incorrect Answers: ${inCorrectList.length}");
 
-      for (int i = 0; i < questionList.length; i++) {
-        if (questionList[i].selectedOption != null) {
-          String questionId = questionList[i].questionId.toString();
+      // Convert ID lists to Sets for faster lookup
+      var physicsIdSet = physicsIds.toSet();
+      var chemistryIdSet = chemistryIds.toSet();
+      var botanyIdSet = botonyIds.toSet();
+      var zoologyIdSet = zoologyIds.toSet();
 
-          // Store selected option in answer map
-          answer[questionId] = questionList[i].selectedOption.toString();
+      // Lists to store categorized answers
+      var userAttendedPhysicsAnswers = [];
+      var userAttendedChemistryAnswers = [];
+      var userAttendedBotanyAnswers = [];
+      var userAttendedZoologyAnswers = [];
 
-          // Fetch the time value from answerMap
-          if (answerMap.containsKey(questionId)) {
-            log("dt:${answerMap[questionId]['time']}");
-            qstnAvgTime[questionId] = answerMap[questionId]['time'];
+      // Process user-attended answers and categorize them
+      for (var user in questionList) {
+        if (answerMap.containsKey(user.questionId.toString()) == false) {
+          log("id not found:${user.questionId}");
+          // missingIds.add(user.questionId.toString());
+          if (!correctIdList.contains("${user.questionId}") &&
+              !inCorrectIdList.contains("${user.questionId}") &&
+              !skippedIds.contains("${user.questionId}")) {
+            missingIds.add(user.questionId.toString());
           }
+          addDetailedAnswer(
+              questionId: user.questionId ?? -1,
+              subjectId: currentSubjectId.value,
+              chapterId: user.chapterId ?? 0,
+              selectedAnswer: user.selectedOption == null
+                  ? 'unattempted'
+                  : user.selectedOption ?? '',
+              originalAnswer: user.answer ?? '',
+              isCorrect: user.selectedOption == user.answer ? true : false,
+              timeTaken: 0);
+        } else {
+          var timeValue = answerMap.containsKey(user.questionId.toString())
+              ? answerMap[user.questionId.toString()]["time"]
+              : null;
+
+          var answerData = {"${user.questionId}": timeValue};
+
+          if (physicsIdSet.contains(user.questionId)) {
+            userAttendedPhysicsAnswers.add(answerData);
+          } else if (chemistryIdSet.contains(user.questionId)) {
+            userAttendedChemistryAnswers.add(answerData);
+          } else if (botanyIdSet.contains(user.questionId)) {
+            userAttendedBotanyAnswers.add(answerData);
+          } else if (zoologyIdSet.contains(user.questionId)) {
+            userAttendedZoologyAnswers.add(answerData);
+          }
+
+          addDetailedAnswer(
+              questionId: user.questionId ?? -1,
+              subjectId: currentSubjectId.value,
+              chapterId: user.chapterId ?? 0,
+              selectedAnswer: user.selectedOption == null
+                  ? 'unattempted'
+                  : user.selectedOption ?? '',
+              originalAnswer: user.answer ?? '',
+              isCorrect: user.selectedOption == user.answer ? true : false,
+              timeTaken: int.parse(timeValue));
         }
       }
-      log("ans:$answer");
-      ansWer.value = answer;
 
-      log("qstnAvgTime:$qstnAvgTime");
-      qstnAvGTime.value = qstnAvgTime;
+      // Final logs for categorized answers
+      Map<String, String> physicsResult =
+          userAttendedPhysicsAnswers.fold({}, (acc, map) => {...acc, ...map});
+      questionIdTimePhysics = physicsResult;
 
-      log("timer:${secondsLeft.value}");
+      log("physics time map:$questionIdTimePhysics");
+
+      Map<String, String> chemistryResult =
+          userAttendedChemistryAnswers.fold({}, (acc, map) => {...acc, ...map});
+      questionIdTimeChemistry = chemistryResult;
+
+      log("Chemistry time map : $questionIdTimeChemistry");
+
+      Map<String, String> zoologyResult =
+          userAttendedZoologyAnswers.fold({}, (acc, map) => {...acc, ...map});
+      questionIdTimezoology = zoologyResult;
+
+      log("Zoology time map : $questionIdTimezoology");
+
+      Map<String, String> botanyResult =
+          userAttendedBotanyAnswers.fold({}, (acc, map) => {...acc, ...map});
+      questionIdTimeBotany = botanyResult;
+
+      log("botany time map:$questionIdTimeBotany");
+
+      Map<String, String> combinedResult = {
+        ...zoologyResult,
+        ...botanyResult,
+      };
+      biologytimeMap = combinedResult;
+
+      totalAttenDed.value = totalAttended;
+      log("total attended:$totalAttenDed");
+      log("dtAnswer:$detailedAnswers");
+
+      log("correct :$correctIdList   correct count:${correctIdList.length}");
+      log("Incorrect :$inCorrectIdList      incorrect count:${inCorrectIdList.length}");
+
+      log("unattempted :$missingIds     unattempted count:${missingIds.length}");
+      log("skipped list:$skippedIds    skipped count;${skippedIds.length}");
+
+      log("total data check:${detailedAnswers.length}");
 
       return await submitCustomTestAnswers();
     } catch (e) {
@@ -1217,16 +1381,19 @@ class ExamController extends GetxController {
   Future<bool> submitCustomTestAnswers({bool isRetrying = false}) async {
     try {
       final resp = await examRepo.submitCustomTestAnswers(
-        accesstoken: accessToken.value,
-        studentId: studentId.value,
-        customTestId: testId.value,
-        totalAttended: totalAttenDed.value,
-        correctNumber: correctList.length,
-        incorrectNumber: inCorrectList.length,
-        testAverageTime: secondsLeft.value,
-        answer: ansWer,
-        questionAvgTime: qstnAvGTime,
-      );
+          accesstoken: accessToken.value,
+          customTestId: testId.value,
+          totalAttended: totalAttenDed.value,
+          totaltimeTaken: secondsLeft.value,
+          totalquestions: questionList.length,
+          correctAnswer: correctIdList.length,
+          incorrectanswers: inCorrectIdList.length,
+          skippedAnswer: skippedIds.length,
+          unattemptedAnswers: missingIds.length,
+          physicsAnswers: questionIdTimePhysics,
+          chemistryAnswers: questionIdTimeChemistry,
+          biologyAnswers: biologytimeMap,
+          detailedAnswers: detailedAnswers);
 
       return resp.fold(
         (failure) async {
@@ -1294,6 +1461,7 @@ class ExamController extends GetxController {
     required String type,
   }) async {
     missingIds.clear();
+    detailedAnswers.clear();
     log("CURRENT SUBJECT ID : $currentSubjectId");
     log("keys:${answerMap.keys},runtimetype:${answerMap.values.runtimeType}");
     log("resuLT 1:$resuLT");
@@ -1375,7 +1543,7 @@ class ExamController extends GetxController {
 
     log("skipped list:$skippedList");
     log("len skipped:${skippedList.length}");
-    // return await submitPracticetestAnswers();
+    return await submitPracticetestAnswers();
   }
 
   // Future<void> submitPracticetestAnswers() async {

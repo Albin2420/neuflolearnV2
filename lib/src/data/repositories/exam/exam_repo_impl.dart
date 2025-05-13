@@ -612,15 +612,13 @@ class ExamRepoImpl extends ExamRepo {
           'Authorization': 'Bearer $accesstoken',
         },
         body: jsonEncode({
-          "student_id": studentId,
           "subjectwise_chapter": {
-            "1": physicsChapters,
-            "2": chemistryChapters,
-            "3": biologyChapters,
+            "Physics": physicsChapters,
+            "Chemistry": chemistryChapters,
+            "Biology": biologyChapters,
           },
           "total_questions": noOfQuestions,
           "total_time": noOfQuestions,
-          "organization_id": 1,
         }),
       );
       log("response:${response.body}");
@@ -634,17 +632,73 @@ class ExamRepoImpl extends ExamRepo {
         return Left(Failure(message: ''));
       }
 
-      log("response 1 go:${result["questions"][0]}");
-
       List<Question> questionList = [];
 
-      questionList = (result["questions"] as List<dynamic>)
-          .map((e) => Question.fromJson(e))
-          .toList();
+      List<Question> physicsList = [];
+      var physicsId = [];
+
+      List<Question> chemistryList = [];
+      var chemistryId = [];
+
+      List<Question> zoologyList = [];
+      var zoologyId = [];
+
+      List<Question> botanyList = [];
+      var botanyId = [];
+
+      if (result.containsKey("question_ids")) {
+        var qstnId = result['question_ids'];
+        if (qstnId.containsKey("Physics")) {
+          physicsId = qstnId["Physics"];
+        }
+
+        if (qstnId.containsKey("Chemistry")) {
+          chemistryId = qstnId["Chemistry"];
+        }
+
+        if (qstnId.containsKey("Zoology")) {
+          zoologyId = qstnId["Zoology"];
+        }
+
+        if (qstnId.containsKey("Botany")) {
+          botanyId = qstnId["Botany"];
+        }
+      }
+
+      if (result.containsKey("questions")) {
+        var questionsData = result["questions"];
+
+        if (questionsData.containsKey("Physics")) {
+          physicsList = (questionsData['Physics'] as List<dynamic>)
+              .map((e) => Question.fromJson(e))
+              .toList();
+        }
+        if (questionsData.containsKey("Chemistry")) {
+          chemistryList = (questionsData['Chemistry'] as List<dynamic>)
+              .map((e) => Question.fromJson(e))
+              .toList();
+        }
+        if (questionsData.containsKey("Zoology")) {
+          zoologyList = (questionsData['Zoology'] as List<dynamic>)
+              .map((e) => Question.fromJson(e))
+              .toList();
+        }
+        if (questionsData.containsKey("Botany")) {
+          botanyList = (questionsData["Botany"] as List<dynamic>)
+              .map((e) => Question.fromJson(e))
+              .toList();
+        }
+      }
+
+      questionList = physicsList + chemistryList + zoologyList + botanyList;
 
       return Right({
         "custom_test_id": result["custom_test_id"],
         "questions": questionList,
+        "physicsId": physicsId,
+        "chemistryId": chemistryId,
+        "zoologyId": zoologyId,
+        "botanyId": botanyId
       });
     } on FormatException catch (e) {
       debugPrint('exception : $e');
@@ -670,14 +724,17 @@ class ExamRepoImpl extends ExamRepo {
   Future<Either<Failure, Map<String, dynamic>>> submitMockTestAnswers({
     required String accessToken,
     required int mockTestId,
-    required int studentId,
     required int totalAttended,
     required int correctNumber,
     required int incorrectNumber,
     required int totalTimeTaken,
-    required List<dynamic> physicsAnswers,
-    required List<dynamic> chemistryAnswers,
-    required List<dynamic> biologyAnswers,
+    required int skippedcount,
+    required int unattempted,
+    required int totalquestionCount,
+    required Map<String, String> physicsAnswers,
+    required Map<String, String> chemistryAnswers,
+    required Map<String, String> biologyAnswers,
+    required List<dynamic> detailedAnswers,
   }) async {
     try {
       final url = "${Url.baseUrl1}/${Url.submitMockquestion}/";
@@ -692,16 +749,19 @@ class ExamRepoImpl extends ExamRepo {
         },
         body: jsonEncode(({
           "mock_test_id": mockTestId,
-          "student_id": studentId,
+          "total_time_taken": totalTimeTaken,
+          "total_questions": totalquestionCount,
           "total_attended": totalAttended,
-          "correct_number": correctNumber,
-          "incorrect_number": incorrectNumber,
-          "answers": {
+          "correct_answer": correctNumber,
+          "incorrect_answer": incorrectNumber,
+          "skipped_answer": skippedcount,
+          "unattempted_answer": unattempted,
+          "time_taken_per_questions": {
             "Physics": physicsAnswers,
             "Chemistry": chemistryAnswers,
-            "Biology": biologyAnswers,
+            "Biology": biologyAnswers
           },
-          "test_average_time": totalTimeTaken,
+          "detailed_answers": detailedAnswers
         })),
       );
 
@@ -733,31 +793,23 @@ class ExamRepoImpl extends ExamRepo {
   @override
   Future<Either<Failure, Map<String, dynamic>>> submitCustomTestAnswers({
     required String accesstoken,
-    required int studentId,
     required int customTestId,
+    required int totaltimeTaken,
+    required int totalquestions,
     required int totalAttended,
-    required int correctNumber,
-    required int incorrectNumber,
-    required int testAverageTime,
-    required var answer,
-    required var questionAvgTime,
+    required int correctAnswer,
+    required int incorrectanswers,
+    required int skippedAnswer,
+    required int unattemptedAnswers,
+    required Map<String, String> physicsAnswers,
+    required Map<String, String> chemistryAnswers,
+    required Map<String, String> biologyAnswers,
+    required List<dynamic> detailedAnswers,
   }) async {
     try {
       final url = "${Url.baseUrl1}/${Url.submitCustomTest1}";
       if (kDebugMode) {
         log('url:${Url.baseUrl1}/${Url.submitCustomTest1}');
-        log(
-          ({
-            "custom_id": customTestId,
-            "student_id": studentId,
-            "total_attended": totalAttended,
-            "correct_number": correctNumber,
-            "incorrect_number": incorrectNumber,
-            "test_average_time": testAverageTime,
-            "question_average_time": questionAvgTime,
-            "answers": answer,
-          }).toString(),
-        );
       }
       final response = await https.post(
         Uri.parse(url),
@@ -766,14 +818,20 @@ class ExamRepoImpl extends ExamRepo {
           'Authorization': 'Bearer $accesstoken',
         },
         body: jsonEncode(({
-          "custom_id": customTestId,
-          "student_id": studentId,
+          "custom_test_id": customTestId,
+          "total_time_taken": totaltimeTaken,
+          "total_questions": totalquestions,
           "total_attended": totalAttended,
-          "correct_number": correctNumber,
-          "incorrect_number": incorrectNumber,
-          "test_average_time": testAverageTime,
-          "question_average_time": questionAvgTime,
-          "answers": answer,
+          "correct_answer": correctAnswer,
+          "incorrect_answer": incorrectanswers,
+          "skipped_answer": skippedAnswer,
+          "unattempted_answer": unattemptedAnswers,
+          "time_taken_per_questions": {
+            "Physics": physicsAnswers,
+            "Chemistry": chemistryAnswers,
+            "Biology": biologyAnswers
+          },
+          "detailed_answers": detailedAnswers
         })),
       );
       dynamic result = handleResponse(response);

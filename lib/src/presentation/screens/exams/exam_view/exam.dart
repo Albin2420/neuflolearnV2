@@ -281,7 +281,7 @@ class Exam extends StatelessWidget {
                                 children: [
                                   Obx(
                                     () => Text(
-                                      "Question ${ctr.page.value + 1}",
+                                      "Question ${ctr.currentQuestionIndex}",
                                       style: GoogleFonts.urbanist(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 16,
@@ -643,6 +643,7 @@ class Exam extends StatelessWidget {
                     return PageView.builder(
                       scrollBehavior: ScrollBehavior(),
                       onPageChanged: (index) {
+                        ctr.nothing(index: index);
                         ctr.setCurrentPageIndex(index: index);
                         ctr.resetValues();
                         ctr.setSubmittedStatus(
@@ -657,8 +658,8 @@ class Exam extends StatelessWidget {
                       itemCount: ctr.questionList.length,
                       itemBuilder: (context, index) {
                         ctr.setCurrentQuestion(
-                          question: ctr.questionList[index],
-                        );
+                            question: ctr.questionList[index], index: index);
+
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           ctr.setCurrentQuestionIndex(index: index + 1);
                         });
@@ -694,7 +695,7 @@ class Exam extends StatelessWidget {
                                     fontSize: 16,
                                   ),
                                 ),
-                                SizedBox(height: 4),
+                                SizedBox(height: 4), 
                                 ListView.builder(
                                   physics: NeverScrollableScrollPhysics(),
                                   shrinkWrap: true,
@@ -845,6 +846,7 @@ class Exam extends StatelessWidget {
                       log("error Next/Sumit/ :$e");
                     }
                   } else {
+                    log("ready to save:${ctr.questionList[ctr.page.value].questionId}");
                     ctr.submitAnswer();
 
                     if (ctr.currentUserSelectedOption.value == null) {
