@@ -20,6 +20,9 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import '../../../core/config/theme/colors.dart';
+import '../../../core/url.dart';
+
 class IntroScreen extends StatelessWidget {
   const IntroScreen({super.key});
 
@@ -28,6 +31,7 @@ class IntroScreen extends StatelessWidget {
     final ctr = Get.put(AuthController());
     final appctrl = Get.find<AppStartupController>();
     FirestoreService firestoreService = FirestoreService();
+    TextEditingController urlController = TextEditingController();
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -74,6 +78,51 @@ class IntroScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: urlController,
+                        decoration: InputDecoration(
+                          hintText: "Enter URL",
+                          hintStyle: GoogleFonts.urbanist(),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Colors
+                                    .orange), // Border color when not focused
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: AppColors.kOrange,
+                                width: 2), // Border color when focused
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    GestureDetector(
+                      onTap: () {
+                        log("URL => ${urlController.text}");
+                        Url.baseUrl1 = urlController.text;
+                        log("Url.baseUrl1 => ${Url.baseUrl1}");
+                      },
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        decoration: const BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                        ),
+                        child: Icon(Icons.arrow_forward_ios,
+                            color:
+                                Colors.white), // Optional: Add icon for meaning
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               Expanded(
                 child: Column(
                   children: [
