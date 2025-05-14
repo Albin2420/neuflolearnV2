@@ -107,6 +107,8 @@ class IntroScreen extends StatelessWidget {
                         log("URL => ${urlController.text}");
                         Url.baseUrl1 = urlController.text;
                         log("Url.baseUrl1 => ${Url.baseUrl1}");
+                        Fluttertoast.showToast(
+                            msg: "base url :${Url.baseUrl1}");
                       },
                       child: Container(
                         width: 50,
