@@ -438,9 +438,10 @@ class ExamController extends GetxController {
     log("Mock Test Submission");
     log("Test ID: $testId");
 
-    // Calculate total attended questions
     int totalAttended =
         questionList.where((q) => q.selectedOption != null).length;
+
+    totalAttenDed.value = totalAttended;
     log("Attended: $totalAttended");
 
     // Logging correct and incorrect answers
@@ -453,10 +454,6 @@ class ExamController extends GetxController {
     var botanyIdSet = botonyIds.toSet();
     var zoologyIdSet = zoologyIds.toSet();
 
-    // Filter user-attended questions
-    var userAnswer =
-        questionList.where((q) => q.selectedOption != null).toList();
-
     // Lists to store categorized answers
     var userAttendedPhysicsAnswers = [];
     var userAttendedChemistryAnswers = [];
@@ -467,7 +464,12 @@ class ExamController extends GetxController {
     for (var user in questionList) {
       if (answerMap.containsKey(user.questionId.toString()) == false) {
         log("id not found:${user.questionId}");
-        missingIds.add(user.questionId.toString());
+        // missingIds.add(user.questionId.toString());
+        if (!correctIdList.contains("${user.questionId}") &&
+            !inCorrectIdList.contains("${user.questionId}") &&
+            !skippedIds.contains("${user.questionId}")) {
+          missingIds.add(user.questionId.toString());
+        }
         addDetailedAnswer(
             questionId: user.questionId ?? -1,
             subjectId: currentSubjectId.value,
@@ -540,16 +542,16 @@ class ExamController extends GetxController {
     biologytimeMap = combinedResult;
 
     totalAttenDed.value = totalAttended;
-    log("total attended:$totalAttenDed");
-    log("dtAnswer:$detailedAnswers");
+    log("total attended :$totalAttenDed");
+    log("dtAnswer :$detailedAnswers");
 
-    log("correct count:${correctIdList.length}");
-    log("Incorrect count:${inCorrectList.length}");
-    log("skipped count:${skippedList.length}");
-    log("unattempted count:${missingIds.length}");
+    log("correct :$correctIdList   correct count :${correctIdList.length}");
+    log("Incorrect :$inCorrectIdList      incorrect count :${inCorrectIdList.length}");
 
-    log("missing ids:$missingIds");
+    log("unattempted :$missingIds     unattempted count :${missingIds.length}");
+    log("skipped list:$skippedIds    skipped count :${skippedIds.length}");
 
+    log("total data check :${detailedAnswers.length}");
     return await subMitMockTest();
   }
 
